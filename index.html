@@ -4,758 +4,441 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#FAF6F0">
-  <title>Asma Allah Al-Husna — Les 99 Noms</title>
+  <title>Asma Allah Al-Husna</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --gold: #B8860B; --gold-light: #D4A84B; --gold-glow: rgba(184,134,11,0.08);
-      --cream: #FAF6F0; --cream-dark: #F0EBE3;
-      --ink: #1A1A1A; --ink-light: #4A4A4A; --ink-faint: #8A8A8A;
-      --success: #2D6A4F; --error: #9B2226;
-      --serif: 'Cormorant Garamond', Georgia, serif;
-      --arabic: 'Noto Sans Arabic', 'Amiri', serif;
+      --gold: #B8860B;
+      --gold-light: #D4A84B;
+      --gold-bg: rgba(184,134,11,0.05);
+      --cream: #FAF6F0;
+      --white: #FFFFFF;
+      --ink: #1A1A1A;
+      --ink-light: #4A4A4A;
+      --success: #2D6A4F;
+      --error: #9B2226;
+      --shadow: 0 10px 30px rgba(0,0,0,0.05);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--cream); font-family: var(--serif); overscroll-behavior: none; min-height: 100dvh; }
-    button { font-family: var(--serif); }
-    button:active { transform: scale(0.97); }
-    .app { max-width: 500px; margin: 0 auto; min-height: 100dvh; padding-bottom: 80px; }
-    .bismillah { text-align: center; padding: 20px 20px 0; font-family: var(--arabic); font-size: 22px; color: var(--gold); direction: rtl; opacity: 0.7; }
-    .page-header { text-align: center; padding: 24px 20px 8px; }
-    .page-header h1 { font-size: 24px; font-weight: 600; color: var(--ink); letter-spacing: 1px; }
-    .page-header .subtitle { font-size: 13px; color: var(--ink-faint); margin-top: 4px; font-style: italic; }
-    .divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 16px auto; width: 40%; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; }
-    .divider::before { background: linear-gradient(to right, transparent, var(--gold-light)); }
-    .divider::after { background: linear-gradient(to left, transparent, var(--gold-light)); }
-    .divider-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
 
-    .tab-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(250,246,240,0.95); backdrop-filter: blur(20px);
-      border-top: 1px solid var(--cream-dark);
-      display: flex; justify-content: space-around; align-items: center;
-      padding: 6px 0 max(8px, env(safe-area-inset-bottom));
-      max-width: 500px; margin: 0 auto;
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      margin: 0; padding: 0; background: var(--cream); 
+      font-family: 'Cormorant Garamond', serif; color: var(--ink);
+      height: 100dvh; overflow: hidden;
     }
-    .tab-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 8px; border-radius: 12px; opacity: 0.5; transition: opacity 0.2s; }
-    .tab-btn.active { opacity: 1; }
-    .tab-btn .icon { font-size: 18px; }
-    .tab-btn .label { font-size: 9px; font-weight: 400; color: var(--ink-light); letter-spacing: 0.5px; }
-    .tab-btn.active .label { font-weight: 700; color: var(--gold); }
-    .tab-indicator { width: 16px; height: 2px; border-radius: 1px; background: var(--gold); margin-top: 1px; }
 
-    .filters { display: flex; justify-content: center; gap: 6px; margin-bottom: 16px; padding: 0 16px; flex-wrap: wrap; }
-    .pill { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; letter-spacing: 0.3px; border: 1px solid var(--cream-dark); background: white; color: var(--ink-faint); transition: all 0.2s; }
-    .pill.active { border-color: var(--gold); background: var(--gold-glow); color: var(--gold); }
-
-    .name-card {
-      background: white; border-radius: 20px; padding: 36px 24px;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(184,134,11,0.1);
-      cursor: pointer; text-align: center; margin: 0 20px; min-height: 280px;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      position: relative; overflow: hidden;
+    .app-container {
+      max-width: 500px; margin: 0 auto; height: 100%;
+      display: flex; flex-direction: column; position: relative;
     }
-    .corner { position: absolute; width: 20px; height: 20px; opacity: 0.4; }
-    .corner-tl { top: 12px; left: 12px; border-top: 1.5px solid var(--gold-light); border-left: 1.5px solid var(--gold-light); border-radius: 4px 0 0 0; }
-    .corner-tr { top: 12px; right: 12px; border-top: 1.5px solid var(--gold-light); border-right: 1.5px solid var(--gold-light); border-radius: 0 4px 0 0; }
-    .corner-bl { bottom: 12px; left: 12px; border-bottom: 1.5px solid var(--gold-light); border-left: 1.5px solid var(--gold-light); border-radius: 0 0 0 4px; }
-    .corner-br { bottom: 12px; right: 12px; border-bottom: 1.5px solid var(--gold-light); border-right: 1.5px solid var(--gold-light); border-radius: 0 0 4px 0; }
-    .card-number { font-size: 13px; color: var(--gold); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
-    .card-arabic { font-family: var(--arabic); font-size: 44px; line-height: 1.4; color: var(--ink); direction: rtl; margin-bottom: 16px; }
-    .card-trans { font-size: 20px; color: var(--gold); font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
-    .card-meaning { font-size: 17px; color: var(--ink-light); font-style: italic; line-height: 1.5; animation: fadeIn 0.3s ease; }
-    .card-category { display: inline-block; margin-top: 12px; padding: 4px 12px; border-radius: 12px; font-size: 11px; color: var(--gold); background: var(--gold-glow); border: 1px solid rgba(184,134,11,0.15); }
-    .card-hint { font-size: 12px; color: var(--ink-faint); margin-top: 12px; opacity: 0.6; }
 
-    .controls { display: flex; justify-content: center; gap: 16px; margin-top: 24px; padding: 0 20px; align-items: center; }
-    .nav-btn { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--cream-dark); background: white; cursor: pointer; font-size: 18px; color: var(--ink-light); display: flex; align-items: center; justify-content: center; }
-    .master-btn { padding: 10px 24px; border-radius: 24px; font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s; }
-    .master-btn.off { border: 1.5px solid var(--gold); background: white; color: var(--gold); }
-    .master-btn.on { border: 1.5px solid var(--success); background: var(--success); color: white; }
+    /* Header */
+    header {
+      padding: 20px 20px 10px; text-align: center; flex-shrink: 0;
+    }
+    .bismillah { 
+      font-family: 'Noto Sans Arabic', sans-serif; font-size: 18px; 
+      color: var(--gold); opacity: 0.8; margin-bottom: 5px;
+    }
+    header h1 { font-size: 24px; margin: 0; letter-spacing: 1px; }
 
-    .question-card { background: white; border-radius: 20px; padding: 32px 24px; margin: 0 20px 20px; text-align: center; box-shadow: 0 2px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(184,134,11,0.1); }
-    .question-label { font-size: 12px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
-    .question-display-ar { font-family: var(--arabic); font-size: 40px; direction: rtl; color: var(--ink); }
-    .question-display-fr { font-size: 22px; font-style: italic; color: var(--ink); }
-    .options { display: flex; flex-direction: column; gap: 10px; padding: 0 20px; }
-    .option-btn { width: 100%; padding: 14px 16px; border-radius: 14px; background: white; border: 1.5px solid var(--cream-dark); cursor: pointer; text-align: center; transition: all 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
-    .option-btn .opt-ar { font-family: var(--arabic); font-size: 18px; color: var(--ink); direction: rtl; margin-bottom: 4px; }
-    .option-btn .opt-label { font-size: 15px; color: var(--ink-light); font-weight: 500; }
-    .option-btn.correct { background: var(--success); border-color: var(--success); }
-    .option-btn.correct .opt-label, .option-btn.correct .opt-ar { color: white; }
-    .option-btn.wrong { background: var(--error); border-color: var(--error); }
-    .option-btn.wrong .opt-label, .option-btn.wrong .opt-ar { color: white; }
+    /* Main Area */
+    main {
+      flex: 1; overflow-y: auto; padding: 10px 20px 120px;
+      scrollbar-width: none;
+    }
+    main::-webkit-scrollbar { display: none; }
 
-    .match-grid { display: flex; gap: 12px; padding: 0 16px; }
-    .match-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .match-btn { padding: 14px 8px; border-radius: 14px; border: 1.5px solid var(--cream-dark); background: white; cursor: pointer; text-align: center; transition: all 0.2s; }
-    .match-btn.selected { border-color: var(--gold); background: var(--gold-glow); }
-    .match-btn.matched { border-color: var(--success); background: rgba(45,106,79,0.06); opacity: 0.5; }
-    .match-btn.wrong-match { border-color: var(--error); background: rgba(155,34,38,0.06); }
-    .match-btn-ar { font-family: var(--arabic); font-size: 20px; color: var(--ink); direction: rtl; }
-    .match-btn-fr { font-size: 13px; color: var(--ink-light); font-weight: 500; }
-    .timer-display { font-size: 28px; font-weight: 600; color: var(--gold); }
-    .complete-msg { text-align: center; padding: 40px 20px; }
-    .complete-msg .emoji { font-size: 40px; margin-bottom: 16px; }
-    .complete-msg p { font-size: 20px; color: var(--ink); font-weight: 600; }
-    .new-round-btn { padding: 12px 32px; border-radius: 24px; border: 1.5px solid var(--gold); background: var(--gold-glow); color: var(--gold); font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 16px; letter-spacing: 0.5px; }
+    /* Flashcard Style - STABLE LAYOUT */
+    .card {
+      background: var(--white); border-radius: 30px; padding: 40px 25px;
+      box-shadow: var(--shadow); border: 1px solid rgba(184,134,11,0.1);
+      text-align: center; position: relative; transition: transform 0.3s ease;
+      min-height: 380px; display: flex; flex-direction: column; justify-content: space-between;
+    }
 
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 16px; padding: 20px 16px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.03); border: 1px solid var(--cream-dark); }
-    .stat-value { font-size: 32px; font-weight: 700; color: var(--gold); }
-    .stat-sub { font-size: 11px; color: var(--ink-faint); letter-spacing: 1px; }
-    .stat-label { font-size: 12px; color: var(--ink-light); margin-top: 4px; font-weight: 600; }
-    .progress-section { padding: 0 20px; margin-bottom: 24px; }
-    .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .progress-track { height: 8px; border-radius: 4px; background: var(--cream-dark); overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); transition: width 0.5s ease; }
-    .difficult-list { padding: 0 20px; }
-    .difficult-list h3 { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
-    .difficult-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: white; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--cream-dark); }
+    .card-num { font-size: 12px; color: var(--gold); font-weight: bold; letter-spacing: 2px; }
+    .card-ar { font-family: 'Noto Sans Arabic', sans-serif; font-size: 52px; margin: 15px 0; }
+    .card-trans { font-size: 24px; color: var(--gold); font-weight: 600; margin-bottom: 10px; }
+    
+    /* Reveal Zone: Fixing the jump */
+    .reveal-zone {
+      min-height: 120px; /* Espace réservé pour éviter que le layout bouge */
+      border-top: 1px solid var(--cream); margin-top: 20px; padding-top: 20px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .meaning { font-size: 20px; font-style: italic; animation: fadeIn 0.4s ease; }
+    .placeholder { color: var(--gold); font-size: 13px; opacity: 0.5; cursor: pointer; }
 
-    /* Writing mode */
-    .write-input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--cream-dark); background: white; font-family: var(--serif); font-size: 16px; color: var(--ink); text-align: center; outline: none; transition: border-color 0.2s; }
-    .write-input:focus { border-color: var(--gold); }
-    .write-input.correct { border-color: var(--success); background: rgba(45,106,79,0.05); }
-    .write-input.wrong { border-color: var(--error); background: rgba(155,34,38,0.05); }
-    .write-submit { padding: 12px 32px; border-radius: 24px; border: 1.5px solid var(--gold); background: var(--gold); color: white; font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 0.5px; margin-top: 12px; }
-    .write-submit:disabled { opacity: 0.4; cursor: default; }
-    .write-correction { margin-top: 12px; padding: 12px 16px; border-radius: 12px; background: rgba(155,34,38,0.06); border: 1px solid rgba(155,34,38,0.15); text-align: center; animation: fadeIn 0.3s ease; }
-    .write-success { margin-top: 12px; padding: 12px 16px; border-radius: 12px; background: rgba(45,106,79,0.06); border: 1px solid rgba(45,106,79,0.15); text-align: center; animation: fadeIn 0.3s ease; }
+    /* Navigation Card */
+    .card-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 25px; gap: 15px;
+    }
+    .btn-circle {
+      width: 54px; height: 54px; border-radius: 50%; border: 1px solid var(--gold);
+      background: var(--white); color: var(--gold); font-size: 24px; cursor: pointer;
+    }
+    .btn-master {
+      flex: 1; padding: 16px; border-radius: 30px; border: none; font-weight: bold;
+      cursor: pointer; transition: 0.3s; font-size: 14px; letter-spacing: 1px;
+    }
+    .btn-master.off { background: var(--white); border: 1px solid var(--gold); color: var(--gold); }
+    .btn-master.on { background: var(--success); color: white; }
 
-    /* Categories */
-    .cat-section { padding: 0 20px; margin-bottom: 16px; }
-    .cat-title { font-size: 15px; font-weight: 600; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-    .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .cat-item { background: white; border-radius: 12px; padding: 12px 10px; text-align: center; border: 1px solid var(--cream-dark); cursor: pointer; transition: all 0.2s; }
-    .cat-item:active { border-color: var(--gold); }
-    .cat-item .ci-ar { font-family: var(--arabic); font-size: 16px; color: var(--ink); direction: rtl; }
-    .cat-item .ci-fr { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+    /* Tabs Bar */
+    .tabs {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.8); backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      display: flex; justify-content: space-around; padding: 15px 10px 30px;
+      border-top: 1px solid rgba(0,0,0,0.05); z-index: 100;
+    }
+    .tab-item {
+      background: none; border: none; display: flex; flex-direction: column;
+      align-items: center; gap: 5px; color: var(--ink-light); opacity: 0.4; transition: 0.3s;
+    }
+    .tab-item.active { opacity: 1; color: var(--gold); }
+    .tab-icon { font-size: 22px; }
+    .tab-label { font-size: 11px; font-weight: bold; }
 
-    .session-score, .counter, .swipe-hint { text-align: center; font-size: 13px; color: var(--ink-faint); }
-    .swipe-hint { font-size: 11px; margin-top: 12px; font-style: italic; }
-    .counter { margin-bottom: 12px; }
-    .session-score { margin-bottom: 16px; }
-    .empty-msg { text-align: center; padding: 40px; color: var(--ink-faint); }
-    .page { display: none; }
-    .page.active { display: block; }
-    .reset-section { text-align: center; padding: 24px 20px; }
-    .reset-btn { padding: 10px 24px; border-radius: 20px; border: 1px solid var(--cream-dark); background: white; color: var(--ink-faint); cursor: pointer; font-size: 12px; }
-    .sr-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; }
-    .sr-new { background: rgba(184,134,11,0.1); color: var(--gold); }
-    .sr-learning { background: rgba(155,34,38,0.1); color: var(--error); }
-    .sr-review { background: rgba(74,74,74,0.1); color: var(--ink-light); }
-    .sr-mastered { background: rgba(45,106,79,0.1); color: var(--success); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    /* Quiz & Games */
+    .quiz-option {
+      background: white; border: 1px solid var(--gold-bg); padding: 18px;
+      border-radius: 20px; width: 100%; margin-bottom: 12px; font-size: 17px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s;
+    }
+    .quiz-option.correct { background: var(--success) !important; color: white; }
+    .quiz-option.wrong { background: var(--error) !important; color: white; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Filters */
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+    .filter-pill {
+      white-space: nowrap; padding: 8px 16px; border-radius: 20px; background: white;
+      border: 1px solid var(--gold-bg); font-size: 12px; font-weight: bold;
+    }
+    .filter-pill.active { background: var(--gold); color: white; }
   </style>
 </head>
 <body>
-<div class="app">
-  <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
 
-  <div id="page-learn" class="page active"></div>
-  <div id="page-quiz" class="page"></div>
-  <div id="page-write" class="page"></div>
-  <div id="page-match" class="page"></div>
-  <div id="page-categories" class="page"></div>
-  <div id="page-progress" class="page"></div>
+<div class="app-container">
+  <header>
+    <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
+    <h1 id="page-title">Les 99 Noms</h1>
+  </header>
 
-  <nav class="tab-bar" id="tab-bar"></nav>
+  <main id="app-content">
+    </main>
+
+  <nav class="tabs">
+    <button class="tab-item active" onclick="nav('learn')">
+      <span class="tab-icon">📖</span><span class="tab-label">Étude</span>
+    </button>
+    <button class="tab-item" onclick="nav('quiz')">
+      <span class="tab-icon">✨</span><span class="tab-label">Quiz</span>
+    </button>
+    <button class="tab-item" onclick="nav('match')">
+      <span class="tab-icon">🔗</span><span class="tab-label">Relier</span>
+    </button>
+    <button class="tab-item" onclick="nav('stats')">
+      <span class="tab-icon">📊</span><span class="tab-label">Stats</span>
+    </button>
+  </nav>
 </div>
 
 <script>
-// =============================================
-// DATA
-// =============================================
-const NAMES=[
-{id:1,ar:"ٱلرَّحْمَـٰنُ",trans:"Ar-Rahmân",fr:"Le Tout Miséricordieux",cat:"misericorde"},
-{id:2,ar:"ٱلرَّحِيمُ",trans:"Ar-Rahîm",fr:"Le Très Miséricordieux",cat:"misericorde"},
-{id:3,ar:"ٱلْمَلِكُ",trans:"Al-Malik",fr:"Le Souverain",cat:"puissance"},
-{id:4,ar:"ٱلْقُدُّوسُ",trans:"Al-Quddûs",fr:"Le Très Saint",cat:"majeste"},
-{id:5,ar:"ٱلسَّلَامُ",trans:"As-Salâm",fr:"La Source de la Paix",cat:"misericorde"},
-{id:6,ar:"ٱلْمُؤْمِنُ",trans:"Al-Mu'min",fr:"Le Rassurant",cat:"misericorde"},
-{id:7,ar:"ٱلْمُهَيْمِنُ",trans:"Al-Muhaymin",fr:"Le Protecteur",cat:"puissance"},
-{id:8,ar:"ٱلْعَزِيزُ",trans:"Al-'Azîz",fr:"Le Tout Puissant",cat:"puissance"},
-{id:9,ar:"ٱلْجَبَّارُ",trans:"Al-Jabbâr",fr:"Le Contraignant",cat:"puissance"},
-{id:10,ar:"ٱلْمُتَكَبِّرُ",trans:"Al-Mutakabbir",fr:"L'Orgueilleux Suprême",cat:"majeste"},
-{id:11,ar:"ٱلْخَالِقُ",trans:"Al-Khâliq",fr:"Le Créateur",cat:"creation"},
-{id:12,ar:"ٱلْبَارِئُ",trans:"Al-Bâri'",fr:"Le Producteur",cat:"creation"},
-{id:13,ar:"ٱلْمُصَوِّرُ",trans:"Al-Musawwir",fr:"Le Formateur",cat:"creation"},
-{id:14,ar:"ٱلْغَفَّارُ",trans:"Al-Ghaffâr",fr:"L'Infini Pardonneur",cat:"misericorde"},
-{id:15,ar:"ٱلْقَهَّارُ",trans:"Al-Qahhâr",fr:"Le Dominateur Suprême",cat:"puissance"},
-{id:16,ar:"ٱلْوَهَّابُ",trans:"Al-Wahhâb",fr:"Le Donateur Suprême",cat:"generosite"},
-{id:17,ar:"ٱلرَّزَّاقُ",trans:"Ar-Razzâq",fr:"Celui qui pourvoit",cat:"generosite"},
-{id:18,ar:"ٱلْفَتَّاحُ",trans:"Al-Fattâh",fr:"L'Ouvreur",cat:"sagesse"},
-{id:19,ar:"ٱلْعَلِيمُ",trans:"Al-'Alîm",fr:"L'Omniscient",cat:"sagesse"},
-{id:20,ar:"ٱلْقَابِضُ",trans:"Al-Qâbid",fr:"Celui qui retient",cat:"puissance"},
-{id:21,ar:"ٱلْبَاسِطُ",trans:"Al-Bâsit",fr:"Celui qui étend",cat:"generosite"},
-{id:22,ar:"ٱلْخَافِضُ",trans:"Al-Khâfid",fr:"Celui qui abaisse",cat:"puissance"},
-{id:23,ar:"ٱلرَّافِعُ",trans:"Ar-Râfi'",fr:"Celui qui élève",cat:"puissance"},
-{id:24,ar:"ٱلْمُعِزُّ",trans:"Al-Mu'izz",fr:"Celui qui honore",cat:"puissance"},
-{id:25,ar:"ٱلْمُذِلُّ",trans:"Al-Mudhill",fr:"Celui qui humilie",cat:"justice"},
-{id:26,ar:"ٱلسَّمِيعُ",trans:"As-Samî'",fr:"L'Audient",cat:"sagesse"},
-{id:27,ar:"ٱلْبَصِيرُ",trans:"Al-Basîr",fr:"Le Clairvoyant",cat:"sagesse"},
-{id:28,ar:"ٱلْحَكَمُ",trans:"Al-Hakam",fr:"Le Juge",cat:"justice"},
-{id:29,ar:"ٱلْعَدْلُ",trans:"Al-'Adl",fr:"Le Juste",cat:"justice"},
-{id:30,ar:"ٱللَّطِيفُ",trans:"Al-Latîf",fr:"Le Subtil",cat:"misericorde"},
-{id:31,ar:"ٱلْخَبِيرُ",trans:"Al-Khabîr",fr:"Le Bien-Informé",cat:"sagesse"},
-{id:32,ar:"ٱلْحَلِيمُ",trans:"Al-Halîm",fr:"L'Indulgent",cat:"misericorde"},
-{id:33,ar:"ٱلْعَظِيمُ",trans:"Al-'Azîm",fr:"Le Sublime",cat:"majeste"},
-{id:34,ar:"ٱلْغَفُورُ",trans:"Al-Ghafûr",fr:"Le Pardonneur",cat:"misericorde"},
-{id:35,ar:"ٱلشَّكُورُ",trans:"Ash-Shakûr",fr:"Le Reconnaissant",cat:"misericorde"},
-{id:36,ar:"ٱلْعَلِيُّ",trans:"Al-'Aliyy",fr:"Le Très Haut",cat:"majeste"},
-{id:37,ar:"ٱلْكَبِيرُ",trans:"Al-Kabîr",fr:"Le Grand",cat:"majeste"},
-{id:38,ar:"ٱلْحَفِيظُ",trans:"Al-Hafîz",fr:"Le Gardien",cat:"puissance"},
-{id:39,ar:"ٱلْمُقِيتُ",trans:"Al-Muqît",fr:"Le Nourricier",cat:"generosite"},
-{id:40,ar:"ٱلْحَسِيبُ",trans:"Al-Hasîb",fr:"Celui qui tient compte",cat:"justice"},
-{id:41,ar:"ٱلْجَلِيلُ",trans:"Al-Jalîl",fr:"Le Majestueux",cat:"majeste"},
-{id:42,ar:"ٱلْكَرِيمُ",trans:"Al-Karîm",fr:"Le Généreux",cat:"generosite"},
-{id:43,ar:"ٱلرَّقِيبُ",trans:"Ar-Raqîb",fr:"Le Vigilant",cat:"sagesse"},
-{id:44,ar:"ٱلْمُجِيبُ",trans:"Al-Mujîb",fr:"Celui qui exauce",cat:"misericorde"},
-{id:45,ar:"ٱلْوَاسِعُ",trans:"Al-Wâsi'",fr:"L'Immense",cat:"majeste"},
-{id:46,ar:"ٱلْحَكِيمُ",trans:"Al-Hakîm",fr:"Le Sage",cat:"sagesse"},
-{id:47,ar:"ٱلْوَدُودُ",trans:"Al-Wadûd",fr:"Le Bien-Aimant",cat:"misericorde"},
-{id:48,ar:"ٱلْمَجِيدُ",trans:"Al-Majîd",fr:"Le Glorieux",cat:"majeste"},
-{id:49,ar:"ٱلْبَاعِثُ",trans:"Al-Bâ'ith",fr:"Celui qui ressuscite",cat:"puissance"},
-{id:50,ar:"ٱلشَّهِيدُ",trans:"Ash-Shahîd",fr:"Le Témoin",cat:"sagesse"},
-{id:51,ar:"ٱلْحَقُّ",trans:"Al-Haqq",fr:"La Vérité",cat:"majeste"},
-{id:52,ar:"ٱلْوَكِيلُ",trans:"Al-Wakîl",fr:"Le Garant",cat:"puissance"},
-{id:53,ar:"ٱلْقَوِيُّ",trans:"Al-Qawiyy",fr:"Le Fort",cat:"puissance"},
-{id:54,ar:"ٱلْمَتِينُ",trans:"Al-Matîn",fr:"Le Ferme",cat:"puissance"},
-{id:55,ar:"ٱلْوَلِيُّ",trans:"Al-Waliyy",fr:"Le Protecteur",cat:"misericorde"},
-{id:56,ar:"ٱلْحَمِيدُ",trans:"Al-Hamîd",fr:"Le Louable",cat:"majeste"},
-{id:57,ar:"ٱلْمُحْصِي",trans:"Al-Muhsî",fr:"Celui qui dénombre",cat:"sagesse"},
-{id:58,ar:"ٱلْمُبْدِئُ",trans:"Al-Mubdi'",fr:"Celui qui commence",cat:"creation"},
-{id:59,ar:"ٱلْمُعِيدُ",trans:"Al-Mu'îd",fr:"Celui qui reproduit",cat:"creation"},
-{id:60,ar:"ٱلْمُحْيِي",trans:"Al-Muhyî",fr:"Celui qui donne la vie",cat:"creation"},
-{id:61,ar:"ٱلْمُمِيتُ",trans:"Al-Mumît",fr:"Celui qui donne la mort",cat:"puissance"},
-{id:62,ar:"ٱلْحَيُّ",trans:"Al-Hayy",fr:"Le Vivant",cat:"majeste"},
-{id:63,ar:"ٱلْقَيُّومُ",trans:"Al-Qayyûm",fr:"Celui qui subsiste par Lui-même",cat:"majeste"},
-{id:64,ar:"ٱلْوَاجِدُ",trans:"Al-Wâjid",fr:"Celui qui trouve",cat:"sagesse"},
-{id:65,ar:"ٱلْمَاجِدُ",trans:"Al-Mâjid",fr:"Le Noble",cat:"majeste"},
-{id:66,ar:"ٱلْوَاحِدُ",trans:"Al-Wâhid",fr:"L'Unique",cat:"majeste"},
-{id:67,ar:"ٱلْأَحَدُ",trans:"Al-Ahad",fr:"Le Seul",cat:"majeste"},
-{id:68,ar:"ٱلصَّمَدُ",trans:"As-Samad",fr:"L'Absolu",cat:"majeste"},
-{id:69,ar:"ٱلْقَادِرُ",trans:"Al-Qâdir",fr:"Le Capable",cat:"puissance"},
-{id:70,ar:"ٱلْمُقْتَدِرُ",trans:"Al-Muqtadir",fr:"Le Tout Déterminant",cat:"puissance"},
-{id:71,ar:"ٱلْمُقَدِّمُ",trans:"Al-Muqaddim",fr:"Celui qui met en avant",cat:"puissance"},
-{id:72,ar:"ٱلْمُؤَخِّرُ",trans:"Al-Mu'akhkhir",fr:"Celui qui retarde",cat:"puissance"},
-{id:73,ar:"ٱلْأَوَّلُ",trans:"Al-Awwal",fr:"Le Premier",cat:"majeste"},
-{id:74,ar:"ٱلْآخِرُ",trans:"Al-Âkhir",fr:"Le Dernier",cat:"majeste"},
-{id:75,ar:"ٱلظَّاهِرُ",trans:"Az-Zâhir",fr:"L'Apparent",cat:"majeste"},
-{id:76,ar:"ٱلْبَاطِنُ",trans:"Al-Bâtin",fr:"Le Caché",cat:"majeste"},
-{id:77,ar:"ٱلْوَالِي",trans:"Al-Wâlî",fr:"Le Maître",cat:"puissance"},
-{id:78,ar:"ٱلْمُتَعَالِي",trans:"Al-Muta'âlî",fr:"Le Très Élevé",cat:"majeste"},
-{id:79,ar:"ٱلْبَرُّ",trans:"Al-Barr",fr:"Le Charitable",cat:"generosite"},
-{id:80,ar:"ٱلتَّوَّابُ",trans:"At-Tawwâb",fr:"Celui qui accepte le repentir",cat:"misericorde"},
-{id:81,ar:"ٱلْمُنْتَقِمُ",trans:"Al-Muntaqim",fr:"Le Vengeur",cat:"justice"},
-{id:82,ar:"ٱلْعَفُوُّ",trans:"Al-'Afuww",fr:"L'Indulgent",cat:"misericorde"},
-{id:83,ar:"ٱلرَّؤُوفُ",trans:"Ar-Ra'ûf",fr:"Le Compatissant",cat:"misericorde"},
-{id:84,ar:"مَالِكُ ٱلْمُلْكِ",trans:"Mâlik-ul-Mulk",fr:"Possesseur du Royaume",cat:"puissance"},
-{id:85,ar:"ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ",trans:"Dhul-Jalâli wal-Ikrâm",fr:"Plein de Majesté et de Munificence",cat:"majeste"},
-{id:86,ar:"ٱلْمُقْسِطُ",trans:"Al-Muqsit",fr:"L'Équitable",cat:"justice"},
-{id:87,ar:"ٱلْجَامِعُ",trans:"Al-Jâmi'",fr:"Celui qui rassemble",cat:"puissance"},
-{id:88,ar:"ٱلْغَنِيُّ",trans:"Al-Ghaniyy",fr:"Le Riche",cat:"majeste"},
-{id:89,ar:"ٱلْمُغْنِي",trans:"Al-Mughnî",fr:"Celui qui enrichit",cat:"generosite"},
-{id:90,ar:"ٱلْمَانِعُ",trans:"Al-Mâni'",fr:"Celui qui empêche",cat:"puissance"},
-{id:91,ar:"ٱلضَّارُّ",trans:"Ad-Dârr",fr:"Celui qui nuit",cat:"puissance"},
-{id:92,ar:"ٱلنَّافِعُ",trans:"An-Nâfi'",fr:"Celui qui accorde le profit",cat:"generosite"},
-{id:93,ar:"ٱلنُّورُ",trans:"An-Nûr",fr:"La Lumière",cat:"majeste"},
-{id:94,ar:"ٱلْهَادِي",trans:"Al-Hâdî",fr:"Le Guide",cat:"sagesse"},
-{id:95,ar:"ٱلْبَدِيعُ",trans:"Al-Badî'",fr:"Le Créateur Originel",cat:"creation"},
-{id:96,ar:"ٱلْبَاقِي",trans:"Al-Bâqî",fr:"L'Éternel",cat:"majeste"},
-{id:97,ar:"ٱلْوَارِثُ",trans:"Al-Wârith",fr:"L'Héritier",cat:"puissance"},
-{id:98,ar:"ٱلرَّشِيدُ",trans:"Ar-Rashîd",fr:"Celui qui dirige avec Sagesse",cat:"sagesse"},
-{id:99,ar:"ٱلصَّبُورُ",trans:"As-Sabûr",fr:"Le Patient",cat:"misericorde"}
+// DATA CORRIGÉE
+const NAMES = [
+  {id:1,ar:"ٱلرَّحْمَـٰنُ",trans:"Ar-Rahmân",fr:"Le Tout Miséricordieux"},
+  {id:2,ar:"ٱلرَّحِيمُ",trans:"Ar-Rahîm",fr:"Le Très Miséricordieux"},
+  {id:3,ar:"ٱلْمَلِكُ",trans:"Al-Malik",fr:"Le Souverain"},
+  {id:4,ar:"ٱلْقُدُّوسُ",trans:"Al-Quddûs",fr:"Le Très Saint"},
+  {id:5,ar:"ٱلسَّلَامُ",trans:"As-Salâm",fr:"La Source de la Paix"},
+  {id:6,ar:"ٱلْمُؤْمِنُ",trans:"Al-Mu'min",fr:"Le Sécurisant"},
+  {id:7,ar:"ٱلْمُهَيْمِنُ",trans:"Al-Muhaymin",fr:"Le Protecteur"},
+  {id:8,ar:"ٱلْعَزِيزُ",trans:"Al-'Azîz",fr:"Le Tout Puissant"},
+  {id:9,ar:"ٱلْجَبَّارُ",trans:"Al-Jabbâr",fr:"Celui qui contraint"},
+  {id:10,ar:"ٱلْمُتَكَبِّرُ",trans:"Al-Mutakabbir",fr:"L'Orgueilleux Suprême"},
+  {id:11,ar:"ٱلْخَالِقُ",trans:"Al-Khâliq",fr:"Le Créateur"},
+  {id:12,ar:"ٱلْبَارِئُ",trans:"Al-Bâri'",fr:"Le Producteur"},
+  {id:13,ar:"ٱلْمُصَوِّرُ",trans:"Al-Musawwir",fr:"Le Formateur"},
+  {id:14,ar:"ٱلْغَفَّارُ",trans:"Al-Ghaffâr",fr:"L'Infini Pardonneur"},
+  {id:15,ar:"ٱلْقَهَّارُ",trans:"Al-Qahhâr",fr:"Le Dominateur Suprême"},
+  {id:16,ar:"ٱلْوَهَّابُ",trans:"Al-Wahhâb",fr:"Le Donateur Suprême"},
+  {id:17,ar:"ٱلرَّزَّاقُ",trans:"Ar-Razzâq",fr:"Celui qui pourvoit"},
+  {id:18,ar:"ٱلْفَتَّاحُ",trans:"Al-Fattâh",fr:"L'Ouvreur"},
+  {id:19,ar:"ٱلْعَلِيمُ",trans:"Al-'Alîm",fr:"L'Omniscient"},
+  {id:20,ar:"ٱلْقَابِضُ",trans:"Al-Qâbid",fr:"Celui qui retient"},
+  {id:21,ar:"ٱلْبَاسِطُ",trans:"Al-Bâsit",fr:"Celui qui étend"},
+  {id:22,ar:"ٱلْخَافِضُ",trans:"Al-Khâfid",fr:"Celui qui abaisse"},
+  {id:23,ar:"ٱلرَّافِعُ",trans:"Ar-Râfi'",fr:"Celui qui élève"},
+  {id:24,ar:"ٱلْمُعِزُّ",trans:"Al-Mu'izz",fr:"Celui qui honore"},
+  {id:25,ar:"ٱلْمُذِلُّ",trans:"Al-Mudhill",fr:"Celui qui humilie"},
+  {id:26,ar:"ٱلسَّمِيعُ",trans:"As-Samî'",fr:"L'Audient"},
+  {id:27,ar:"ٱلْبَصِيرُ",trans:"Al-Basîr",fr:"Le Clairvoyant"},
+  {id:28,ar:"ٱلْحَكَمُ",trans:"Al-Hakam",fr:"Le Juge"},
+  {id:29,ar:"ٱلْعَدْلُ",trans:"Al-'Adl",fr:"Le Juste"},
+  {id:30,ar:"ٱللَّطِيفُ",trans:"Al-Latîf",fr:"Le Subtil"},
+  {id:31,ar:"ٱلْخَبِيرُ",trans:"Al-Khabîr",fr:"Le Bien-Informé"},
+  {id:32,ar:"ٱلْحَلِيمُ",trans:"Al-Halîm",fr:"Le Longanime"},
+  {id:33,ar:"ٱلْعَظِيمُ",trans:"Al-'Azîm",fr:"Le Sublime"},
+  {id:34,ar:"ٱلْغَفُورُ",trans:"Al-Ghafûr",fr:"Le Pardonneur"},
+  {id:35,ar:"ٱلشَّكُورُ",trans:"Ash-Shakûr",fr:"Le Reconnaissant"},
+  {id:36,ar:"ٱلْعَلِيُّ",trans:"Al-'Aliyy",fr:"Le Très Haut"},
+  {id:37,ar:"ٱلْكَبِيرُ",trans:"Al-Kabîr",fr:"Le Grand"},
+  {id:38,ar:"ٱلْحَفِيظُ",trans:"Al-Hafîz",fr:"Le Gardien"},
+  {id:39,ar:"ٱلْمُقِيتُ",trans:"Al-Muqît",fr:"Le Nourricier"},
+  {id:40,ar:"ٱلْحَسِيبُ",trans:"Al-Hasîb",fr:"Celui qui tient compte"},
+  {id:41,ar:"ٱلْجَلِيلُ",trans:"Al-Jalîl",fr:"Le Majestueux"},
+  {id:42,ar:"ٱلْكَرِيمُ",trans:"Al-Karîm",fr:"Le Généreux"},
+  {id:43,ar:"ٱلرَّقِيبُ",trans:"Ar-Raqîb",fr:"Le Vigilant"},
+  {id:44,ar:"ٱلْمُجِيبُ",trans:"Al-Mujîb",fr:"Celui qui exauce"},
+  {id:45,ar:"ٱلْوَاسِعُ",trans:"Al-Wâsi'",fr:"L'Immense"},
+  {id:46,ar:"ٱلْحكِيمُ",trans:"Al-Hakîm",fr:"Le Sage"},
+  {id:47,ar:"ٱلْوَدُودُ",trans:"Al-Wadûd",fr:"Le Bien-Aimant"},
+  {id:48,ar:"ٱلْمَجِيدُ",trans:"Al-Majîd",fr:"Le Glorieux"},
+  {id:49,ar:"ٱلْبَاعِثُ",trans:"Al-Bâ'ith",fr:"Celui qui ressuscite"},
+  {id:50,ar:"ٱلشَّهِيدُ",trans:"Ash-Shahîd",fr:"Le Témoin"},
+  {id:51,ar:"ٱلْحَقُّ",trans:"Al-Haqq",fr:"La Vérité"},
+  {id:52,ar:"ٱلْوَكِيلُ",trans:"Al-Wakîl",fr:"Le Garant"},
+  {id:53,ar:"ٱلْقَوِيُّ",trans:"Al-Qawiyy",fr:"Le Fort"},
+  {id:54,ar:"ٱلْمَتِينُ",trans:"Al-Matîn",fr:"Le Ferme"},
+  {id:55,ar:"ٱلْوَلِيُّ",trans:"Al-Waliyy",fr:"Le Protecteur"},
+  {id:56,ar:"ٱلْحَمِيدُ",trans:"Al-Hamîd",fr:"Le Louable"},
+  {id:57,ar:"ٱلْمُحْصِي",trans:"Al-Muhsî",fr:"Celui qui dénombre"},
+  {id:58,ar:"ٱلْمُبْدِئُ",trans:"Al-Mubdi'",fr:"Celui qui commence"},
+  {id:59,ar:"ٱلْمُعِيدُ",trans:"Al-Mu'îd",fr:"Celui qui reproduit"},
+  {id:60,ar:"ٱلْمُحْيِي",trans:"Al-Muhyî",fr:"Celui qui donne la vie"},
+  {id:61,ar:"ٱلْمُمِيتُ",trans:"Al-Mumît",fr:"Celui qui donne la mort"},
+  {id:62,ar:"ٱلْحَيُّ",trans:"Al-Hayy",fr:"Le Vivant"},
+  {id:63,ar:"ٱلْقَيُّومُ",trans:"Al-Qayyûm",fr:"Le Subsistant"},
+  {id:64,ar:"ٱلْوَاجِدُ",trans:"Al-Wâjid",fr:"Celui qui trouve"},
+  {id:65,ar:"ٱلْمَاجِدُ",trans:"Al-Mâjid",fr:"Le Noble"},
+  {id:66,ar:"ٱلْوَاحِدُ",trans:"Al-Wâhid",fr:"L'Unique"},
+  {id:67,ar:"ٱلْأَحَدُ",trans:"Al-Ahad",fr:"Le Seul"},
+  {id:68,ar:"ٱلصَّمَدُ",trans:"As-Samad",fr:"L'Absolu"},
+  {id:69,ar:"ٱلْقَادِرُ",trans:"Al-Qâdir",fr:"Le Capable"},
+  {id:70,ar:"ٱلْمُقْتَدِرُ",trans:"Al-Muqtadir",fr:"Le Tout Déterminant"},
+  {id:71,ar:"ٱلْمُقَدِّمُ",trans:"Al-Muqaddim",fr:"Celui qui met en avant"},
+  {id:72,ar:"ٱلْمُؤَخِّرُ",trans:"Al-Mu'akhkhir",fr:"Celui qui retarde"},
+  {id:73,ar:"ٱلْأَوَّلُ",trans:"Al-Awwal",fr:"Le Premier"},
+  {id:74,ar:"ٱلْآخِرُ",trans:"Al-Âkhir",fr:"Le Dernier"},
+  {id:75,ar:"ٱلظَّاهِرُ",trans:"Az-Zâhir",fr:"L'Apparent"},
+  {id:76,ar:"ٱلْبَاطِنُ",trans:"Al-Bâtin",fr:"Le Caché"},
+  {id:77,ar:"ٱلْوَالِي",trans:"Al-Wâlî",fr:"Le Maître"},
+  {id:78,ar:"ٱلْمُتَعَالِي",trans:"Al-Muta'âlî",fr:"Le Très Élevé"},
+  {id:79,ar:"ٱلْبَرُّ",trans:"Al-Barr",fr:"Le Bienfaiteur"},
+  {id:80,ar:"ٱلتَّوَّابُ",trans:"At-Tawwâb",fr:"Celui qui accepte le repentir"},
+  {id:81,ar:"ٱلْمُنْتَقِمُ",trans:"Al-Muntaqim",fr:"Le Vengeur"},
+  {id:82,ar:"ٱلْعَفُوُّ",trans:"Al-'Afuww",fr:"L'Indulgent"},
+  {id:83,ar:"ٱلرَّؤُوفُ",trans:"Ar-Ra'ûf",fr:"Le Compatissant"},
+  {id:84,ar:"مَالِكُ ٱلْمُلْكِ",trans:"Mâlik-ul-Mulk",fr:"Possesseur du Royaume"},
+  {id:85,ar:"ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ",trans:"Dhul-Jalâli wal-Ikrâm",fr:"Plein de Majesté et de Munificence"},
+  {id:86,ar:"ٱلْمُقْسِطُ",trans:"Al-Muqsit",fr:"L'Équitable"},
+  {id:87,ar:"ٱلْجَامِعُ",trans:"Al-Jâmi'",fr:"Celui qui rassemble"},
+  {id:88,ar:"ٱلْغَنِيُّ",trans:"Al-Ghaniyy",fr:"Le Riche"},
+  {id:89,ar:"ٱلْمُغْنِي",trans:"Al-Mughnî",fr:"Celui qui enrichit"},
+  {id:90,ar:"ٱلْمَانِعُ",trans:"Al-Mâni'",fr:"Celui qui empêche"},
+  {id:91,ar:"ٱلضَّارُّ",trans:"Ad-Dârr",fr:"Celui qui nuit"},
+  {id:92,ar:"ٱلنَّافِعُ",trans:"An-Nâfi'",fr:"Celui qui accorde le profit"},
+  {id:93,ar:"ٱلنُّورُ",trans:"An-Nûr",fr:"La Lumière"},
+  {id:94,ar:"ٱلْهَادِي",trans:"Al-Hâdî",fr:"Le Guide"},
+  {id:95,ar:"ٱلْبَدِيعُ",trans:"Al-Badî'",fr:"Le Créateur Originel"},
+  {id:96,ar:"ٱلْبَاقِي",trans:"Al-Bâqî",fr:"L'Éternel"},
+  {id:97,ar:"ٱلْوَارِثُ",trans:"Al-Wârith",fr:"L'Héritier"},
+  {id:98,ar:"ٱلرَّشِيدُ",trans:"Ar-Rashîd",fr:"Celui qui dirige avec Sagesse"},
+  {id:99,ar:"ٱلصَّبُورُ",trans:"As-Sabûr",fr:"Le Patient"}
 ];
 
-const CATEGORIES = {
-  misericorde: { label: "Miséricorde & Pardon", icon: "🤲", color: "#2D6A4F" },
-  puissance: { label: "Puissance & Souveraineté", icon: "⚡", color: "#8B4513" },
-  majeste: { label: "Majesté & Grandeur", icon: "👑", color: "#B8860B" },
-  sagesse: { label: "Sagesse & Savoir", icon: "📖", color: "#1B4965" },
-  creation: { label: "Création & Vie", icon: "🌱", color: "#3A5A40" },
-  generosite: { label: "Générosité & Subsistance", icon: "💎", color: "#7B2D8B" },
-  justice: { label: "Justice & Jugement", icon: "⚖️", color: "#9B2226" },
+// ETAT DE L'APP
+let state = {
+  view: 'learn',
+  learnIdx: 0,
+  isFlipped: false,
+  mastered: new Set(JSON.parse(localStorage.getItem('asma-mastered') || '[]')),
+  stats: JSON.parse(localStorage.getItem('asma-stats') || '{}'),
+  quiz: { q: null, selected: null },
+  match: { pairs: [], leftId: null, matched: new Set(), animating: false }
 };
 
-// =============================================
-// STATE
-// =============================================
-let mastered = new Set();
-let stats = {};
-let srData = {}; // spaced repetition: { id: { box: 0-4, nextReview: timestamp } }
-let currentPage = 'learn';
-
-// Learn
-let learnIdx = 0, learnFlipped = false, learnFilter = 'all';
-// Quiz
-let quizMode = 'ar_to_fr', quizQuestion = null, quizSelected = null, quizCount = 0, quizCorrect = 0;
-// Write
-let writeMode = 'ar_to_trans', writeQuestion = null, writeAnswered = false, writeCount = 0, writeCorrect = 0;
-// Match
-let matchPairs = [], matchRightOrder = [], matchSelectedLeft = null, matchMatched = new Set();
-let matchWrong = null, matchTimer = 0, matchInterval = null, matchMode = 'ar_to_fr', matchIsAnimating = false;
-
-// =============================================
-// SPACED REPETITION (Leitner system)
-// =============================================
-const SR_INTERVALS = [0, 1, 3, 7, 21]; // days per box
-const SR_LABELS = ['Nouveau', 'En cours', 'Révision', 'Acquis', 'Maîtrisé'];
-const SR_CLASSES = ['sr-new', 'sr-learning', 'sr-review', 'sr-mastered', 'sr-mastered'];
-
-function getSR(id) {
-  if (!srData[id]) srData[id] = { box: 0, nextReview: 0 };
-  return srData[id];
+function save() {
+  localStorage.setItem('asma-mastered', JSON.stringify([...state.mastered]));
+  localStorage.setItem('asma-stats', JSON.stringify(state.stats));
 }
 
-function srPromote(id) {
-  const sr = getSR(id);
-  sr.box = Math.min(sr.box + 1, 4);
-  sr.nextReview = Date.now() + SR_INTERVALS[sr.box] * 86400000;
-  saveSR();
+// NAVIGATION
+function nav(view) {
+  state.view = view;
+  state.isFlipped = false;
+  document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[onclick="nav('${view}')"]`).classList.add('active');
+  render();
 }
 
-function srDemote(id) {
-  const sr = getSR(id);
-  sr.box = Math.max(sr.box - 1, 0);
-  sr.nextReview = Date.now();
-  saveSR();
-}
+function render() {
+  const container = document.getElementById('app-content');
+  const title = document.getElementById('page-title');
 
-function getDueNames() {
-  const now = Date.now();
-  return NAMES.filter(n => {
-    const sr = getSR(n.id);
-    return sr.nextReview <= now;
-  });
-}
-
-function getSmartQuizName() {
-  const due = getDueNames();
-  if (due.length > 0) return due[Math.floor(Math.random() * due.length)];
-  return NAMES[Math.floor(Math.random() * NAMES.length)];
-}
-
-// =============================================
-// UTILS
-// =============================================
-function shuffle(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-
-function normalize(str) {
-  return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z\s]/g,'').trim();
-}
-
-function saveState() {
-  try {
-    localStorage.setItem('asma-mastered', JSON.stringify([...mastered]));
-    localStorage.setItem('asma-stats', JSON.stringify(stats));
-  } catch(e) {}
-}
-function saveSR() { try { localStorage.setItem('asma-sr', JSON.stringify(srData)); } catch(e) {} }
-function loadState() {
-  try {
-    const m = localStorage.getItem('asma-mastered'); if(m) mastered = new Set(JSON.parse(m));
-    const s = localStorage.getItem('asma-stats'); if(s) stats = JSON.parse(s);
-    const sr = localStorage.getItem('asma-sr'); if(sr) srData = JSON.parse(sr);
-  } catch(e) {}
-}
-function getFilteredNames() {
-  if(learnFilter==='mastered') return NAMES.filter(n=>mastered.has(n.id));
-  if(learnFilter==='remaining') return NAMES.filter(n=>!mastered.has(n.id));
-  if(learnFilter==='due') return getDueNames();
-  return NAMES;
-}
-function formatTime(s){return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');}
-
-function dividerHTML(w){ return `<div class="divider" style="width:${w||'40%'}"><div class="divider-dot"></div></div>`; }
-function headerHTML(title, sub){ return `<div class="page-header"><h1>${title}</h1>${sub?`<p class="subtitle">${sub}</p>`:''}${dividerHTML()}</div>`; }
-
-// =============================================
-// TAB BAR
-// =============================================
-const TABS = [
-  {id:'learn',label:'Apprendre',icon:'📖'},
-  {id:'quiz',label:'Quiz',icon:'✨'},
-  {id:'write',label:'Écrire',icon:'✍️'},
-  {id:'match',label:'Relier',icon:'🔗'},
-  {id:'categories',label:'Thèmes',icon:'🏷️'},
-  {id:'progress',label:'Progrès',icon:'📊'},
-];
-
-function renderTabBar() {
-  document.getElementById('tab-bar').innerHTML = TABS.map(t=>`
-    <button class="tab-btn ${currentPage===t.id?'active':''}" onclick="switchPage('${t.id}')">
-      <span class="icon">${t.icon}</span>
-      <span class="label">${t.label}</span>
-      ${currentPage===t.id?'<div class="tab-indicator"></div>':''}
-    </button>
-  `).join('');
-}
-
-function switchPage(id) {
-  currentPage=id;
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  renderTabBar();
-  const renders = {learn:renderLearn,quiz:renderQuiz,write:renderWrite,match:initMatch,categories:renderCategories,progress:renderProgress};
-  if(renders[id]) renders[id]();
-}
-
-// =============================================
-// LEARN
-// =============================================
-function renderLearn() {
-  const names = getFilteredNames();
-  if(learnIdx>=names.length) learnIdx=0;
-  const name = names[learnIdx];
-  const dueCount = getDueNames().length;
-
-  let html = headerHTML('Apprendre','Mémorise les Noms un par un');
-  html += `<div class="filters">
-    ${[{id:'all',l:`Tous (99)`},{id:'remaining',l:`Restants (${99-mastered.size})`},{id:'mastered',l:`Acquis (${mastered.size})`},{id:'due',l:`À réviser (${dueCount})`}]
-    .map(f=>`<button class="pill ${learnFilter===f.id?'active':''}" onclick="setLearnFilter('${f.id}')">${f.l}</button>`).join('')}
-  </div>`;
-
-  if(!name||names.length===0) {
-    html += '<div class="empty-msg">Aucun nom dans cette catégorie</div>';
-  } else {
-    const isMast = mastered.has(name.id);
-    const sr = getSR(name.id);
-    const catInfo = CATEGORIES[name.cat];
-    html += `<div class="counter">${learnIdx+1} / ${names.length}</div>`;
-    html += `<div class="name-card" id="learn-card" onclick="toggleFlip()">
-      <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
-      <div class="corner corner-bl"></div><div class="corner corner-br"></div>
-      <div class="card-number">N°${name.id} <span class="sr-badge ${SR_CLASSES[sr.box]}">${SR_LABELS[sr.box]}</span></div>
-      <div class="card-arabic">${name.ar}</div>
-      <div class="card-trans">${name.trans}</div>
-      ${learnFlipped
-        ? `${dividerHTML('30%')}<div class="card-meaning">${name.fr}</div><div class="card-category">${catInfo.icon} ${catInfo.label}</div>`
-        : '<div class="card-hint">Touche pour révéler</div>'}
-    </div>`;
-    html += `<div class="controls">
-      <button class="nav-btn" onclick="learnGo(-1)">‹</button>
-      <button class="master-btn ${isMast?'on':'off'}" onclick="toggleMaster(${name.id})">${isMast?'✓ Acquis':'Marquer acquis'}</button>
-      <button class="nav-btn" onclick="learnGo(1)">›</button>
-    </div>`;
-    html += '<p class="swipe-hint">← Swipe pour naviguer →</p>';
-  }
-  document.getElementById('page-learn').innerHTML = html;
-
-  // Swipe
-  const card = document.getElementById('learn-card');
-  if(card) {
-    let tx=null;
-    card.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});
-    card.addEventListener('touchend',e=>{if(!tx)return;const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){e.preventDefault();learnGo(d>0?1:-1);}tx=null;});
-  }
-}
-function setLearnFilter(f){learnFilter=f;learnIdx=0;learnFlipped=false;renderLearn();}
-function toggleFlip(){learnFlipped=!learnFlipped;renderLearn();}
-function learnGo(dir){const n=getFilteredNames();learnFlipped=false;if(dir===1)learnIdx=learnIdx<n.length-1?learnIdx+1:0;else learnIdx=learnIdx>0?learnIdx-1:n.length-1;renderLearn();}
-function toggleMaster(id){if(mastered.has(id))mastered.delete(id);else mastered.add(id);saveState();renderLearn();}
-
-// =============================================
-// QUIZ (with spaced repetition)
-// =============================================
-function genQuiz(){
-  const target = getSmartQuizName();
-  const wrongs = shuffle(NAMES.filter(n=>n.id!==target.id)).slice(0,3);
-  quizQuestion = {target, options: shuffle([target,...wrongs])};
-  quizSelected = null;
-}
-
-function renderQuiz(){
-  if(!quizQuestion) genQuiz();
-  const t = quizQuestion.target;
-  let html = headerHTML('Quiz','Teste tes connaissances — Répétition espacée');
-  html += `<div class="filters">${[
-    {id:'ar_to_fr',l:'Arabe → Français'},{id:'fr_to_ar',l:'Français → Arabe'},{id:'trans_to_ar',l:'Arabe → Translit.'}
-  ].map(m=>`<button class="pill ${quizMode===m.id?'active':''}" onclick="setQuizMode('${m.id}')">${m.l}</button>`).join('')}</div>`;
-  if(quizCount>0) html+=`<div class="session-score">Session : ${quizCorrect}/${quizCount} (${Math.round(quizCorrect/quizCount*100)}%)</div>`;
-
-  let display, displayClass, label;
-  if(quizMode==='ar_to_fr'){display=t.ar;displayClass='question-display-ar';label='Quelle est la signification ?';}
-  else if(quizMode==='fr_to_ar'){display=t.fr;displayClass='question-display-fr';label='Quel est ce Nom ?';}
-  else {display=t.ar;displayClass='question-display-ar';label='Quelle est la translittération ?';}
-
-  html += `<div class="question-card"><p class="question-label">${label}</p><div class="${displayClass}">${display}</div></div>`;
-  html += '<div class="options">';
-  quizQuestion.options.forEach(opt=>{
-    let cls='';
-    if(quizSelected){if(opt.id===t.id)cls='correct';else if(opt.id===quizSelected)cls='wrong';}
-    let optLabel = quizMode==='ar_to_fr'?opt.fr:opt.trans;
-    let optAr = quizMode==='fr_to_ar'?`<div class="opt-ar">${opt.ar}</div>`:'';
-    html += `<button class="option-btn ${cls}" onclick="quizAnswer(${opt.id})" ${quizSelected?'disabled':''}>${optAr}<div class="opt-label">${optLabel}</div></button>`;
-  });
-  html += '</div>';
-  document.getElementById('page-quiz').innerHTML = html;
-}
-function setQuizMode(m){quizMode=m;quizCount=0;quizCorrect=0;genQuiz();renderQuiz();}
-function quizAnswer(id){
-  if(quizSelected)return;
-  quizSelected=id; quizCount++;
-  const correct=id===quizQuestion.target.id;
-  if(correct){quizCorrect++;srPromote(quizQuestion.target.id);}else{srDemote(quizQuestion.target.id);}
-  const tid=quizQuestion.target.id;
-  if(!stats[tid])stats[tid]={correct:0,wrong:0};
-  if(correct)stats[tid].correct++;else stats[tid].wrong++;
-  saveState();renderQuiz();
-  setTimeout(()=>{genQuiz();renderQuiz();},correct?800:1500);
-}
-
-// =============================================
-// WRITE MODE
-// =============================================
-function genWrite(){
-  writeQuestion = getSmartQuizName();
-  writeAnswered = false;
-}
-
-function renderWrite(){
-  if(!writeQuestion) genWrite();
-  const t = writeQuestion;
-  let html = headerHTML('Écrire','Tape ta réponse — mémoire active');
-  html += `<div class="filters">${[
-    {id:'ar_to_trans',l:'Arabe → Translit.'},{id:'ar_to_fr',l:'Arabe → Français'},{id:'fr_to_trans',l:'Français → Translit.'}
-  ].map(m=>`<button class="pill ${writeMode===m.id?'active':''}" onclick="setWriteMode('${m.id}')">${m.l}</button>`).join('')}</div>`;
-  if(writeCount>0) html+=`<div class="session-score">Session : ${writeCorrect}/${writeCount} (${Math.round(writeCorrect/writeCount*100)}%)</div>`;
-
-  let display, displayClass, promptLabel;
-  if(writeMode==='ar_to_trans'){display=t.ar;displayClass='question-display-ar';promptLabel='Écris la translittération';}
-  else if(writeMode==='ar_to_fr'){display=t.ar;displayClass='question-display-ar';promptLabel='Écris la signification en français';}
-  else{display=t.fr;displayClass='question-display-fr';promptLabel='Écris la translittération';}
-
-  html += `<div class="question-card"><p class="question-label">${promptLabel}</p><div class="${displayClass}">${display}</div></div>`;
-  html += `<div style="padding:0 20px">`;
-  html += `<input type="text" class="write-input ${writeAnswered?(document.getElementById('write-field')&&document.getElementById('write-field').dataset.correct==='true'?'correct':'wrong'):''}" id="write-field" placeholder="Ta réponse..." autocomplete="off" autocapitalize="off" ${writeAnswered?'disabled':''} onkeydown="if(event.key==='Enter')checkWrite()">`;
-  if(!writeAnswered){
-    html += `<div style="text-align:center"><button class="write-submit" onclick="checkWrite()">Vérifier</button></div>`;
-  }
-  html += `<div id="write-feedback"></div></div>`;
-  document.getElementById('page-write').innerHTML = html;
-  if(!writeAnswered) setTimeout(()=>{const f=document.getElementById('write-field');if(f)f.focus();},100);
-}
-
-function setWriteMode(m){writeMode=m;writeCount=0;writeCorrect=0;genWrite();renderWrite();}
-
-function checkWrite(){
-  if(writeAnswered)return;
-  const field = document.getElementById('write-field');
-  if(!field||!field.value.trim())return;
-  writeAnswered = true; writeCount++;
-
-  const t = writeQuestion;
-  let expected;
-  if(writeMode==='ar_to_trans'||writeMode==='fr_to_trans') expected = t.trans;
-  else expected = t.fr;
-
-  const userAnswer = normalize(field.value);
-  const correctAnswer = normalize(expected);
-  const isCorrect = userAnswer === correctAnswer;
-
-  // Also check partial match (80%+)
-  const similarity = calcSimilarity(userAnswer, correctAnswer);
-  const isClose = !isCorrect && similarity > 0.75;
-
-  field.dataset.correct = isCorrect || isClose ? 'true' : 'false';
-  field.classList.add(isCorrect || isClose ? 'correct' : 'wrong');
-  field.disabled = true;
-
-  const tid = t.id;
-  if(!stats[tid]) stats[tid] = {correct:0,wrong:0};
-
-  const fb = document.getElementById('write-feedback');
-  if(isCorrect){
-    writeCorrect++;
-    stats[tid].correct++;
-    srPromote(tid);
-    fb.innerHTML = `<div class="write-success"><span style="color:var(--success);font-weight:600">✓ Correct !</span></div>`;
-  } else if(isClose) {
-    writeCorrect++;
-    stats[tid].correct++;
-    srPromote(tid);
-    fb.innerHTML = `<div class="write-success"><span style="color:var(--success);font-weight:600">✓ Presque parfait !</span><br><span style="font-size:13px;color:var(--ink-light)">Réponse exacte : <strong>${expected}</strong></span></div>`;
-  } else {
-    stats[tid].wrong++;
-    srDemote(tid);
-    fb.innerHTML = `<div class="write-correction"><span style="color:var(--error);font-weight:600">✗ Incorrect</span><br><span style="font-size:13px;color:var(--ink-light)">Réponse : <strong>${expected}</strong></span><br><span style="font-family:var(--arabic);font-size:20px;direction:rtl">${t.ar}</span> — ${t.trans}</div>`;
-  }
-  saveState();
-  setTimeout(()=>{genWrite();renderWrite();}, isCorrect?1200:2500);
-}
-
-function calcSimilarity(a,b){
-  if(a===b)return 1;
-  const longer=a.length>b.length?a:b, shorter=a.length>b.length?b:a;
-  if(longer.length===0)return 1;
-  let matches=0;
-  for(let i=0;i<shorter.length;i++){if(shorter[i]===longer[i])matches++;}
-  return matches/longer.length;
-}
-
-// =============================================
-// MATCH / RELIER
-// =============================================
-function initMatch(){
-  clearInterval(matchInterval);
-  matchPairs=shuffle(NAMES).slice(0,5);
-  matchRightOrder=shuffle([...matchPairs]);
-  matchSelectedLeft=null;matchMatched=new Set();matchWrong=null;matchTimer=0;matchIsAnimating=false;
-  matchInterval=setInterval(()=>{matchTimer++;renderMatchTimer();},1000);
-  renderMatch();
-}
-function renderMatchModes(){
-  return [
-    {id:'ar_to_fr',l:'Arabe → Français'},{id:'fr_to_ar',l:'Français → Arabe'},{id:'ar_to_trans',l:'Arabe → Translit.'}
-  ].map(m=>`<button class="pill ${matchMode===m.id?'active':''}" onclick="setMatchMode('${m.id}')">${m.l}</button>`).join('');
-}
-function setMatchMode(m){matchMode=m;initMatch();}
-function getMLDisplay(p){return matchMode==='fr_to_ar'?`<div class="match-btn-fr">${p.fr}</div>`:`<div class="match-btn-ar">${p.ar}</div>`;}
-function getMRDisplay(p){
-  if(matchMode==='ar_to_fr')return`<div class="match-btn-fr">${p.fr}</div>`;
-  if(matchMode==='fr_to_ar')return`<div class="match-btn-ar">${p.ar}</div><div class="match-btn-fr" style="margin-top:4px;font-size:11px">${p.trans}</div>`;
-  return`<div class="match-btn-fr">${p.trans}</div>`;
-}
-function renderMatchTimer(){
-  const el=document.getElementById('match-timer-display');
-  if(el)el.innerHTML=`<span class="timer-display">${formatTime(matchTimer)}</span><span style="font-size:13px;color:var(--ink-faint);margin-left:12px">${matchMatched.size}/5</span>`;
-}
-function renderMatch(){
-  let html = headerHTML('Relier','Relie chaque Nom à sa signification');
-  html += `<div class="filters">${renderMatchModes()}</div>`;
-  html += `<div id="match-timer-display" style="text-align:center;margin-bottom:16px"></div>`;
-
-  if(matchMatched.size===5){
-    clearInterval(matchInterval);
-    html+=`<div class="complete-msg"><div class="emoji">✨</div><p>Terminé en ${formatTime(matchTimer)} !</p>${dividerHTML('30%')}<button class="new-round-btn" onclick="initMatch()">Nouvelle série</button></div>`;
-  } else {
-    html+=`<div class="match-grid"><div class="match-col">`;
-    matchPairs.forEach(p=>{
-      let cls=matchMatched.has(p.id)?'matched':matchSelectedLeft===p.id?'selected':'';
-      html+=`<button class="match-btn ${cls}" onclick="matchLeftClick(${p.id})">${getMLDisplay(p)}</button>`;
-    });
-    html+=`</div><div class="match-col">`;
-    matchRightOrder.forEach(p=>{
-      let cls=matchMatched.has(p.id)?'matched':matchWrong===p.id?'wrong-match':'';
-      html+=`<button class="match-btn ${cls}" onclick="matchRightClick(${p.id})">${getMRDisplay(p)}</button>`;
-    });
-    html+=`</div></div>`;
-  }
-  document.getElementById('page-match').innerHTML=html;
-  renderMatchTimer();
-}
-function matchLeftClick(id){if(matchMatched.has(id)||matchIsAnimating)return;matchSelectedLeft=id;matchWrong=null;renderMatch();}
-function matchRightClick(id){
-  if(matchMatched.has(id)||!matchSelectedLeft||matchIsAnimating)return;
-  if(matchSelectedLeft===id){
-    matchMatched.add(id);if(!stats[id])stats[id]={correct:0,wrong:0};stats[id].correct++;
-    matchSelectedLeft=null;saveState();renderMatch();
-  }else{
-    matchIsAnimating=true;matchWrong=id;
-    if(!stats[matchSelectedLeft])stats[matchSelectedLeft]={correct:0,wrong:0};stats[matchSelectedLeft].wrong++;
-    saveState();renderMatch();
-    setTimeout(()=>{matchWrong=null;matchSelectedLeft=null;matchIsAnimating=false;renderMatch();},600);
-  }
-}
-
-// =============================================
-// CATEGORIES
-// =============================================
-function renderCategories(){
-  let html = headerHTML('Thèmes','Les Noms classés par famille');
-  Object.entries(CATEGORIES).forEach(([key, cat])=>{
-    const names = NAMES.filter(n=>n.cat===key);
-    html += `<div class="cat-section">
-      <div class="cat-title"><span>${cat.icon}</span> ${cat.label} <span style="font-size:12px;color:var(--ink-faint);font-weight:400">(${names.length})</span></div>
-      <div class="cat-grid">
-        ${names.map(n=>`<div class="cat-item" onclick="goToLearnName(${n.id})">
-          <div class="ci-ar">${n.ar}</div>
-          <div class="ci-fr">${n.fr}</div>
-        </div>`).join('')}
+  if(state.view === 'learn') {
+    title.innerText = "Apprentissage";
+    const n = NAMES[state.learnIdx];
+    const isM = state.mastered.has(n.id);
+    container.innerHTML = `
+      <div class="card" onclick="state.isFlipped = !state.isFlipped; render()">
+        <div class="card-num">NOM ${n.id} / 99</div>
+        <div class="card-ar">${n.ar}</div>
+        <div class="card-trans">${n.trans}</div>
+        <div class="reveal-zone">
+          ${state.isFlipped ? `<div class="meaning">${n.fr}</div>` : `<div class="placeholder">Appuie pour voir le sens</div>`}
+        </div>
       </div>
-    </div>`;
-  });
-  document.getElementById('page-categories').innerHTML = html;
-}
-
-function goToLearnName(id){
-  learnFilter='all'; learnIdx=NAMES.findIndex(n=>n.id===id); learnFlipped=true;
-  switchPage('learn');
-}
-
-// =============================================
-// PROGRESS
-// =============================================
-function renderProgress(){
-  const totalAnswered=Object.values(stats).reduce((a,s)=>a+s.correct+s.wrong,0);
-  const totalCorrect=Object.values(stats).reduce((a,s)=>a+s.correct,0);
-  const accuracy=totalAnswered>0?Math.round(totalCorrect/totalAnswered*100):0;
-  const pct=Math.round(mastered.size/99*100);
-  const dueCount=getDueNames().length;
-
-  // SR distribution
-  const srDist=[0,0,0,0,0];
-  NAMES.forEach(n=>{const sr=getSR(n.id);srDist[sr.box]++;});
-
-  const difficult=NAMES.map(n=>({...n,stat:stats[n.id]||{correct:0,wrong:0}}))
-    .filter(n=>n.stat.wrong>0).sort((a,b)=>b.stat.wrong-a.stat.wrong).slice(0,10);
-
-  let html = headerHTML('Progrès','Ton avancement');
-  html += `<div class="stats-grid">
-    <div class="stat-card"><div class="stat-value">${mastered.size}</div><div class="stat-sub">/ 99</div><div class="stat-label">Noms acquis</div></div>
-    <div class="stat-card"><div class="stat-value">${accuracy}%</div><div class="stat-sub">${totalCorrect}/${totalAnswered}</div><div class="stat-label">Précision</div></div>
-    <div class="stat-card"><div class="stat-value">${dueCount}</div><div class="stat-sub">noms</div><div class="stat-label">À réviser</div></div>
-    <div class="stat-card"><div class="stat-value">${srDist[3]+srDist[4]}</div><div class="stat-sub">/ 99</div><div class="stat-label">Mémorisés (SR)</div></div>
-  </div>`;
-
-  html += `<div class="progress-section"><div class="progress-header"><span style="color:var(--ink-light);font-weight:600;font-size:13px">Progression globale</span><span style="color:var(--gold);font-weight:700;font-size:13px">${pct}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;
-
-  // SR boxes visualization
-  html += `<div style="padding:0 20px;margin-bottom:24px">
-    <p style="font-size:13px;font-weight:600;color:var(--ink-light);margin-bottom:10px">Répétition espacée</p>
-    <div style="display:flex;gap:4px;height:32px;border-radius:8px;overflow:hidden">
-      ${srDist.map((count,i)=>{
-        const colors=['var(--gold)','var(--error)','var(--ink-faint)','var(--success)','#2D6A4F'];
-        const w = count/99*100;
-        return w>0?`<div style="width:${w}%;background:${colors[i]};display:flex;align-items:center;justify-content:center;font-size:10px;color:white;font-weight:600;min-width:${count>0?'20px':'0'}">${count}</div>`:'';
-      }).join('')}
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--ink-faint)">
-      <span>Nouveau</span><span>En cours</span><span>Révision</span><span>Acquis</span><span>Maîtrisé</span>
-    </div>
-  </div>`;
-
-  if(difficult.length>0){
-    html+=`<div class="difficult-list"><h3>À retravailler</h3>`;
-    difficult.forEach(n=>{
-      html+=`<div class="difficult-item"><div style="display:flex;align-items:center;gap:12px"><span style="font-family:var(--arabic);font-size:18px;color:var(--ink);direction:rtl">${n.ar}</span><span style="font-size:12px;color:var(--ink-faint)">${n.trans}</span></div><div style="display:flex;gap:8px;font-size:11px"><span style="color:var(--success)">✓ ${n.stat.correct}</span><span style="color:var(--error)">✗ ${n.stat.wrong}</span></div></div>`;
-    });
-    html+='</div>';
+      <div class="card-nav">
+        <button class="btn-circle" onclick="changeName(-1); event.stopPropagation()">‹</button>
+        <button class="btn-master ${isM?'on':'off'}" onclick="toggleMaster(${n.id}); event.stopPropagation()">
+          ${isM ? '✓ ACQUIS' : 'MARQUER ACQUIS'}
+        </button>
+        <button class="btn-circle" onclick="changeName(1); event.stopPropagation()">›</button>
+      </div>
+    `;
   }
-  html+=`<div class="reset-section"><button class="reset-btn" onclick="resetAll()">Réinitialiser</button></div>`;
-  document.getElementById('page-progress').innerHTML=html;
-}
 
-function resetAll(){
-  if(confirm('Réinitialiser toute ta progression ?')){
-    mastered=new Set();stats={};srData={};
-    localStorage.removeItem('asma-mastered');localStorage.removeItem('asma-stats');localStorage.removeItem('asma-sr');
-    renderProgress();
+  if(state.view === 'quiz') {
+    title.innerText = "Quiz";
+    if(!state.quiz.q) nextQuiz();
+    const q = state.quiz.q;
+    container.innerHTML = `
+      <div style="text-align:center; padding: 20px 0;">
+        <p style="color:var(--ink-light)">Que signifie ce Nom ?</p>
+        <div style="font-family:'Noto Sans Arabic'; font-size:45px; margin:15px 0;">${q.target.ar}</div>
+      </div>
+      <div class="quiz-options">
+        ${q.options.map(opt => {
+          let cls = '';
+          if(state.quiz.selected) {
+            if(opt.id === q.target.id) cls = 'correct';
+            else if(opt.id === state.quiz.selected) cls = 'wrong';
+          }
+          return `<button class="quiz-option ${cls}" onclick="handleQuiz(${opt.id})" ${state.quiz.selected?'disabled':''}>${opt.fr}</button>`;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  if(state.view === 'match') {
+    title.innerText = "Relier les Paires";
+    if(state.match.pairs.length === 0) initMatch();
+    
+    if(state.match.matched.size === 5) {
+      container.innerHTML = `<div style="text-align:center; padding:50px 20px;"><h2>Bravo ! 🎉</h2><button class="btn-master on" onclick="initMatch()">Rejouer</button></div>`;
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${state.match.leftSide.map(n => `
+            <button class="quiz-option ${state.match.matched.has(n.id)?'correct':''} ${state.match.leftId===n.id?'wrong':''}" 
+              style="padding:12px; font-family:'Noto Sans Arabic'; font-size:18px; visibility:${state.match.matched.has(n.id)?'hidden':'visible'}"
+              onclick="selectMatchLeft(${n.id})">${n.ar}</button>
+          `).join('')}
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${state.match.rightSide.map(n => `
+            <button class="quiz-option" style="padding:12px; font-size:14px; visibility:${state.match.matched.has(n.id)?'hidden':'visible'}"
+              onclick="selectMatchRight(${n.id})">${n.fr}</button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if(state.view === 'stats') {
+    title.innerText = "Progression";
+    const pct = Math.round((state.mastered.size / 99) * 100);
+    container.innerHTML = `
+      <div class="card" style="min-height: auto; padding: 30px;">
+        <div class="card-num">PROGRESSION GLOBALE</div>
+        <div style="font-size:48px; font-weight:bold; color:var(--gold); margin:10px 0;">${pct}%</div>
+        <div style="width:100%; height:8px; background:var(--cream); border-radius:10px; overflow:hidden;">
+          <div style="width:${pct}%; height:100%; background:var(--gold);"></div>
+        </div>
+        <p style="margin-top:15px; font-size:14px; color:var(--ink-light)">${state.mastered.size} noms maîtrisés sur 99</p>
+      </div>
+      <button class="btn-master off" style="margin-top:20px; width:100%; color:var(--error); border-color:var(--error);" onclick="resetAll()">Réinitialiser tout</button>
+    `;
   }
 }
 
-// =============================================
-// INIT
-// =============================================
-loadState();
-renderTabBar();
-renderLearn();
+// LOGIQUE ETUDE
+function changeName(dir) {
+  state.learnIdx = (state.learnIdx + dir + 99) % 99;
+  state.isFlipped = false;
+  render();
+}
+function toggleMaster(id) {
+  if(state.mastered.has(id)) state.mastered.delete(id);
+  else state.mastered.add(id);
+  save();
+  render();
+}
+
+// LOGIQUE QUIZ
+function nextQuiz() {
+  const target = NAMES[Math.floor(Math.random()*99)];
+  const wrongs = shuffle(NAMES.filter(n => n.id !== target.id)).slice(0,3);
+  state.quiz = { q: { target, options: shuffle([target, ...wrongs]) }, selected: null };
+}
+function handleQuiz(id) {
+  state.quiz.selected = id;
+  render();
+  setTimeout(() => { nextQuiz(); render(); }, 1500);
+}
+
+// LOGIQUE MATCH (RELIER)
+function initMatch() {
+  const batch = shuffle(NAMES).slice(0, 5);
+  state.match = { 
+    leftSide: shuffle([...batch]), 
+    rightSide: shuffle([...batch]), 
+    leftId: null, 
+    matched: new Set(),
+    animating: false
+  };
+  render();
+}
+function selectMatchLeft(id) {
+  if(state.match.animating) return;
+  state.match.leftId = id;
+  render();
+}
+function selectMatchRight(id) {
+  if(!state.match.leftId || state.match.animating) return;
+  if(state.match.leftId === id) {
+    state.match.matched.add(id);
+    state.match.leftId = null;
+    render();
+  } else {
+    state.match.animating = true;
+    setTimeout(() => { state.match.leftId = null; state.match.animating = false; render(); }, 500);
+  }
+}
+
+// UTILS
+function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
+function resetAll() { if(confirm("Effacer toute ta progression ?")) { localStorage.clear(); location.reload(); } }
+
+// START
+render();
 </script>
+
 </body>
 </html>
