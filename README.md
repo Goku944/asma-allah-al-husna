@@ -1,1 +1,0 @@
-# asma-allah-al-husna
