@@ -13,119 +13,77 @@
   
   <style>
     :root {
-      --gold: #B8860B;
-      --gold-light: #D4A84B;
-      --gold-bg: rgba(184,134,11,0.05);
-      --cream: #FAF6F0;
-      --white: #FFFFFF;
-      --ink: #1A1A1A;
-      --ink-light: #4A4A4A;
-      --success: #2D6A4F;
-      --error: #9B2226;
-      --shadow: 0 10px 30px rgba(0,0,0,0.05);
+      --gold: #B8860B; --gold-light: #D4A84B; --gold-bg: rgba(184,134,11,0.05);
+      --cream: #FAF6F0; --white: #FFFFFF; --ink: #1A1A1A; --ink-light: #4A4A4A;
+      --success: #2D6A4F; --error: #9B2226; --shadow: 0 10px 30px rgba(0,0,0,0.05);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
     body { 
-      margin: 0; padding: 0; background: var(--cream); 
-      font-family: 'Cormorant Garamond', serif; color: var(--ink);
-      height: 100dvh; overflow: hidden;
+      margin: 0; background: var(--cream); font-family: 'Cormorant Garamond', serif; 
+      color: var(--ink); height: 100dvh; overflow: hidden;
     }
 
-    .app-container {
-      max-width: 500px; margin: 0 auto; height: 100%;
-      display: flex; flex-direction: column; position: relative;
-    }
+    .app-container { max-width: 500px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; position: relative; }
 
-    /* Header */
-    header {
-      padding: 20px 20px 10px; text-align: center; flex-shrink: 0;
-    }
-    .bismillah { 
-      font-family: 'Noto Sans Arabic', sans-serif; font-size: 18px; 
-      color: var(--gold); opacity: 0.8; margin-bottom: 5px;
-    }
-    header h1 { font-size: 24px; margin: 0; letter-spacing: 1px; }
+    header { padding: 20px 20px 10px; text-align: center; flex-shrink: 0; }
+    .bismillah { font-family: 'Noto Sans Arabic', sans-serif; font-size: 18px; color: var(--gold); opacity: 0.8; }
+    header h1 { font-size: 22px; margin: 0; letter-spacing: 1px; }
 
-    /* Main Area */
-    main {
-      flex: 1; overflow-y: auto; padding: 10px 20px 120px;
-      scrollbar-width: none;
-    }
+    main { flex: 1; overflow-y: auto; padding: 10px 20px 100px; scrollbar-width: none; }
     main::-webkit-scrollbar { display: none; }
 
-    /* Flashcard Style - STABLE LAYOUT */
+    /* Flashcard & UI Elements */
     .card {
-      background: var(--white); border-radius: 30px; padding: 40px 25px;
+      background: var(--white); border-radius: 30px; padding: 30px 25px;
       box-shadow: var(--shadow); border: 1px solid rgba(184,134,11,0.1);
-      text-align: center; position: relative; transition: transform 0.3s ease;
-      min-height: 380px; display: flex; flex-direction: column; justify-content: space-between;
+      text-align: center; min-height: 360px; display: flex; flex-direction: column; justify-content: space-between;
     }
-
     .card-num { font-size: 12px; color: var(--gold); font-weight: bold; letter-spacing: 2px; }
-    .card-ar { font-family: 'Noto Sans Arabic', sans-serif; font-size: 52px; margin: 15px 0; }
-    .card-trans { font-size: 24px; color: var(--gold); font-weight: 600; margin-bottom: 10px; }
+    .card-ar { font-family: 'Noto Sans Arabic', sans-serif; font-size: 48px; margin: 10px 0; }
+    .card-trans { font-size: 22px; color: var(--gold); font-weight: 600; }
     
-    /* Reveal Zone: Fixing the jump */
-    .reveal-zone {
-      min-height: 120px; /* Espace réservé pour éviter que le layout bouge */
-      border-top: 1px solid var(--cream); margin-top: 20px; padding-top: 20px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .meaning { font-size: 20px; font-style: italic; animation: fadeIn 0.4s ease; }
+    .reveal-zone { min-height: 100px; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--cream); margin-top: 15px; }
+    .meaning { font-size: 19px; font-style: italic; animation: fadeIn 0.3s ease; }
     .placeholder { color: var(--gold); font-size: 13px; opacity: 0.5; cursor: pointer; }
 
-    /* Navigation Card */
-    .card-nav {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: 25px; gap: 15px;
-    }
-    .btn-circle {
-      width: 54px; height: 54px; border-radius: 50%; border: 1px solid var(--gold);
-      background: var(--white); color: var(--gold); font-size: 24px; cursor: pointer;
-    }
-    .btn-master {
-      flex: 1; padding: 16px; border-radius: 30px; border: none; font-weight: bold;
-      cursor: pointer; transition: 0.3s; font-size: 14px; letter-spacing: 1px;
-    }
-    .btn-master.off { background: var(--white); border: 1px solid var(--gold); color: var(--gold); }
+    /* Buttons */
+    .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--gold); background: white; color: var(--gold); font-size: 20px; cursor: pointer; }
+    .btn-master { flex: 1; padding: 14px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 13px; }
+    .btn-master.off { background: white; border: 1px solid var(--gold); color: var(--gold); }
     .btn-master.on { background: var(--success); color: white; }
+
+    /* Spaced Repetition Badges */
+    .sr-badge { padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-left: 10px; }
+    .sr-0 { background: #eee; color: #666; } /* Nouveau */
+    .sr-1 { background: #ffebee; color: #c62828; } /* Apprentissage */
+    .sr-4 { background: #e8f5e9; color: #2e7d32; } /* Maîtrisé */
 
     /* Tabs Bar */
     .tabs {
       position: absolute; bottom: 0; left: 0; right: 0;
-      background: rgba(255,255,255,0.8); backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      display: flex; justify-content: space-around; padding: 15px 10px 30px;
+      background: rgba(255,255,255,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      display: flex; justify-content: space-around; padding: 12px 5px 25px;
       border-top: 1px solid rgba(0,0,0,0.05); z-index: 100;
     }
-    .tab-item {
-      background: none; border: none; display: flex; flex-direction: column;
-      align-items: center; gap: 5px; color: var(--ink-light); opacity: 0.4; transition: 0.3s;
-    }
+    .tab-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--ink-light); opacity: 0.4; flex: 1; }
     .tab-item.active { opacity: 1; color: var(--gold); }
-    .tab-icon { font-size: 22px; }
-    .tab-label { font-size: 11px; font-weight: bold; }
+    .tab-icon { font-size: 20px; }
+    .tab-label { font-size: 10px; font-weight: bold; }
 
-    /* Quiz & Games */
-    .quiz-option {
-      background: white; border: 1px solid var(--gold-bg); padding: 18px;
-      border-radius: 20px; width: 100%; margin-bottom: 12px; font-size: 17px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s;
-    }
-    .quiz-option.correct { background: var(--success) !important; color: white; }
-    .quiz-option.wrong { background: var(--error) !important; color: white; }
+    /* Inputs for Write Mode */
+    .write-input { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid var(--gold-bg); font-family: serif; font-size: 18px; text-align: center; outline: none; transition: 0.3s; }
+    .write-input:focus { border-color: var(--gold); }
+    .write-input.correct { border-color: var(--success); background: #e8f5e9; }
+    .write-input.wrong { border-color: var(--error); background: #ffebee; }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Grid for Categories */
+    .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cat-card { background: white; padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--gold-bg); box-shadow: var(--shadow); cursor: pointer; }
+    .cat-icon { font-size: 24px; margin-bottom: 5px; }
+    .cat-name { font-weight: bold; font-size: 13px; color: var(--ink-light); }
 
-    /* Filters */
-    .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-    .filter-pill {
-      white-space: nowrap; padding: 8px 16px; border-radius: 20px; background: white;
-      border: 1px solid var(--gold-bg); font-size: 12px; font-weight: bold;
-    }
-    .filter-pill.active { background: var(--gold); color: white; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -133,312 +91,201 @@
 <div class="app-container">
   <header>
     <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
-    <h1 id="page-title">Les 99 Noms</h1>
+    <h1 id="page-title">Chargement...</h1>
   </header>
 
-  <main id="app-content">
-    </main>
+  <main id="app-content"></main>
 
   <nav class="tabs">
-    <button class="tab-item active" onclick="nav('learn')">
-      <span class="tab-icon">📖</span><span class="tab-label">Étude</span>
-    </button>
-    <button class="tab-item" onclick="nav('quiz')">
-      <span class="tab-icon">✨</span><span class="tab-label">Quiz</span>
-    </button>
-    <button class="tab-item" onclick="nav('match')">
-      <span class="tab-icon">🔗</span><span class="tab-label">Relier</span>
-    </button>
-    <button class="tab-item" onclick="nav('stats')">
-      <span class="tab-icon">📊</span><span class="tab-label">Stats</span>
-    </button>
+    <button class="tab-item active" onclick="nav('learn')"><span class="tab-icon">📖</span><span class="tab-label">Étude</span></button>
+    <button class="tab-item" onclick="nav('quiz')"><span class="tab-icon">✨</span><span class="tab-label">Quiz</span></button>
+    <button class="tab-item" onclick="nav('write')"><span class="tab-icon">✍️</span><span class="tab-label">Écrit</span></button>
+    <button class="tab-item" onclick="nav('cats')"><span class="tab-icon">🏷️</span><span class="tab-label">Thèmes</span></button>
+    <button class="tab-item" onclick="nav('stats')"><span class="tab-icon">📊</span><span class="tab-label">Stats</span></button>
   </nav>
 </div>
 
 <script>
-// DATA CORRIGÉE
+// --- DONNÉES & CATÉGORIES ---
 const NAMES = [
-  {id:1,ar:"ٱلرَّحْمَـٰنُ",trans:"Ar-Rahmân",fr:"Le Tout Miséricordieux"},
-  {id:2,ar:"ٱلرَّحِيمُ",trans:"Ar-Rahîm",fr:"Le Très Miséricordieux"},
-  {id:3,ar:"ٱلْمَلِكُ",trans:"Al-Malik",fr:"Le Souverain"},
-  {id:4,ar:"ٱلْقُدُّوسُ",trans:"Al-Quddûs",fr:"Le Très Saint"},
-  {id:5,ar:"ٱلسَّلَامُ",trans:"As-Salâm",fr:"La Source de la Paix"},
-  {id:6,ar:"ٱلْمُؤْمِنُ",trans:"Al-Mu'min",fr:"Le Sécurisant"},
-  {id:7,ar:"ٱلْمُهَيْمِنُ",trans:"Al-Muhaymin",fr:"Le Protecteur"},
-  {id:8,ar:"ٱلْعَزِيزُ",trans:"Al-'Azîz",fr:"Le Tout Puissant"},
-  {id:9,ar:"ٱلْجَبَّارُ",trans:"Al-Jabbâr",fr:"Celui qui contraint"},
-  {id:10,ar:"ٱلْمُتَكَبِّرُ",trans:"Al-Mutakabbir",fr:"L'Orgueilleux Suprême"},
-  {id:11,ar:"ٱلْخَالِقُ",trans:"Al-Khâliq",fr:"Le Créateur"},
-  {id:12,ar:"ٱلْبَارِئُ",trans:"Al-Bâri'",fr:"Le Producteur"},
-  {id:13,ar:"ٱلْمُصَوِّرُ",trans:"Al-Musawwir",fr:"Le Formateur"},
-  {id:14,ar:"ٱلْغَفَّارُ",trans:"Al-Ghaffâr",fr:"L'Infini Pardonneur"},
-  {id:15,ar:"ٱلْقَهَّارُ",trans:"Al-Qahhâr",fr:"Le Dominateur Suprême"},
-  {id:16,ar:"ٱلْوَهَّابُ",trans:"Al-Wahhâb",fr:"Le Donateur Suprême"},
-  {id:17,ar:"ٱلرَّزَّاقُ",trans:"Ar-Razzâq",fr:"Celui qui pourvoit"},
-  {id:18,ar:"ٱلْفَتَّاحُ",trans:"Al-Fattâh",fr:"L'Ouvreur"},
-  {id:19,ar:"ٱلْعَلِيمُ",trans:"Al-'Alîm",fr:"L'Omniscient"},
-  {id:20,ar:"ٱلْقَابِضُ",trans:"Al-Qâbid",fr:"Celui qui retient"},
-  {id:21,ar:"ٱلْبَاسِطُ",trans:"Al-Bâsit",fr:"Celui qui étend"},
-  {id:22,ar:"ٱلْخَافِضُ",trans:"Al-Khâfid",fr:"Celui qui abaisse"},
-  {id:23,ar:"ٱلرَّافِعُ",trans:"Ar-Râfi'",fr:"Celui qui élève"},
-  {id:24,ar:"ٱلْمُعِزُّ",trans:"Al-Mu'izz",fr:"Celui qui honore"},
-  {id:25,ar:"ٱلْمُذِلُّ",trans:"Al-Mudhill",fr:"Celui qui humilie"},
-  {id:26,ar:"ٱلسَّمِيعُ",trans:"As-Samî'",fr:"L'Audient"},
-  {id:27,ar:"ٱلْبَصِيرُ",trans:"Al-Basîr",fr:"Le Clairvoyant"},
-  {id:28,ar:"ٱلْحَكَمُ",trans:"Al-Hakam",fr:"Le Juge"},
-  {id:29,ar:"ٱلْعَدْلُ",trans:"Al-'Adl",fr:"Le Juste"},
-  {id:30,ar:"ٱللَّطِيفُ",trans:"Al-Latîf",fr:"Le Subtil"},
-  {id:31,ar:"ٱلْخَبِيرُ",trans:"Al-Khabîr",fr:"Le Bien-Informé"},
-  {id:32,ar:"ٱلْحَلِيمُ",trans:"Al-Halîm",fr:"Le Longanime"},
-  {id:33,ar:"ٱلْعَظِيمُ",trans:"Al-'Azîm",fr:"Le Sublime"},
-  {id:34,ar:"ٱلْغَفُورُ",trans:"Al-Ghafûr",fr:"Le Pardonneur"},
-  {id:35,ar:"ٱلشَّكُورُ",trans:"Ash-Shakûr",fr:"Le Reconnaissant"},
-  {id:36,ar:"ٱلْعَلِيُّ",trans:"Al-'Aliyy",fr:"Le Très Haut"},
-  {id:37,ar:"ٱلْكَبِيرُ",trans:"Al-Kabîr",fr:"Le Grand"},
-  {id:38,ar:"ٱلْحَفِيظُ",trans:"Al-Hafîz",fr:"Le Gardien"},
-  {id:39,ar:"ٱلْمُقِيتُ",trans:"Al-Muqît",fr:"Le Nourricier"},
-  {id:40,ar:"ٱلْحَسِيبُ",trans:"Al-Hasîb",fr:"Celui qui tient compte"},
-  {id:41,ar:"ٱلْجَلِيلُ",trans:"Al-Jalîl",fr:"Le Majestueux"},
-  {id:42,ar:"ٱلْكَرِيمُ",trans:"Al-Karîm",fr:"Le Généreux"},
-  {id:43,ar:"ٱلرَّقِيبُ",trans:"Ar-Raqîb",fr:"Le Vigilant"},
-  {id:44,ar:"ٱلْمُجِيبُ",trans:"Al-Mujîb",fr:"Celui qui exauce"},
-  {id:45,ar:"ٱلْوَاسِعُ",trans:"Al-Wâsi'",fr:"L'Immense"},
-  {id:46,ar:"ٱلْحكِيمُ",trans:"Al-Hakîm",fr:"Le Sage"},
-  {id:47,ar:"ٱلْوَدُودُ",trans:"Al-Wadûd",fr:"Le Bien-Aimant"},
-  {id:48,ar:"ٱلْمَجِيدُ",trans:"Al-Majîd",fr:"Le Glorieux"},
-  {id:49,ar:"ٱلْبَاعِثُ",trans:"Al-Bâ'ith",fr:"Celui qui ressuscite"},
-  {id:50,ar:"ٱلشَّهِيدُ",trans:"Ash-Shahîd",fr:"Le Témoin"},
-  {id:51,ar:"ٱلْحَقُّ",trans:"Al-Haqq",fr:"La Vérité"},
-  {id:52,ar:"ٱلْوَكِيلُ",trans:"Al-Wakîl",fr:"Le Garant"},
-  {id:53,ar:"ٱلْقَوِيُّ",trans:"Al-Qawiyy",fr:"Le Fort"},
-  {id:54,ar:"ٱلْمَتِينُ",trans:"Al-Matîn",fr:"Le Ferme"},
-  {id:55,ar:"ٱلْوَلِيُّ",trans:"Al-Waliyy",fr:"Le Protecteur"},
-  {id:56,ar:"ٱلْحَمِيدُ",trans:"Al-Hamîd",fr:"Le Louable"},
-  {id:57,ar:"ٱلْمُحْصِي",trans:"Al-Muhsî",fr:"Celui qui dénombre"},
-  {id:58,ar:"ٱلْمُبْدِئُ",trans:"Al-Mubdi'",fr:"Celui qui commence"},
-  {id:59,ar:"ٱلْمُعِيدُ",trans:"Al-Mu'îd",fr:"Celui qui reproduit"},
-  {id:60,ar:"ٱلْمُحْيِي",trans:"Al-Muhyî",fr:"Celui qui donne la vie"},
-  {id:61,ar:"ٱلْمُمِيتُ",trans:"Al-Mumît",fr:"Celui qui donne la mort"},
-  {id:62,ar:"ٱلْحَيُّ",trans:"Al-Hayy",fr:"Le Vivant"},
-  {id:63,ar:"ٱلْقَيُّومُ",trans:"Al-Qayyûm",fr:"Le Subsistant"},
-  {id:64,ar:"ٱلْوَاجِدُ",trans:"Al-Wâjid",fr:"Celui qui trouve"},
-  {id:65,ar:"ٱلْمَاجِدُ",trans:"Al-Mâjid",fr:"Le Noble"},
-  {id:66,ar:"ٱلْوَاحِدُ",trans:"Al-Wâhid",fr:"L'Unique"},
-  {id:67,ar:"ٱلْأَحَدُ",trans:"Al-Ahad",fr:"Le Seul"},
-  {id:68,ar:"ٱلصَّمَدُ",trans:"As-Samad",fr:"L'Absolu"},
-  {id:69,ar:"ٱلْقَادِرُ",trans:"Al-Qâdir",fr:"Le Capable"},
-  {id:70,ar:"ٱلْمُقْتَدِرُ",trans:"Al-Muqtadir",fr:"Le Tout Déterminant"},
-  {id:71,ar:"ٱلْمُقَدِّمُ",trans:"Al-Muqaddim",fr:"Celui qui met en avant"},
-  {id:72,ar:"ٱلْمُؤَخِّرُ",trans:"Al-Mu'akhkhir",fr:"Celui qui retarde"},
-  {id:73,ar:"ٱلْأَوَّلُ",trans:"Al-Awwal",fr:"Le Premier"},
-  {id:74,ar:"ٱلْآخِرُ",trans:"Al-Âkhir",fr:"Le Dernier"},
-  {id:75,ar:"ٱلظَّاهِرُ",trans:"Az-Zâhir",fr:"L'Apparent"},
-  {id:76,ar:"ٱلْبَاطِنُ",trans:"Al-Bâtin",fr:"Le Caché"},
-  {id:77,ar:"ٱلْوَالِي",trans:"Al-Wâlî",fr:"Le Maître"},
-  {id:78,ar:"ٱلْمُتَعَالِي",trans:"Al-Muta'âlî",fr:"Le Très Élevé"},
-  {id:79,ar:"ٱلْبَرُّ",trans:"Al-Barr",fr:"Le Bienfaiteur"},
-  {id:80,ar:"ٱلتَّوَّابُ",trans:"At-Tawwâb",fr:"Celui qui accepte le repentir"},
-  {id:81,ar:"ٱلْمُنْتَقِمُ",trans:"Al-Muntaqim",fr:"Le Vengeur"},
-  {id:82,ar:"ٱلْعَفُوُّ",trans:"Al-'Afuww",fr:"L'Indulgent"},
-  {id:83,ar:"ٱلرَّؤُوفُ",trans:"Ar-Ra'ûf",fr:"Le Compatissant"},
-  {id:84,ar:"مَالِكُ ٱلْمُلْكِ",trans:"Mâlik-ul-Mulk",fr:"Possesseur du Royaume"},
-  {id:85,ar:"ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ",trans:"Dhul-Jalâli wal-Ikrâm",fr:"Plein de Majesté et de Munificence"},
-  {id:86,ar:"ٱلْمُقْسِطُ",trans:"Al-Muqsit",fr:"L'Équitable"},
-  {id:87,ar:"ٱلْجَامِعُ",trans:"Al-Jâmi'",fr:"Celui qui rassemble"},
-  {id:88,ar:"ٱلْغَنِيُّ",trans:"Al-Ghaniyy",fr:"Le Riche"},
-  {id:89,ar:"ٱلْمُغْنِي",trans:"Al-Mughnî",fr:"Celui qui enrichit"},
-  {id:90,ar:"ٱلْمَانِعُ",trans:"Al-Mâni'",fr:"Celui qui empêche"},
-  {id:91,ar:"ٱلضَّارُّ",trans:"Ad-Dârr",fr:"Celui qui nuit"},
-  {id:92,ar:"ٱلنَّافِعُ",trans:"An-Nâfi'",fr:"Celui qui accorde le profit"},
-  {id:93,ar:"ٱلنُّورُ",trans:"An-Nûr",fr:"La Lumière"},
-  {id:94,ar:"ٱلْهَادِي",trans:"Al-Hâdî",fr:"Le Guide"},
-  {id:95,ar:"ٱلْبَدِيعُ",trans:"Al-Badî'",fr:"Le Créateur Originel"},
-  {id:96,ar:"ٱلْبَاقِي",trans:"Al-Bâqî",fr:"L'Éternel"},
-  {id:97,ar:"ٱلْوَارِثُ",trans:"Al-Wârith",fr:"L'Héritier"},
-  {id:98,ar:"ٱلرَّشِيدُ",trans:"Ar-Rashîd",fr:"Celui qui dirige avec Sagesse"},
-  {id:99,ar:"ٱلصَّبُورُ",trans:"As-Sabûr",fr:"Le Patient"}
+  {id:1,ar:"ٱلرَّحْمَـٰنُ",trans:"Ar-Rahmân",fr:"Le Tout Miséricordieux",cat:"misericorde"},
+  {id:2,ar:"ٱلرَّحِيمُ",trans:"Ar-Rahîm",fr:"Le Très Miséricordieux",cat:"misericorde"},
+  {id:3,ar:"ٱلْمَلِكُ",trans:"Al-Malik",fr:"Le Souverain",cat:"puissance"},
+  {id:4,ar:"ٱلْقُدُّوسُ",trans:"Al-Quddûs",fr:"Le Très Saint",cat:"majeste"},
+  {id:5,ar:"ٱلسَّلَامُ",trans:"As-Salâm",fr:"La Source de la Paix",cat:"misericorde"},
+  {id:11,ar:"ٱلْخَالِقُ",trans:"Al-Khâliq",fr:"Le Créateur",cat:"creation"},
+  {id:19,ar:"ٱلْعَلِيمُ",trans:"Al-'Alîm",fr:"L'Omniscient",cat:"sagesse"},
+  {id:46,ar:"ٱلْحكِيمُ",trans:"Al-Hakîm",fr:"Le Sage",cat:"sagesse"},
+  // ... (Ajoute les autres noms ici avec leurs 'cat')
 ];
 
-// ETAT DE L'APP
+const CAT_DEFS = {
+  misericorde: { label: "Miséricorde", icon: "🤲" },
+  puissance: { label: "Puissance", icon: "⚡" },
+  majeste: { label: "Majesté", icon: "👑" },
+  sagesse: { label: "Sagesse", icon: "📖" },
+  creation: { label: "Création", icon: "🌱" }
+};
+
+// --- LOGIQUE SPACED REPETITION (SR) ---
+const SR_INTERVALS = [0, 1, 3, 7, 21]; // Jours entre révisions
+const SR_LABELS = ["Nouveau", "Apprentissage", "Révision", "Acquis", "Maîtrisé"];
+
+// --- ÉTAT ---
 let state = {
   view: 'learn',
   learnIdx: 0,
-  isFlipped: false,
-  mastered: new Set(JSON.parse(localStorage.getItem('asma-mastered') || '[]')),
-  stats: JSON.parse(localStorage.getItem('asma-stats') || '{}'),
-  quiz: { q: null, selected: null },
-  match: { pairs: [], leftId: null, matched: new Set(), animating: false }
+  filter: 'all', // 'all' ou id de catégorie
+  sr: JSON.parse(localStorage.getItem('asma-sr') || '{}'),
+  stats: JSON.parse(localStorage.getItem('asma-stats') || '{ "correct": 0, "total": 0 }'),
+  write: { q: null, val: '', status: '' }
 };
 
 function save() {
-  localStorage.setItem('asma-mastered', JSON.stringify([...state.mastered]));
+  localStorage.setItem('asma-sr', JSON.stringify(state.sr));
   localStorage.setItem('asma-stats', JSON.stringify(state.stats));
 }
 
-// NAVIGATION
+function getSR(id) {
+  if (!state.sr[id]) state.sr[id] = { box: 0, next: 0 };
+  return state.sr[id];
+}
+
+function promote(id, isCorrect) {
+  let sr = getSR(id);
+  if (isCorrect) {
+    sr.box = Math.min(sr.box + 1, 4);
+    state.stats.correct++;
+  } else {
+    sr.box = Math.max(sr.box - 1, 0);
+  }
+  sr.next = Date.now() + (SR_INTERVALS[sr.box] * 86400000);
+  state.stats.total++;
+  save();
+}
+
+// --- NAVIGATION ---
 function nav(view) {
   state.view = view;
   state.isFlipped = false;
-  document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   document.querySelector(`[onclick="nav('${view}')"]`).classList.add('active');
+  if(view === 'write') nextWrite();
   render();
 }
 
 function render() {
-  const container = document.getElementById('app-content');
+  const content = document.getElementById('app-content');
   const title = document.getElementById('page-title');
+  
+  // FILTRAGE
+  let list = NAMES;
+  if(state.filter !== 'all') list = NAMES.filter(n => n.cat === state.filter);
 
-  if(state.view === 'learn') {
-    title.innerText = "Apprentissage";
-    const n = NAMES[state.learnIdx];
-    const isM = state.mastered.has(n.id);
-    container.innerHTML = `
+  if (state.view === 'learn') {
+    title.innerText = state.filter === 'all' ? "Étude" : CAT_DEFS[state.filter].label;
+    const n = list[state.learnIdx];
+    const sr = getSR(n.id);
+    content.innerHTML = `
       <div class="card" onclick="state.isFlipped = !state.isFlipped; render()">
-        <div class="card-num">NOM ${n.id} / 99</div>
+        <div class="card-num">NOM ${n.id} / 99 <span class="sr-badge sr-${sr.box}">${SR_LABELS[sr.box]}</span></div>
         <div class="card-ar">${n.ar}</div>
         <div class="card-trans">${n.trans}</div>
         <div class="reveal-zone">
-          ${state.isFlipped ? `<div class="meaning">${n.fr}</div>` : `<div class="placeholder">Appuie pour voir le sens</div>`}
+          ${state.isFlipped ? `<div class="meaning">${n.fr}</div>` : `<div class="placeholder">Cliquez pour voir le sens</div>`}
         </div>
       </div>
-      <div class="card-nav">
-        <button class="btn-circle" onclick="changeName(-1); event.stopPropagation()">‹</button>
-        <button class="btn-master ${isM?'on':'off'}" onclick="toggleMaster(${n.id}); event.stopPropagation()">
-          ${isM ? '✓ ACQUIS' : 'MARQUER ACQUIS'}
-        </button>
-        <button class="btn-circle" onclick="changeName(1); event.stopPropagation()">›</button>
+      <div class="card-nav" style="display:flex; gap:15px; margin-top:20px;">
+        <button class="btn-circle" onclick="changeName(-1)">‹</button>
+        <button class="btn-master off" onclick="state.isFlipped = true; render()">RÉVÉLER</button>
+        <button class="btn-circle" onclick="changeName(1)">›</button>
       </div>
     `;
   }
 
-  if(state.view === 'quiz') {
-    title.innerText = "Quiz";
-    if(!state.quiz.q) nextQuiz();
-    const q = state.quiz.q;
-    container.innerHTML = `
-      <div style="text-align:center; padding: 20px 0;">
-        <p style="color:var(--ink-light)">Que signifie ce Nom ?</p>
-        <div style="font-family:'Noto Sans Arabic'; font-size:45px; margin:15px 0;">${q.target.ar}</div>
+  if (state.view === 'write') {
+    title.innerText = "Mode Écriture";
+    const n = state.write.q;
+    content.innerHTML = `
+      <div style="text-align:center; padding-bottom:20px;">
+        <div class="card-ar">${n.ar}</div>
+        <p>Tapez la translittération (ex: Ar-Rahman)</p>
       </div>
-      <div class="quiz-options">
-        ${q.options.map(opt => {
-          let cls = '';
-          if(state.quiz.selected) {
-            if(opt.id === q.target.id) cls = 'correct';
-            else if(opt.id === state.quiz.selected) cls = 'wrong';
-          }
-          return `<button class="quiz-option ${cls}" onclick="handleQuiz(${opt.id})" ${state.quiz.selected?'disabled':''}>${opt.fr}</button>`;
-        }).join('')}
+      <input type="text" class="write-input ${state.write.status}" 
+             placeholder="Votre réponse..." 
+             value="${state.write.val}"
+             oninput="state.write.val = this.value"
+             onkeydown="if(event.key==='Enter') checkWrite()">
+      <button class="btn-master on" style="width:100%; margin-top:20px;" onclick="checkWrite()">VÉRIFIER</button>
+      ${state.write.status === 'wrong' ? `<p style="text-align:center; color:var(--error); margin-top:10px;">Réponse : <b>${n.trans}</b></p>` : ''}
+    `;
+  }
+
+  if (state.view === 'cats') {
+    title.innerText = "Par Thématiques";
+    content.innerHTML = `
+      <div class="cat-grid">
+        <div class="cat-card" onclick="state.filter='all'; nav('learn')">
+          <div class="cat-icon">🌍</div><div class="cat-name">Tous les Noms</div>
+        </div>
+        ${Object.keys(CAT_DEFS).map(key => `
+          <div class="cat-card" onclick="state.filter='${key}'; nav('learn')">
+            <div class="cat-icon">${CAT_DEFS[key].icon}</div>
+            <div class="cat-name">${CAT_DEFS[key].label}</div>
+          </div>
+        `).join('')}
       </div>
     `;
   }
 
-  if(state.view === 'match') {
-    title.innerText = "Relier les Paires";
-    if(state.match.pairs.length === 0) initMatch();
-    
-    if(state.match.matched.size === 5) {
-      container.innerHTML = `<div style="text-align:center; padding:50px 20px;"><h2>Bravo ! 🎉</h2><button class="btn-master on" onclick="initMatch()">Rejouer</button></div>`;
-      return;
-    }
-
-    container.innerHTML = `
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          ${state.match.leftSide.map(n => `
-            <button class="quiz-option ${state.match.matched.has(n.id)?'correct':''} ${state.match.leftId===n.id?'wrong':''}" 
-              style="padding:12px; font-family:'Noto Sans Arabic'; font-size:18px; visibility:${state.match.matched.has(n.id)?'hidden':'visible'}"
-              onclick="selectMatchLeft(${n.id})">${n.ar}</button>
-          `).join('')}
-        </div>
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          ${state.match.rightSide.map(n => `
-            <button class="quiz-option" style="padding:12px; font-size:14px; visibility:${state.match.matched.has(n.id)?'hidden':'visible'}"
-              onclick="selectMatchRight(${n.id})">${n.fr}</button>
-          `).join('')}
+  if (state.view === 'stats') {
+    title.innerText = "Ma Progression";
+    const precision = state.stats.total > 0 ? Math.round((state.stats.correct / state.stats.total) * 100) : 0;
+    content.innerHTML = `
+      <div class="card" style="min-height: auto; padding: 25px;">
+        <div class="card-num">RÉUSSITE</div>
+        <div style="font-size:40px; font-weight:bold; color:var(--gold);">${precision}%</div>
+        <p style="font-size:14px; opacity:0.6;">Basé sur ${state.stats.total} tests</p>
+        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+        <div style="text-align:left;">
+          <p><b>Maîtrise :</b> ${Object.values(state.sr).filter(s => s.box === 4).length} / 99</p>
         </div>
       </div>
-    `;
-  }
-
-  if(state.view === 'stats') {
-    title.innerText = "Progression";
-    const pct = Math.round((state.mastered.size / 99) * 100);
-    container.innerHTML = `
-      <div class="card" style="min-height: auto; padding: 30px;">
-        <div class="card-num">PROGRESSION GLOBALE</div>
-        <div style="font-size:48px; font-weight:bold; color:var(--gold); margin:10px 0;">${pct}%</div>
-        <div style="width:100%; height:8px; background:var(--cream); border-radius:10px; overflow:hidden;">
-          <div style="width:${pct}%; height:100%; background:var(--gold);"></div>
-        </div>
-        <p style="margin-top:15px; font-size:14px; color:var(--ink-light)">${state.mastered.size} noms maîtrisés sur 99</p>
-      </div>
-      <button class="btn-master off" style="margin-top:20px; width:100%; color:var(--error); border-color:var(--error);" onclick="resetAll()">Réinitialiser tout</button>
     `;
   }
 }
 
-// LOGIQUE ETUDE
+// --- ACTIONS ---
 function changeName(dir) {
-  state.learnIdx = (state.learnIdx + dir + 99) % 99;
+  const list = state.filter === 'all' ? NAMES : NAMES.filter(n => n.cat === state.filter);
+  state.learnIdx = (state.learnIdx + dir + list.length) % list.length;
   state.isFlipped = false;
   render();
 }
-function toggleMaster(id) {
-  if(state.mastered.has(id)) state.mastered.delete(id);
-  else state.mastered.add(id);
-  save();
-  render();
+
+function nextWrite() {
+  // Choisir un nom au hasard
+  state.write = { q: NAMES[Math.floor(Math.random()*NAMES.length)], val: '', status: '' };
 }
 
-// LOGIQUE QUIZ
-function nextQuiz() {
-  const target = NAMES[Math.floor(Math.random()*99)];
-  const wrongs = shuffle(NAMES.filter(n => n.id !== target.id)).slice(0,3);
-  state.quiz = { q: { target, options: shuffle([target, ...wrongs]) }, selected: null };
-}
-function handleQuiz(id) {
-  state.quiz.selected = id;
-  render();
-  setTimeout(() => { nextQuiz(); render(); }, 1500);
-}
-
-// LOGIQUE MATCH (RELIER)
-function initMatch() {
-  const batch = shuffle(NAMES).slice(0, 5);
-  state.match = { 
-    leftSide: shuffle([...batch]), 
-    rightSide: shuffle([...batch]), 
-    leftId: null, 
-    matched: new Set(),
-    animating: false
-  };
-  render();
-}
-function selectMatchLeft(id) {
-  if(state.match.animating) return;
-  state.match.leftId = id;
-  render();
-}
-function selectMatchRight(id) {
-  if(!state.match.leftId || state.match.animating) return;
-  if(state.match.leftId === id) {
-    state.match.matched.add(id);
-    state.match.leftId = null;
+function checkWrite() {
+  const target = state.write.q.trans.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+  const input = state.write.val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+  
+  if (input === target) {
+    state.write.status = 'correct';
+    promote(state.write.q.id, true);
     render();
+    setTimeout(() => { nextWrite(); render(); }, 1200);
   } else {
-    state.match.animating = true;
-    setTimeout(() => { state.match.leftId = null; state.match.animating = false; render(); }, 500);
+    state.write.status = 'wrong';
+    promote(state.write.q.id, false);
+    render();
   }
 }
 
-// UTILS
-function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
-function resetAll() { if(confirm("Effacer toute ta progression ?")) { localStorage.clear(); location.reload(); } }
-
-// START
+// Lancement
 render();
 </script>
-
 </body>
 </html>
