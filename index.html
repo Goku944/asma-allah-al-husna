@@ -86,9 +86,9 @@
     /* ============================================ */
     /* LEARN CARD — FIXED HEIGHT                   */
     /* ============================================ */
-    .card-wrap { padding: 0 16px; }
+    .card-wrap { padding: 0 20px; }
     .card {
-      background: white; border-radius: var(--radius); padding: 20px 16px;
+      background: white; border-radius: var(--radius); padding: 24px 20px;
       box-shadow: var(--shadow-card);
       text-align: center; position: relative; overflow: hidden;
       min-height: 260px;
@@ -101,9 +101,9 @@
     .co-tr { top:12px; right:12px; border-top:1.5px solid var(--gold-light); border-right:1.5px solid var(--gold-light); border-radius:0 4px 0 0; }
     .co-bl { bottom:12px; left:12px; border-bottom:1.5px solid var(--gold-light); border-left:1.5px solid var(--gold-light); border-radius:0 0 0 4px; }
     .co-br { bottom:12px; right:12px; border-bottom:1.5px solid var(--gold-light); border-right:1.5px solid var(--gold-light); border-radius:0 0 4px 0; }
-    .c-num { font-size:0.75rem; color:var(--gold); font-weight:600; letter-spacing:2px; margin-bottom:8px; }
-    .c-ar { font-family:var(--arabic); font-size:2.625rem; line-height:1.2; color:var(--ink); direction:rtl; margin-bottom:6px; }
-    .c-tr { font-size:1.25rem; color:var(--gold); font-weight:600; letter-spacing:0.5px; margin-bottom:2px; }
+    .c-num { font-size:0.8125rem; color:var(--gold); font-weight:600; letter-spacing:2px; margin-bottom:14px; }
+    .c-ar { font-family:var(--arabic); font-size:2.875rem; line-height:1.3; color:var(--ink); direction:rtl; margin-bottom:6px; }
+    .c-tr { font-size:1.375rem; color:var(--gold); font-weight:600; letter-spacing:0.5px; margin-bottom:2px; }
     .c-fr { font-size:1.125rem; color:var(--ink-light); font-style:italic; line-height:1.4; animation:fadeUp 0.25s ease; }
     .c-cat { display:inline-block; margin-top:8px; padding:4px 12px; border-radius:10px; font-size:0.75rem; color:var(--gold); background:var(--gold-glow); border:1px solid var(--gold-border); }
     .c-hint { font-size:0.8125rem; color:var(--ink-faint); opacity:0.5; margin-top:10px; }
@@ -115,7 +115,7 @@
     .sr4 { background:rgba(45,106,79,0.15); color:var(--success); }
 
     /* CONTROLS */
-    .ctrls { display:flex; justify-content:center; align-items:center; gap:14px; padding:8px 20px 2px; }
+    .ctrls { display:flex; justify-content:center; align-items:center; gap:14px; padding:14px 20px 4px; }
     .nbtn {
       width:48px; height:48px; border-radius:50%; border:1px solid var(--cream-dark);
       background:white; font-size:1.25rem; color:var(--ink-light);
@@ -277,7 +277,7 @@
       box-shadow:0 8px 40px rgba(0,0,0,0.12), 0 0 0 2px var(--gold);
       z-index:1000; animation: milestoneIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
     }
-    .milestone .ms-emoji { font-size:3rem; margin-bottom:8px; }
+    .milestone .ms-emoji { font-size:3rem; margin-bottom:14px; }
     .milestone .ms-text { font-size:1.25rem; font-weight:600; color:var(--ink); }
     .milestone .ms-sub { font-size:0.8125rem; color:var(--gold); margin-top:4px; }
     /* SETTINGS */
@@ -329,7 +329,7 @@
     .info-btn { position:absolute; top:16px; right:16px; width:28px; height:28px; border-radius:50%; background:var(--gold-glow); border:1px solid var(--gold-border); color:var(--gold); font-size:0.875rem; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:10; }
     .info-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:900; display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeUp 0.2s ease; }
     .info-box { background:var(--cream); border-radius:20px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 8px 40px rgba(0,0,0,0.15); position:relative; max-height:80vh; overflow-y:auto; }
-    .info-box h2 { font-size:1.25rem; color:var(--ink); margin-bottom:8px; }
+    .info-box h2 { font-size:1.25rem; color:var(--ink); margin-bottom:14px; }
     .info-box p { font-size:0.875rem; color:var(--ink-light); line-height:1.6; margin-bottom:10px; }
     .info-close { position:absolute; top:12px; right:14px; background:none; border:none; font-size:1.25rem; color:var(--ink-faint); cursor:pointer; }
     body.dark .info-box { background:#1E1E1E; }
@@ -710,46 +710,36 @@ function sp(id){pg=id;document.querySelectorAll('.page').forEach(p=>p.classList.
 function rL(){
   const ns=gfn();if(li>=ns.length)li=0;const n=ns[li];const dc=due().length;
   const rem=99-mst.size, acq=mst.size;
-
-  // Compact header: arc + streak + search in one bar
-  let h='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 2px">';
-  h+=streak>0?'<div style="display:flex;align-items:center;gap:4px"><span style="font-size:1rem">\u{1F525}</span><span style="font-family:var(--heading);font-size:0.875rem;font-weight:700;color:var(--gold)">'+streak+'j</span></div>':'<div></div>';
-  const pct=Math.round(mst.size/99*100);const r=24,circ=Math.PI*r;const offs=circ-(pct/100*circ);
-  h+='<svg width="56" height="32" viewBox="0 0 56 32"><path d="M6,28 A24,24 0 0,1 50,28" fill="none" stroke="var(--cream-dark)" stroke-width="5"/><path d="M6,28 A24,24 0 0,1 50,28" fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+offs+'"/><text x="28" y="24" text-anchor="middle" font-family="var(--heading)" font-size="9" font-weight="700" fill="var(--ink)">'+mst.size+'/99</text></svg>';
-  h+='<button onclick="searchOpen=!searchOpen;searchQ=\'\';rL();if(searchOpen){setTimeout(()=>{const i=document.getElementById(\'search-inp\');if(i)i.focus();},50);}" style="background:none;border:none;font-size:1.125rem;cursor:pointer;opacity:0.5;padding:4px">'+(searchOpen?'\u2715':'\u{1F50D}')+'</button>';
+  let h=arcSvg()+streakHtml();
+  h+=hd('Apprendre','Mémorise les Noms un par un','learn');
+  h+=`<div style="display:flex;justify-content:flex-end;padding:0 20px 4px"><button onclick="searchOpen=!searchOpen;searchQ='';rL();if(searchOpen){setTimeout(()=>{const i=document.getElementById('search-inp');if(i)i.focus();},50);}" style="background:none;border:1px solid var(--cream-dark);border-radius:8px;padding:5px 12px;font-size:0.75rem;color:var(--ink-faint);cursor:pointer">${searchOpen?'\u2715 Fermer':'\ud83d\udd0d Rechercher'}</button></div>`;
+  h+=renderSearch();
+  if(searchOpen&&searchQ.length>=1){document.getElementById('page-learn').innerHTML=h;const inp=document.getElementById('search-inp');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}return;}
+  h+='<div class="pills">';
+  h+='<button class="pl'+(lfi==='all'?' a':'')+'" onclick="sLF(\'all\')">Tous (99)</button>';
+  h+='<button class="pl'+(lfi==='remaining'?' a':'')+'" onclick="sLF(\'remaining\')">Restants ('+rem+')</button>';
+  h+='<button class="pl'+(lfi==='mastered'?' a':'')+'" onclick="sLF(\'mastered\')">Mémorisés ('+acq+')</button>';
+  h+='<button class="pl'+(lfi==='due'?' a':'')+'" onclick="sLF(\'due\')">À réviser ('+dc+')</button>';
   h+='</div>';
-
-  if(searchOpen){
-    h+=renderSearch();
-    if(searchQ.length>=1){document.getElementById('page-learn').innerHTML=h;const inp=document.getElementById('search-inp');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}return;}
-  }
-
-  // Compact pills
-  h+='<div class="pills" style="padding:2px 16px;margin-bottom:0;flex-wrap:nowrap;overflow-x:auto;gap:6px;justify-content:center">';
-  [{id:'all',l:'Tous',c:99},{id:'remaining',l:'Rest.',c:rem},{id:'mastered',l:'Acquis',c:acq},{id:'due',l:'Réviser',c:dc}].forEach(function(f){
-    h+='<button class="pl'+(lfi===f.id?' a':'')+'" style="white-space:nowrap;padding:4px 9px;font-size:0.625rem" onclick="sLF(\''+f.id+'\')">'+f.l+' ('+f.c+')</button>';
-  });
-  h+='</div>';
-
   if(!n||!ns.length){h+='<div class="empty">Aucun nom dans cette catégorie</div>';document.getElementById('page-learn').innerHTML=h;return;}
   const im=mst.has(n.id),s=gsr(n.id),ci=CAT[n.c];
-
-  h+='<div class="card-wrap"><div class="card '+(slideDir?'slide-'+slideDir:'fade-in')+'" id="lc" onclick="tF()">';
-  h+='<div class="co co-tl"></div><div class="co co-tr"></div><div class="co co-bl"></div><div class="co co-br"></div>';
-  h+='<div class="c-num">'+(li+1)+'/'+ns.length+' \u00b7 N\u00b0'+n.id+' <span class="sr-b sr'+s.b+'">'+SRL[s.b]+'</span></div>';
-  h+='<div class="c-ar">'+n.ar+'</div>';
+  h+=`<div class="counter">${li+1} / ${ns.length}</div>`;
+  h+=`<div class="card-wrap"><div class="card ${slideDir?'slide-'+slideDir:'fade-in'}" id="lc" onclick="tF()">`;
+  h+=`<div class="co co-tl"></div><div class="co co-tr"></div><div class="co co-bl"></div><div class="co co-br"></div>`;
+  h+=`<div class="c-num">N\u00b0${n.id} <span class="sr-b sr${s.b}">${SRL[s.b]}</span></div>`;
+  h+=`<div class="c-ar">${n.ar}</div>`;
   h+=audioBtnHtml(n.id);
-  if(showTranslit)h+='<div class="c-tr">'+n.t+'</div>';
+  if(showTranslit)h+=`<div class="c-tr">${n.t}</div>`;
   if(lf){
-    h+='<div class="c-fr" style="animation:cardFadeIn 0.25s ease">'+n.fr+'</div>';
-    h+='<div class="c-cat">'+ci.i+' '+ci.l+'</div>';
-    h+='<button class="mbtn mbtn-off" style="margin-top:4px;font-size:0.7rem;padding:4px 12px" onclick="event.stopPropagation();showDetail('+n.id+')">\u{1F4D6} En savoir plus</button>';
+    h+=`<div class="c-fr">${n.fr}</div>`;
+    h+=`<div class="c-cat" style="margin-top:4px">${ci.i} ${ci.l}</div>`;
+    h+=`<button class="mbtn mbtn-off" style="margin-top:4px;font-size:0.7rem;padding:4px 12px" onclick="event.stopPropagation();showDetail(${n.id})">\ud83d\udcd6 En savoir plus</button>`;
   } else {
-    h+='<div class="c-hint">Touche pour r\u00e9v\u00e9ler</div>';
+    h+=`<div class="c-hint">Touche pour révéler</div>`;
   }
-  h+='</div></div>';
-  h+='<div class="ctrls"><button class="nbtn" onclick="lG(-1)">\u2039</button><button class="mbtn '+(im?'mbtn-on':'mbtn-off')+'" onclick="tM('+n.id+')">'+(im?'\u2713 M\u00e9moris\u00e9':'Je le sais')+'</button><button class="nbtn" onclick="lG(1)">\u203a</button></div>';
-
+  h+=`</div></div>`;
+  h+=`<div class="ctrls"><button class="nbtn" onclick="lG(-1)">\u2039</button><button class="mbtn ${im?'mbtn-on':'mbtn-off'}" onclick="tM(${n.id})">${im?'\u2713 Mémorisé':'Je le sais'}</button><button class="nbtn" onclick="lG(1)">\u203a</button></div>`;
+  h+=`<div class="meta">\u2190 Swipe pour naviguer \u2192</div>`;
   document.getElementById('page-learn').innerHTML=h;
   const c=document.getElementById('lc');if(c){let tx=null;c.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});c.addEventListener('touchend',e=>{if(!tx)return;const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){e.preventDefault();lG(d>0?1:-1);}tx=null;});}
 }
@@ -1339,18 +1329,25 @@ function showSplash(){
 load();loadSettings();rTB();rL();
 showSplash();
 
-// PWA with auto-update
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(function(reg){
-    reg.addEventListener('updatefound',function(){
-      var nw=reg.installing;
-      if(nw) nw.addEventListener('statechange',function(){
-        if(nw.state==='activated') window.location.reload();
-      });
+// PWA — nuke old caches + register v7
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  if(window.caches) caches.keys().then(function(ks){
+    ks.forEach(function(k){ if(k!=='asma-v7') caches.delete(k); });
+  });
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    var hadOld = regs.length > 0;
+    var p = regs.map(function(r){ return r.unregister(); });
+    return Promise.all(p).then(function(){ return hadOld; });
+  }).then(function(hadOld){
+    navigator.serviceWorker.register('sw.js?v=7').then(function(reg){
+      if(hadOld && !sessionStorage.getItem('sw7')){
+        sessionStorage.setItem('sw7','1');
+        setTimeout(function(){ window.location.reload(true); }, 300);
+      }
     });
-    reg.update();
-  }).catch(function(){});
-}
+  }).catch(function(e){ console.log('SW error',e); });
+})();
 
   </script>
 </body>
