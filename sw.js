@@ -1,4 +1,4 @@
-const CACHE_NAME = 'asma-v6';
+const CACHE_NAME = 'asma-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -6,33 +6,25 @@ const ASSETS = [
   'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap'
 ];
 
-// Install — cache assets
+// Precache audio files 1-99
+for(let i=1;i<=99;i++) ASSETS.push('./audio/'+i+'.mp3');
+
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
   );
-  self.skipWaiting(); // Force activate immediately
 });
 
-// Activate — clean ALL old caches
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim(); // Take control immediately
 });
 
-// Fetch — NETWORK FIRST (ensures updates are picked up), fallback to cache
 self.addEventListener('fetch', e => {
   e.respondWith(
-    fetch(e.request).then(response => {
-      if (response && response.status === 200) {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-      }
-      return response;
-    }).catch(() => caches.match(e.request))
+    caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
