@@ -1,30 +1,1354 @@
-const CACHE_NAME = 'asma-v7';
-const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap'
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#FAF6F0">
+  <link rel="manifest" href="manifest.json">
+  <title>Asma Allah Al-Husna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+      --gold: #B8860B; --gold-light: #D4A84B; --gold-glow: rgba(184,134,11,0.08);
+      --gold-border: rgba(184,134,11,0.12);
+      --cream: #FAF6F0; --cream-dark: #EDE8E0;
+      --ink: #1A1A1A; --ink-light: #4A4A4A; --ink-faint: #999;
+      --success: #2D6A4F; --error: #9B2226;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --arabic: 'Noto Sans Arabic', serif;
+      --radius: 16px; --radius-sm: 12px;
+      --shadow-card: 0 2px 16px rgba(26,26,26,0.04), 0 0 0 1px var(--gold-border);
+      --shadow-btn: 0 1px 4px rgba(26,26,26,0.03);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { height: 100%; }
+    body {
+      background: var(--cream); font-family: var(--serif);
+      min-height: 100%; overscroll-behavior: none; -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: var(--serif); border: none; cursor: pointer; transition: transform 0.12s, opacity 0.12s, background 0.2s, border-color 0.2s, box-shadow 0.2s; }
+    button:active { transform: scale(0.96); }
+    input { font-family: var(--serif); }
+    ::selection { background: rgba(184,134,11,0.15); }
+
+    /* APP SHELL */
+    .app { max-width: 500px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
+    .page-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: 76px; -webkit-overflow-scrolling: touch; }
+    .page { display: none; }
+    .page.active { display: flex; flex-direction: column; min-height: 100%; }
+
+    /* BISMILLAH */
+    .bismillah {
+      text-align: center; padding: 18px 20px 0;
+      font-family: var(--arabic); font-size: 1.5rem; color: var(--gold);
+      direction: rtl; opacity: 0.55; letter-spacing: 2px;
+    }
+
+    /* HEADER */
+    .ph { text-align: center; padding: 18px 20px 4px; }
+    .ph h1 { font-size: 1.625rem; font-weight: 600; color: var(--ink); letter-spacing: 0.5px; }
+    .ph .sub { font-size: 0.875rem; color: var(--ink-faint); margin-top: 3px; font-style: italic; }
+    .dv { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 12px auto; width: 25%; }
+    .dv::before, .dv::after { content:''; flex:1; height:1px; }
+    .dv::before { background: linear-gradient(to right, transparent, var(--gold-light)); }
+    .dv::after { background: linear-gradient(to left, transparent, var(--gold-light)); }
+    .dv i { width:5px; height:5px; border-radius:50%; background:var(--gold); opacity:0.4; display:block; }
+
+    /* TAB BAR */
+    .tab-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(250,246,240,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(184,134,11,0.08);
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 6px 2px max(6px, env(safe-area-inset-bottom));
+      max-width: 500px; margin: 0 auto;
+    }
+    .tb { background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:1px; padding:4px 6px; border-radius:10px; opacity:0.35; transition:all 0.2s; cursor:pointer; min-width:0; }
+    .tb.a { opacity:1; background:rgba(200,169,110,0.08); }
+    .tb .ti { font-size:1.125rem; line-height:1; }
+    .tb .tl { font-size:0; overflow:hidden; max-width:0; transition:all 0.2s; font-weight:600; color:var(--gold); white-space:nowrap; }
+    .tb.a .tl { font-size:0.5625rem; max-width:60px; letter-spacing:0.2px; }
+    .tb .td { width:3px; height:3px; border-radius:50%; background:var(--gold); margin-top:1px; }
+
+    /* PILLS */
+    .pills { display:flex; justify-content:center; gap:6px; padding:0 12px; flex-wrap:wrap; margin-bottom:14px; }
+    .pl {
+      padding:6px 14px; border-radius:20px; font-size:0.8125rem; font-weight:600;
+      letter-spacing:0.3px; border:1px solid var(--cream-dark);
+      background:rgba(255,255,255,0.7); color:var(--ink-faint); transition:all 0.2s;
+      backdrop-filter: blur(4px);
+    }
+    .pl.a { border-color:var(--gold); background:var(--gold-glow); color:var(--gold); }
+
+    /* ============================================ */
+    /* LEARN CARD — FIXED HEIGHT                   */
+    /* ============================================ */
+    .card-wrap { padding: 0 20px; }
+    .card {
+      background: white; border-radius: var(--radius); padding: 24px 20px;
+      box-shadow: var(--shadow-card);
+      text-align: center; position: relative; overflow: hidden;
+      min-height: 260px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card:active { box-shadow: 0 1px 8px rgba(0,0,0,0.06), 0 0 0 1.5px rgba(184,134,11,0.18); transform: scale(0.995); }
+    .co { position:absolute; width:20px; height:20px; opacity:0.25; }
+    .co-tl { top:12px; left:12px; border-top:1.5px solid var(--gold-light); border-left:1.5px solid var(--gold-light); border-radius:4px 0 0 0; }
+    .co-tr { top:12px; right:12px; border-top:1.5px solid var(--gold-light); border-right:1.5px solid var(--gold-light); border-radius:0 4px 0 0; }
+    .co-bl { bottom:12px; left:12px; border-bottom:1.5px solid var(--gold-light); border-left:1.5px solid var(--gold-light); border-radius:0 0 0 4px; }
+    .co-br { bottom:12px; right:12px; border-bottom:1.5px solid var(--gold-light); border-right:1.5px solid var(--gold-light); border-radius:0 0 4px 0; }
+    .c-num { font-size:0.8125rem; color:var(--gold); font-weight:600; letter-spacing:2px; margin-bottom:14px; }
+    .c-ar { font-family:var(--arabic); font-size:2.875rem; line-height:1.3; color:var(--ink); direction:rtl; margin-bottom:6px; }
+    .c-tr { font-size:1.375rem; color:var(--gold); font-weight:600; letter-spacing:0.5px; margin-bottom:2px; }
+    .c-fr { font-size:1.125rem; color:var(--ink-light); font-style:italic; line-height:1.4; animation:fadeUp 0.25s ease; }
+    .c-cat { display:inline-block; margin-top:8px; padding:4px 12px; border-radius:10px; font-size:0.75rem; color:var(--gold); background:var(--gold-glow); border:1px solid var(--gold-border); }
+    .c-hint { font-size:0.8125rem; color:var(--ink-faint); opacity:0.5; margin-top:10px; }
+    .sr-b { display:inline-block; padding:3px 8px; border-radius:6px; font-size:0.6875rem; font-weight:600; margin-left:6px; vertical-align:middle; }
+    .sr0 { background:rgba(184,134,11,0.1); color:var(--gold); }
+    .sr1 { background:rgba(155,34,38,0.1); color:var(--error); }
+    .sr2 { background:rgba(74,74,74,0.1); color:var(--ink-light); }
+    .sr3 { background:rgba(45,106,79,0.1); color:var(--success); }
+    .sr4 { background:rgba(45,106,79,0.15); color:var(--success); }
+
+    /* CONTROLS */
+    .ctrls { display:flex; justify-content:center; align-items:center; gap:14px; padding:14px 20px 4px; }
+    .nbtn {
+      width:48px; height:48px; border-radius:50%; border:1px solid var(--cream-dark);
+      background:white; font-size:1.25rem; color:var(--ink-light);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: var(--shadow-btn);
+    }
+    .nbtn:active { background:var(--cream); }
+    .mbtn { padding:10px 24px; border-radius:24px; font-size:14px; font-weight:600; letter-spacing:0.4px; }
+    .mbtn-off { border:1.5px solid var(--gold); background:white; color:var(--gold); box-shadow: var(--shadow-btn); }
+    .mbtn-off:active { background:var(--gold-glow); }
+    .mbtn-on { border:1.5px solid var(--success); background:var(--success); color:white; box-shadow: 0 2px 8px rgba(45,106,79,0.2); }
+    .meta { text-align:center; font-size:0.75rem; color:var(--ink-faint); font-style:italic; padding:8px 0 0; opacity:0.5; }
+    .counter { text-align:center; font-size:14px; color:var(--ink-faint); margin-bottom:10px; }
+
+    /* QUIZ / WRITE CARD */
+    .qcard {
+      background:white; border-radius:var(--radius); padding:26px 20px; margin:0 20px 16px;
+      text-align:center; box-shadow: var(--shadow-card);
+    }
+    .qlabel { font-size:0.75rem; color:var(--gold); letter-spacing:2.5px; text-transform:uppercase; margin-bottom:14px; font-weight:600; }
+    .qd-ar { font-family:var(--arabic); font-size:2.75rem; direction:rtl; color:var(--ink); line-height:1.3; }
+    .qd-fr { font-size:1.5rem; font-style:italic; color:var(--ink); }
+    .opts { display:flex; flex-direction:column; gap:8px; padding:0 20px; }
+    .ob {
+      width:100%; padding:13px 14px; border-radius:var(--radius-sm); background:white;
+      border:1.5px solid var(--cream-dark); text-align:center; transition:all 0.2s;
+      box-shadow: var(--shadow-btn);
+    }
+    .ob:active { background:var(--cream); }
+    .ob .oa { font-family:var(--arabic); font-size:1.25rem; color:var(--ink); direction:rtl; margin-bottom:3px; }
+    .ob .ol { font-size:1rem; color:var(--ink-light); font-weight:500; }
+    .ob.ok { background:var(--success); border-color:var(--success); box-shadow:0 2px 8px rgba(45,106,79,0.2); }
+    .ob.ok .ol, .ob.ok .oa { color:white; }
+    .ob.ko { background:var(--error); border-color:var(--error); box-shadow:0 2px 8px rgba(155,34,38,0.2); }
+    .ob.ko .ol, .ob.ko .oa { color:white; }
+    .ss { text-align:center; font-size:14px; color:var(--ink-faint); margin-bottom:12px; }
+
+    /* WRITE INPUT */
+    .wi {
+      width:100%; padding:14px 16px; border-radius:var(--radius-sm); border:1.5px solid var(--cream-dark);
+      background:white; font-size:1.125rem; color:var(--ink); text-align:center; outline:none;
+      transition:border-color 0.2s, box-shadow 0.2s;
+      box-shadow: var(--shadow-btn);
+    }
+    .wi:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,134,11,0.08); }
+    .wi.ok { border-color:var(--success); background:rgba(45,106,79,0.03); box-shadow:0 0 0 3px rgba(45,106,79,0.08); }
+    .wi.ko { border-color:var(--error); background:rgba(155,34,38,0.03); box-shadow:0 0 0 3px rgba(155,34,38,0.08); }
+    .wbtn {
+      display:block; margin:12px auto 0; padding:12px 32px; border-radius:24px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color:white; font-size:0.9375rem; font-weight:600; letter-spacing:0.5px;
+      box-shadow: 0 3px 12px rgba(184,134,11,0.25);
+    }
+    .wbtn:disabled { opacity:0.3; box-shadow:none; }
+    .wfb { margin-top:12px; padding:12px 14px; border-radius:var(--radius-sm); text-align:center; font-size:0.9375rem; animation:fadeUp 0.25s ease; }
+    .wfb-ok { background:rgba(45,106,79,0.06); border:1px solid rgba(45,106,79,0.12); color:var(--success); }
+    .wfb-ko { background:rgba(155,34,38,0.06); border:1px solid rgba(155,34,38,0.12); color:var(--error); }
+
+    /* ============================================ */
+    /* MATCH — EQUAL HEIGHT BOXES                  */
+    /* ============================================ */
+    .mg { display:flex; gap:10px; padding:0 14px; }
+    .mc { flex:1; display:flex; flex-direction:column; gap:6px; }
+    .mb {
+      /* EQUAL HEIGHT — flex:1 makes all boxes same height */
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding:10px 6px; border-radius:var(--radius-sm); border:1.5px solid var(--cream-dark);
+      background:white; text-align:center; transition:all 0.2s;
+      box-shadow: var(--shadow-btn);
+      min-height: 56px;
+    }
+    .mb:active { background:var(--cream); }
+    .mb.sel { border-color:var(--gold); background:var(--gold-glow); box-shadow:0 0 0 3px rgba(184,134,11,0.06); }
+    .mb.mat { border-color:var(--success); background:rgba(45,106,79,0.04); opacity:0.4; box-shadow:none; }
+    .mb.wrg { border-color:var(--error); background:rgba(155,34,38,0.04); box-shadow:0 0 0 3px rgba(155,34,38,0.06); }
+    .mb-ar { font-family:var(--arabic); font-size:1.25rem; color:var(--ink); direction:rtl; line-height:1.3; }
+    .mb-fr { font-size:14px; color:var(--ink-light); font-weight:500; line-height:1.3; }
+    .timer-d { text-align:center; margin-bottom:14px; }
+    .timer-v { font-size:2rem; font-weight:600; color:var(--gold); letter-spacing:1px; }
+    .done { text-align:center; padding:36px 20px; }
+    .done .em { font-size:2.5rem; margin-bottom:14px; }
+    .done p { font-size:1.375rem; color:var(--ink); font-weight:600; }
+    .nrb {
+      padding:11px 30px; border-radius:24px; border:1.5px solid var(--gold);
+      background:var(--gold-glow); color:var(--gold); font-size:1rem; font-weight:600; margin-top:16px;
+    }
+
+    /* CATEGORIES */
+    .csec { padding:0 20px 16px; }
+    .ctitle { font-size:1rem; font-weight:600; color:var(--gold); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+    .cgrid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+    .ci {
+      background:white; border-radius:var(--radius-sm); padding:11px 8px;
+      text-align:center; border:1px solid var(--cream-dark); cursor:pointer;
+      transition:all 0.2s; box-shadow: var(--shadow-btn);
+    }
+    .ci:active { border-color:var(--gold); transform:scale(0.97); }
+    .ci-ar { font-family:var(--arabic); font-size:1.125rem; color:var(--ink); direction:rtl; }
+    .ci-fr { font-size:0.75rem; color:var(--ink-faint); margin-top:3px; line-height:1.3; }
+
+    /* PROGRESS */
+    .sg { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 20px; margin-bottom:20px; }
+    .sc {
+      background:white; border-radius:14px; padding:18px 12px;
+      text-align:center; box-shadow: var(--shadow-card); border:none;
+    }
+    .sv { font-size:2.125rem; font-weight:700; color:var(--gold); line-height:1; }
+    .ssub { font-size:0.75rem; color:var(--ink-faint); margin-top:2px; }
+    .slab { font-size:0.8125rem; color:var(--ink-light); margin-top:4px; font-weight:600; }
+    .psec { padding:0 20px; margin-bottom:20px; }
+    .pbar { height:6px; border-radius:3px; background:var(--cream-dark); overflow:hidden; margin-top:8px; }
+    .pfill { height:100%; border-radius:3px; background:linear-gradient(90deg, var(--gold), var(--gold-light)); transition:width 0.6s ease; }
+    .dlist { padding:0 20px 8px; }
+    .dlist h3 { font-size:1rem; font-weight:600; color:var(--ink); margin-bottom:10px; }
+    .di {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 14px; background:white; border-radius:var(--radius-sm);
+      margin-bottom:6px; box-shadow: var(--shadow-btn); border: none;
+    }
+    .rst { text-align:center; padding:24px 20px; }
+    .rstb { padding:10px 24px; border-radius:20px; border:1px solid var(--cream-dark); background:white; color:var(--ink-faint); font-size:0.8125rem; }
+    .empty { text-align:center; padding:40px 20px; color:var(--ink-faint); font-size:14px; }
+
+    /* SR bar in progress */
+    .sr-bar { display:flex; gap:2px; height:30px; border-radius:8px; overflow:hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); }
+    .sr-seg { display:flex; align-items:center; justify-content:center; font-size:0.6875rem; color:white; font-weight:600; min-width:20px; transition:width 0.5s ease; }
+    .sr-legend { display:flex; justify-content:space-between; margin-top:6px; font-size:0.625rem; color:var(--ink-faint); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+    
+
+     to{opacity:1;transform:translateX(0)} }
+
+    /* CONFETTI */
+    .confetti-container { position:fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:999; overflow:hidden; }
+    .confetti-piece {
+      position:absolute; width:8px; height:8px; top:-10px;
+      animation: confettiFall 2.5s ease-in forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg) scale(1); opacity:1; }
+      80% { opacity:1; }
+      100% { transform: translateY(100vh) rotate(720deg) scale(0.3); opacity:0; }
+    }
+
+    /* GLOW on correct */
+    .glow-success { animation: glowGreen 0.6s ease; }
+    @keyframes glowGreen { 0%{box-shadow:0 0 0 0 rgba(45,106,79,0.4)} 50%{box-shadow:0 0 20px 8px rgba(45,106,79,0.15)} 100%{box-shadow:var(--shadow-card)} }
+    .glow-gold { animation: glowGold 0.8s ease; }
+    @keyframes glowGold { 0%{box-shadow:0 0 0 0 rgba(184,134,11,0.4)} 50%{box-shadow:0 0 24px 10px rgba(184,134,11,0.2)} 100%{box-shadow:var(--shadow-card)} }
+
+    /* MILESTONE BANNER */
+    .milestone {
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0);
+      background:white; border-radius:20px; padding:32px 40px; text-align:center;
+      box-shadow:0 8px 40px rgba(0,0,0,0.12), 0 0 0 2px var(--gold);
+      z-index:1000; animation: milestoneIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    .milestone .ms-emoji { font-size:3rem; margin-bottom:14px; }
+    .milestone .ms-text { font-size:1.25rem; font-weight:600; color:var(--ink); }
+    .milestone .ms-sub { font-size:0.8125rem; color:var(--gold); margin-top:4px; }
+    /* SETTINGS */
+    .set-section { padding:0 20px 20px; }
+    .set-label { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:10px; }
+    .set-row { display:flex; align-items:center; justify-content:space-between; background:white; border-radius:14px; padding:16px 18px; margin-bottom:10px; box-shadow:var(--shadow-btn); }
+    .set-row span { font-size:0.9375rem; color:var(--ink-light); }
+    .toggle { width:52px; height:28px; border-radius:14px; background:var(--cream-dark); position:relative; cursor:pointer; transition:background 0.3s; border:none; }
+    .toggle.on { background:var(--gold); }
+    .toggle::after { content:''; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:white; transition:transform 0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+    .toggle.on::after { transform:translateX(24px); }
+    .size-slider { width:100%; -webkit-appearance:none; appearance:none; height:6px; border-radius:3px; background:var(--cream-dark); outline:none; margin:8px 0; }
+    .size-slider::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:var(--gold); cursor:pointer; box-shadow:0 2px 6px rgba(184,134,11,0.3); }
+    .size-val { font-size:0.9375rem; font-weight:600; color:var(--gold); min-width:40px; text-align:right; }
+    .size-labels { display:flex; justify-content:space-between; font-size:0.6875rem; color:var(--ink-faint); margin-top:-4px; }
+
+    /* DARK MODE */
+    body.dark {
+      --cream: #121212; --cream-dark: #1E1E1E;
+      --ink: #F0ECE4; --ink-light: #C8C0B4; --ink-faint: #8A8278;
+      --gold: #D4A84B; --gold-light: #E8C86A; --gold-glow: rgba(212,168,75,0.1);
+      --gold-border: rgba(212,168,75,0.15);
+      --shadow-card: 0 2px 16px rgba(0,0,0,0.2), 0 0 0 1px var(--gold-border);
+      --shadow-btn: 0 1px 4px rgba(0,0,0,0.15);
+    }
+    body.dark .card, body.dark .qcard, body.dark .ob, body.dark .mb, body.dark .wi,
+    body.dark .sc, body.dark .ci, body.dark .di, body.dark .set-row { background:#1E1E1E; }
+    body.dark .tab-bar { background:rgba(18,18,18,0.96); border-top-color:rgba(212,168,75,0.1); }
+    body.dark .toggle { background:#2A2A2A; }
+    body.dark .toggle.on { background:var(--gold); }
+    body.dark .nbtn { background:#1E1E1E; border-color:#2A2A2A; }
+    body.dark .mbtn-off { background:#1E1E1E; border-color:var(--gold); color:var(--gold); }
+    body.dark .mbtn-on { background:var(--success); border-color:var(--success); color:white; }
+    body.dark .ob.ok { background:var(--success); }
+    body.dark .ob.ko { background:var(--error); }
+    body.dark .pl { background:rgba(30,30,30,0.7); border-color:#2A2A2A; }
+    body.dark .size-slider { background:#2A2A2A; }
+    body.dark .milestone { background:#1E1E1E; }
+    body.dark .rstb { background:#1E1E1E; border-color:#2A2A2A; color:var(--ink-faint); }
+    body.dark .nrb { background:rgba(212,168,75,0.1); }
+    body.dark .wbtn { background:linear-gradient(135deg, var(--gold), var(--gold-light)); }
+    body.dark .wfb-ok { background:rgba(45,106,79,0.12); border-color:rgba(45,106,79,0.2); }
+    body.dark .wfb-ko { background:rgba(155,34,38,0.12); border-color:rgba(155,34,38,0.2); }
+    body.dark .card-front, body.dark .card-back { background:#1E1E1E; }
+
+    /* FONT SCALE via root font-size */
+
+    /* INFO MODAL */
+    .info-btn { position:absolute; top:16px; right:16px; width:28px; height:28px; border-radius:50%; background:var(--gold-glow); border:1px solid var(--gold-border); color:var(--gold); font-size:0.875rem; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:10; }
+    .info-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:900; display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeUp 0.2s ease; }
+    .info-box { background:var(--cream); border-radius:20px; padding:28px 24px; max-width:400px; width:100%; box-shadow:0 8px 40px rgba(0,0,0,0.15); position:relative; max-height:80vh; overflow-y:auto; }
+    .info-box h2 { font-size:1.25rem; color:var(--ink); margin-bottom:14px; }
+    .info-box p { font-size:0.875rem; color:var(--ink-light); line-height:1.6; margin-bottom:10px; }
+    .info-close { position:absolute; top:12px; right:14px; background:none; border:none; font-size:1.25rem; color:var(--ink-faint); cursor:pointer; }
+    body.dark .info-box { background:#1E1E1E; }
+    body.dark .info-overlay { background:rgba(0,0,0,0.6); }
+
+    @keyframes milestoneIn { from{transform:translate(-50%,-50%) scale(0)} to{transform:translate(-50%,-50%) scale(1)} }
+
+    /* CARD FADE ANIMATION */
+    .card.fade-in { animation: cardFadeIn 0.3s ease; }
+    @keyframes cardFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .card.slide-left { animation: slideL 0.25s ease; }
+    .card.slide-right { animation: slideR 0.25s ease; }
+    @keyframes slideL { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes slideR { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
+
+    /* ===== V6 ADDITIONS ===== */
+
+    /* ARC PROGRESS (global header) */
+    .arc-wrap { display:flex; justify-content:center; padding:8px 0 4px; }
+    .arc-svg { width:80px; height:44px; }
+    .arc-bg { fill:none; stroke:var(--cream-dark); stroke-width:6; }
+    .arc-fill { fill:none; stroke:var(--gold); stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset 0.6s ease; }
+    .arc-text { font-family:var(--heading); font-size:0.6875rem; fill:var(--ink); text-anchor:middle; font-weight:700; }
+    .arc-sub { font-family:var(--heading); font-size:0.375rem; fill:var(--ink-faint); text-anchor:middle; }
+    body.dark .arc-bg { stroke:#333; }
+    body.dark .arc-text { fill:#F0E6D3; }
+
+    /* ARABESQUE — disabled */
+
+    /* SEARCH BAR */
+    .search-bar { padding:0 20px 8px; }
+    .search-input { width:100%; padding:10px 14px 10px 36px; border:1.5px solid var(--cream-dark); border-radius:10px; font-family:var(--heading); font-size:0.8125rem; background:var(--cream); color:var(--ink); outline:none; transition:border 0.2s; box-sizing:border-box; }
+    .search-input:focus { border-color:var(--gold); }
+    .search-input::placeholder { color:var(--ink-faint); }
+    .search-wrap { position:relative; }
+    .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.875rem; color:var(--ink-faint); pointer-events:none; }
+    .search-results { padding:0 20px; }
+    .search-item { display:flex; align-items:center; gap:12px; padding:10px 14px; margin-bottom:6px; background:white; border-radius:10px; border:1px solid var(--cream-dark); cursor:pointer; }
+    .search-item:active { background:var(--cream-dark); }
+    body.dark .search-input { background:#1E1E1E; border-color:#333; color:#F0E6D3; }
+    body.dark .search-item { background:#1E1E1E; border-color:#333; }
+
+    /* STREAK */
+    .streak-bar { display:flex; align-items:center; justify-content:center; gap:8px; padding:6px 0; }
+    .streak-flame { font-size:1.25rem; }
+    .streak-num { font-family:var(--heading); font-size:1.125rem; font-weight:700; color:var(--gold); }
+    .streak-label { font-size:0.6875rem; color:var(--ink-faint); }
+    .streak-dots { display:flex; gap:4px; margin-top:2px; }
+    .streak-dot { width:8px; height:8px; border-radius:50%; background:var(--cream-dark); }
+    .streak-dot.active { background:var(--gold); }
+    .streak-dot.today { background:var(--success); box-shadow:0 0 4px var(--success); }
+
+    /* WEEKLY CHART */
+    .week-chart { padding:0 20px; margin-bottom:16px; }
+    .week-bars { display:flex; justify-content:space-between; align-items:flex-end; height:80px; gap:4px; }
+    .week-bar-wrap { display:flex; flex-direction:column; align-items:center; flex:1; gap:4px; }
+    .week-bar { width:100%; border-radius:4px 4px 0 0; background:var(--gold); min-height:2px; transition:height 0.3s ease; opacity:0.8; }
+    .week-bar.today { opacity:1; box-shadow:0 0 6px rgba(200,169,110,0.4); }
+    .week-day { font-size:0.5625rem; color:var(--ink-faint); font-weight:600; }
+    .week-count { font-size:0.5rem; color:var(--ink-faint); }
+    body.dark .week-bar { opacity:0.9; }
+
+    /* AUDIO BUTTON */
+    .audio-btn { background:none; border:1px solid var(--gold-light); border-radius:50%; width:28px; height:28px; font-size:0.8rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; justify-content:center; margin:2px 0; }
+    .audio-btn:active { transform:scale(0.9); }
+    .audio-btn.playing { background:var(--gold-glow); border-color:var(--gold); animation:audioPulse 0.8s ease infinite; }
+    @keyframes audioPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    body.dark .audio-btn { border-color:rgba(200,169,110,0.3); }
+    body.dark .audio-btn.playing { background:rgba(200,169,110,0.15); }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="page-scroll">
+      <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
+      <div id="page-learn" class="page active"></div>
+      <div id="page-review" class="page"></div>
+      <div id="page-quiz" class="page"></div>
+      <div id="page-write" class="page"></div>
+      <div id="page-match" class="page"></div>
+      <div id="page-categories" class="page"></div>
+      <div id="page-progress" class="page"></div>
+      <div id="page-settings" class="page"></div>
+    </div>
+    <nav class="tab-bar" id="tab-bar"></nav>
+  </div>
+  <script>
+const N=[
+{id:1,ar:"ٱلرَّحْمَـٰنُ",t:"Ar-Rahmân",fr:"Le Tout Miséricordieux",c:"mi"},
+{id:2,ar:"ٱلرَّحِيمُ",t:"Ar-Rahîm",fr:"Le Très Miséricordieux",c:"mi"},
+{id:3,ar:"ٱلْمَلِكُ",t:"Al-Malik",fr:"Le Souverain",c:"pu"},
+{id:4,ar:"ٱلْقُدُّوسُ",t:"Al-Quddûs",fr:"Le Très Saint",c:"ma"},
+{id:5,ar:"ٱلسَّلَامُ",t:"As-Salâm",fr:"La Source de la Paix",c:"mi"},
+{id:6,ar:"ٱلْمُؤْمِنُ",t:"Al-Mu'min",fr:"Le Rassurant",c:"mi"},
+{id:7,ar:"ٱلْمُهَيْمِنُ",t:"Al-Muhaymin",fr:"Le Protecteur",c:"pu"},
+{id:8,ar:"ٱلْعَزِيزُ",t:"Al-'Azîz",fr:"Le Tout Puissant",c:"pu"},
+{id:9,ar:"ٱلْجَبَّارُ",t:"Al-Jabbâr",fr:"Le Contraignant",c:"pu"},
+{id:10,ar:"ٱلْمُتَكَبِّرُ",t:"Al-Mutakabbir",fr:"L'Orgueilleux Suprême",c:"ma"},
+{id:11,ar:"ٱلْخَالِقُ",t:"Al-Khâliq",fr:"Le Créateur",c:"cr"},
+{id:12,ar:"ٱلْبَارِئُ",t:"Al-Bâri'",fr:"Le Producteur",c:"cr"},
+{id:13,ar:"ٱلْمُصَوِّرُ",t:"Al-Musawwir",fr:"Le Formateur",c:"cr"},
+{id:14,ar:"ٱلْغَفَّارُ",t:"Al-Ghaffâr",fr:"L'Infini Pardonneur",c:"mi"},
+{id:15,ar:"ٱلْقَهَّارُ",t:"Al-Qahhâr",fr:"Le Dominateur Suprême",c:"pu"},
+{id:16,ar:"ٱلْوَهَّابُ",t:"Al-Wahhâb",fr:"Le Donateur Suprême",c:"ge"},
+{id:17,ar:"ٱلرَّزَّاقُ",t:"Ar-Razzâq",fr:"Celui qui pourvoit",c:"ge"},
+{id:18,ar:"ٱلْفَتَّاحُ",t:"Al-Fattâh",fr:"L'Ouvreur",c:"sa"},
+{id:19,ar:"ٱلْعَلِيمُ",t:"Al-'Alîm",fr:"L'Omniscient",c:"sa"},
+{id:20,ar:"ٱلْقَابِضُ",t:"Al-Qâbid",fr:"Celui qui retient",c:"pu"},
+{id:21,ar:"ٱلْبَاسِطُ",t:"Al-Bâsit",fr:"Celui qui étend",c:"ge"},
+{id:22,ar:"ٱلْخَافِضُ",t:"Al-Khâfid",fr:"Celui qui abaisse",c:"pu"},
+{id:23,ar:"ٱلرَّافِعُ",t:"Ar-Râfi'",fr:"Celui qui élève",c:"pu"},
+{id:24,ar:"ٱلْمُعِزُّ",t:"Al-Mu'izz",fr:"Celui qui honore",c:"pu"},
+{id:25,ar:"ٱلْمُذِلُّ",t:"Al-Mudhill",fr:"Celui qui humilie",c:"ju"},
+{id:26,ar:"ٱلسَّمِيعُ",t:"As-Samî'",fr:"L'Audient",c:"sa"},
+{id:27,ar:"ٱلْبَصِيرُ",t:"Al-Basîr",fr:"Le Clairvoyant",c:"sa"},
+{id:28,ar:"ٱلْحَكَمُ",t:"Al-Hakam",fr:"Le Juge",c:"ju"},
+{id:29,ar:"ٱلْعَدْلُ",t:"Al-'Adl",fr:"Le Juste",c:"ju"},
+{id:30,ar:"ٱللَّطِيفُ",t:"Al-Latîf",fr:"Le Subtil",c:"mi"},
+{id:31,ar:"ٱلْخَبِيرُ",t:"Al-Khabîr",fr:"Le Bien-Informé",c:"sa"},
+{id:32,ar:"ٱلْحَلِيمُ",t:"Al-Halîm",fr:"L'Indulgent",c:"mi"},
+{id:33,ar:"ٱلْعَظِيمُ",t:"Al-'Azîm",fr:"Le Sublime",c:"ma"},
+{id:34,ar:"ٱلْغَفُورُ",t:"Al-Ghafûr",fr:"Le Pardonneur",c:"mi"},
+{id:35,ar:"ٱلشَّكُورُ",t:"Ash-Shakûr",fr:"Le Reconnaissant",c:"mi"},
+{id:36,ar:"ٱلْعَلِيُّ",t:"Al-'Aliyy",fr:"Le Très Haut",c:"ma"},
+{id:37,ar:"ٱلْكَبِيرُ",t:"Al-Kabîr",fr:"Le Grand",c:"ma"},
+{id:38,ar:"ٱلْحَفِيظُ",t:"Al-Hafîz",fr:"Le Gardien",c:"pu"},
+{id:39,ar:"ٱلْمُقِيتُ",t:"Al-Muqît",fr:"Le Nourricier",c:"ge"},
+{id:40,ar:"ٱلْحَسِيبُ",t:"Al-Hasîb",fr:"Celui qui tient compte",c:"ju"},
+{id:41,ar:"ٱلْجَلِيلُ",t:"Al-Jalîl",fr:"Le Majestueux",c:"ma"},
+{id:42,ar:"ٱلْكَرِيمُ",t:"Al-Karîm",fr:"Le Généreux",c:"ge"},
+{id:43,ar:"ٱلرَّقِيبُ",t:"Ar-Raqîb",fr:"Le Vigilant",c:"sa"},
+{id:44,ar:"ٱلْمُجِيبُ",t:"Al-Mujîb",fr:"Celui qui exauce",c:"mi"},
+{id:45,ar:"ٱلْوَاسِعُ",t:"Al-Wâsi'",fr:"L'Immense",c:"ma"},
+{id:46,ar:"ٱلْحَكِيمُ",t:"Al-Hakîm",fr:"Le Sage",c:"sa"},
+{id:47,ar:"ٱلْوَدُودُ",t:"Al-Wadûd",fr:"Le Bien-Aimant",c:"mi"},
+{id:48,ar:"ٱلْمَجِيدُ",t:"Al-Majîd",fr:"Le Glorieux",c:"ma"},
+{id:49,ar:"ٱلْبَاعِثُ",t:"Al-Bâ'ith",fr:"Celui qui ressuscite",c:"pu"},
+{id:50,ar:"ٱلشَّهِيدُ",t:"Ash-Shahîd",fr:"Le Témoin",c:"sa"},
+{id:51,ar:"ٱلْحَقُّ",t:"Al-Haqq",fr:"La Vérité",c:"ma"},
+{id:52,ar:"ٱلْوَكِيلُ",t:"Al-Wakîl",fr:"Le Garant",c:"pu"},
+{id:53,ar:"ٱلْقَوِيُّ",t:"Al-Qawiyy",fr:"Le Fort",c:"pu"},
+{id:54,ar:"ٱلْمَتِينُ",t:"Al-Matîn",fr:"Le Ferme",c:"pu"},
+{id:55,ar:"ٱلْوَلِيُّ",t:"Al-Waliyy",fr:"Le Protecteur",c:"mi"},
+{id:56,ar:"ٱلْحَمِيدُ",t:"Al-Hamîd",fr:"Le Louable",c:"ma"},
+{id:57,ar:"ٱلْمُحْصِي",t:"Al-Muhsî",fr:"Celui qui dénombre",c:"sa"},
+{id:58,ar:"ٱلْمُبْدِئُ",t:"Al-Mubdi'",fr:"Celui qui commence",c:"cr"},
+{id:59,ar:"ٱلْمُعِيدُ",t:"Al-Mu'îd",fr:"Celui qui reproduit",c:"cr"},
+{id:60,ar:"ٱلْمُحْيِي",t:"Al-Muhyî",fr:"Celui qui donne la vie",c:"cr"},
+{id:61,ar:"ٱلْمُمِيتُ",t:"Al-Mumît",fr:"Celui qui donne la mort",c:"pu"},
+{id:62,ar:"ٱلْحَيُّ",t:"Al-Hayy",fr:"Le Vivant",c:"ma"},
+{id:63,ar:"ٱلْقَيُّومُ",t:"Al-Qayyûm",fr:"Celui qui subsiste par Lui-même",c:"ma"},
+{id:64,ar:"ٱلْوَاجِدُ",t:"Al-Wâjid",fr:"Celui qui trouve",c:"sa"},
+{id:65,ar:"ٱلْمَاجِدُ",t:"Al-Mâjid",fr:"Le Noble",c:"ma"},
+{id:66,ar:"ٱلْوَاحِدُ",t:"Al-Wâhid",fr:"L'Unique",c:"ma"},
+{id:67,ar:"ٱلْأَحَدُ",t:"Al-Ahad",fr:"Le Seul",c:"ma"},
+{id:68,ar:"ٱلصَّمَدُ",t:"As-Samad",fr:"L'Absolu",c:"ma"},
+{id:69,ar:"ٱلْقَادِرُ",t:"Al-Qâdir",fr:"Le Capable",c:"pu"},
+{id:70,ar:"ٱلْمُقْتَدِرُ",t:"Al-Muqtadir",fr:"Le Tout Déterminant",c:"pu"},
+{id:71,ar:"ٱلْمُقَدِّمُ",t:"Al-Muqaddim",fr:"Celui qui met en avant",c:"pu"},
+{id:72,ar:"ٱلْمُؤَخِّرُ",t:"Al-Mu'akhkhir",fr:"Celui qui retarde",c:"pu"},
+{id:73,ar:"ٱلْأَوَّلُ",t:"Al-Awwal",fr:"Le Premier",c:"ma"},
+{id:74,ar:"ٱلْآخِرُ",t:"Al-Âkhir",fr:"Le Dernier",c:"ma"},
+{id:75,ar:"ٱلظَّاهِرُ",t:"Az-Zâhir",fr:"L'Apparent",c:"ma"},
+{id:76,ar:"ٱلْبَاطِنُ",t:"Al-Bâtin",fr:"Le Caché",c:"ma"},
+{id:77,ar:"ٱلْوَالِي",t:"Al-Wâlî",fr:"Le Maître",c:"pu"},
+{id:78,ar:"ٱلْمُتَعَالِي",t:"Al-Muta'âlî",fr:"Le Très Élevé",c:"ma"},
+{id:79,ar:"ٱلْبَرُّ",t:"Al-Barr",fr:"Le Charitable",c:"ge"},
+{id:80,ar:"ٱلتَّوَّابُ",t:"At-Tawwâb",fr:"Celui qui accepte le repentir",c:"mi"},
+{id:81,ar:"ٱلْمُنْتَقِمُ",t:"Al-Muntaqim",fr:"Le Vengeur",c:"ju"},
+{id:82,ar:"ٱلْعَفُوُّ",t:"Al-'Afuww",fr:"L'Indulgent",c:"mi"},
+{id:83,ar:"ٱلرَّؤُوفُ",t:"Ar-Ra'ûf",fr:"Le Compatissant",c:"mi"},
+{id:84,ar:"مَالِكُ ٱلْمُلْكِ",t:"Mâlik-ul-Mulk",fr:"Possesseur du Royaume",c:"pu"},
+{id:85,ar:"ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ",t:"Dhul-Jalâli wal-Ikrâm",fr:"Plein de Majesté et de Munificence",c:"ma"},
+{id:86,ar:"ٱلْمُقْسِطُ",t:"Al-Muqsit",fr:"L'Équitable",c:"ju"},
+{id:87,ar:"ٱلْجَامِعُ",t:"Al-Jâmi'",fr:"Celui qui rassemble",c:"pu"},
+{id:88,ar:"ٱلْغَنِيُّ",t:"Al-Ghaniyy",fr:"Le Riche",c:"ma"},
+{id:89,ar:"ٱلْمُغْنِي",t:"Al-Mughnî",fr:"Celui qui enrichit",c:"ge"},
+{id:90,ar:"ٱلْمَانِعُ",t:"Al-Mâni'",fr:"Celui qui empêche",c:"pu"},
+{id:91,ar:"ٱلضَّارُّ",t:"Ad-Dârr",fr:"Celui qui nuit",c:"pu"},
+{id:92,ar:"ٱلنَّافِعُ",t:"An-Nâfi'",fr:"Celui qui accorde le profit",c:"ge"},
+{id:93,ar:"ٱلنُّورُ",t:"An-Nûr",fr:"La Lumière",c:"ma"},
+{id:94,ar:"ٱلْهَادِي",t:"Al-Hâdî",fr:"Le Guide",c:"sa"},
+{id:95,ar:"ٱلْبَدِيعُ",t:"Al-Badî'",fr:"Le Créateur Originel",c:"cr"},
+{id:96,ar:"ٱلْبَاقِي",t:"Al-Bâqî",fr:"L'Éternel",c:"ma"},
+{id:97,ar:"ٱلْوَارِثُ",t:"Al-Wârith",fr:"L'Héritier",c:"pu"},
+{id:98,ar:"ٱلرَّشِيدُ",t:"Ar-Rashîd",fr:"Celui qui dirige avec Sagesse",c:"sa"},
+{id:99,ar:"ٱلصَّبُورُ",t:"As-Sabûr",fr:"Le Patient",c:"mi"}
 ];
 
-// Precache audio files 1-99
-for(let i=1;i<=99;i++) ASSETS.push('./audio/'+i+'.mp3');
+const CAT={
+  mi:{l:"Miséricorde & Pardon",i:"🤲"},
+  pu:{l:"Puissance & Souveraineté",i:"⚡"},
+  ma:{l:"Majesté & Grandeur",i:"👑"},
+  sa:{l:"Sagesse & Savoir",i:"📖"},
+  cr:{l:"Création & Vie",i:"🌱"},
+  ge:{l:"Générosité & Subsistance",i:"💎"},
+  ju:{l:"Justice & Jugement",i:"⚖️"}
+};
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
-  );
-});
+const SRI=[0,1,3,7,21], SRL=['Nouveau','En cours','Révision','Acquis','Maîtrisé'];
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
-});
+// STATE
+let mst=new Set(), st={}, sr={}, pg='learn';
+let li=0, lf=false, lfi='all', slideDir='';
+let qm='ar_to_fr', qq=null, qs=null, qn=0, qc=0;
+let wm='ar_to_trans', wq=null, wa=false, wn=0, wc=0;
+let mp=[], mro=[], msl=null, mm=new Set(), mw=null, mt=0, mi=null, mmo='ar_to_fr', mia=false;
+let streak=0, lastActive='', actLog={};
 
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
-  );
-});
+// UTILS
+function sh(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z\s]/g,'').trim();}
+function sim(a,b){if(a===b)return 1;const l=a.length>b.length?a:b,s=a.length>b.length?b:a;if(!l.length)return 1;let m=0;for(let i=0;i<s.length;i++)if(s[i]===l[i])m++;return m/l.length;}
+function ft(s){return(s/60|0)+':'+(s%60+'').padStart(2,'0');}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function save(){try{localStorage.setItem('a-m',JSON.stringify([...mst]));localStorage.setItem('a-s',JSON.stringify(st));localStorage.setItem('a-r',JSON.stringify(sr));localStorage.setItem('a-streak',JSON.stringify({s:streak,d:lastActive}));localStorage.setItem('a-log',JSON.stringify(actLog));}catch(e){}}
+function load(){try{const a=localStorage.getItem('a-m');if(a)mst=new Set(JSON.parse(a));const b=localStorage.getItem('a-s');if(b)st=JSON.parse(b);const c=localStorage.getItem('a-r');if(c)sr=JSON.parse(c);const sk=localStorage.getItem('a-streak');if(sk){const d=JSON.parse(sk);streak=d.s||0;lastActive=d.d||'';}const lg=localStorage.getItem('a-log');if(lg)actLog=JSON.parse(lg);}catch(e){}}
+
+// STREAK
+function updateStreak(){
+  const today=todayStr();
+  if(lastActive===today) return;
+  const yesterday=new Date(Date.now()-864e5).toISOString().slice(0,10);
+  if(lastActive===yesterday){streak++;}
+  else if(lastActive!==today){streak=1;}
+  lastActive=today;
+  save();
+}
+function logActivity(){
+  const today=todayStr();
+  actLog[today]=(actLog[today]||0)+1;
+  updateStreak();
+  save();
+}
+
+// ARC PROGRESS SVG
+function arcSvg(){
+  const pct=Math.round(mst.size/99*100);
+  const r=32,cx=40,cy=38;
+  const circ=Math.PI*r;
+  const offset=circ-(pct/100*circ);
+  return `<div class="arc-wrap"><svg class="arc-svg" viewBox="0 0 80 44">
+    <path class="arc-bg" d="M8,38 A32,32 0 0,1 72,38"/>
+    <path class="arc-fill" d="M8,38 A32,32 0 0,1 72,38" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+    <text class="arc-text" x="40" y="32">${mst.size}/99</text>
+    <text class="arc-sub" x="40" y="42">${pct}%</text>
+  </svg></div>`;
+}
+
+// SEARCH
+let searchOpen=false, searchQ='';
+function renderSearch(){
+  if(!searchOpen) return '';
+  let h='<div class="search-bar"><div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-inp" type="text" placeholder="Rechercher un nom..." value="'+searchQ+'" oninput="doSearch(this.value)"></div></div>';
+  h+='<div id="search-res">';
+  h+=searchResults();
+  h+='</div>';
+  return h;
+}
+function searchResults(){
+  if(searchQ.length<1) return '';
+  const q=norm(searchQ);
+  const results=N.filter(n=>norm(n.fr).includes(q)||norm(n.t).includes(q)||n.ar.includes(searchQ)||(''+n.id)===searchQ.trim());
+  if(!results.length) return '<div style="text-align:center;padding:16px;color:var(--ink-faint);font-size:0.8125rem">Aucun résultat</div>';
+  let h='<div class="search-results">';
+  results.slice(0,8).forEach(n=>{
+    h+=`<div class="search-item" onclick="searchOpen=false;searchQ='';goN(${n.id})">
+      <span style="font-family:var(--arabic);font-size:1.125rem;direction:rtl">${n.ar}</span>
+      <span style="flex:1"><b style="color:var(--gold);font-size:0.8125rem">${n.t}</b><br><span style="font-size:0.75rem;color:var(--ink-light)">${n.fr}</span></span>
+      <span style="font-size:0.6875rem;color:var(--ink-faint)">N°${n.id}</span>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function doSearch(v){
+  searchQ=v;
+  const el=document.getElementById('search-res');
+  if(el) el.innerHTML=searchResults();
+}
+
+// WEEKLY CHART
+function weekChart(){
+  const days=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const today=new Date();
+  const dow=today.getDay()||7;
+  let data=[];
+  for(let i=1;i<=7;i++){
+    const d=new Date(today);
+    d.setDate(today.getDate()-(dow-i));
+    const key=d.toISOString().slice(0,10);
+    data.push({day:days[i-1],count:actLog[key]||0,isToday:key===todayStr()});
+  }
+  const max=Math.max(...data.map(d=>d.count),1);
+  let h='<div class="week-chart"><p style="font-size:0.75rem;font-weight:600;color:var(--ink-light);margin-bottom:8px">Activité cette semaine</p><div class="week-bars">';
+  data.forEach(d=>{
+    const height=Math.max(d.count/max*60,2);
+    h+=`<div class="week-bar-wrap"><div class="week-count">${d.count||''}</div><div class="week-bar${d.isToday?' today':''}" style="height:${height}px"></div><div class="week-day">${d.day}</div></div>`;
+  });
+  h+='</div></div>';
+  return h;
+}
+
+// STREAK DISPLAY
+function streakHtml(){
+  if(streak<=0) return '';
+  const today=todayStr();
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(Date.now()-i*864e5).toISOString().slice(0,10);
+    days.push({d,active:!!actLog[d],isToday:d===today});
+  }
+  let h='<div class="streak-bar"><span class="streak-flame">🔥</span><span class="streak-num">'+streak+'</span><span class="streak-label">jour'+(streak>1?'s':'')+'</span></div>';
+  h+='<div style="display:flex;justify-content:center;margin-bottom:8px"><div class="streak-dots">';
+  days.forEach(d=>{h+=`<div class="streak-dot${d.active?' active':''}${d.isToday?' today':''}"></div>`;});
+  h+='</div></div>';
+  return h;
+}
+function gsr(id){if(!sr[id])sr[id]={b:0,n:0};return sr[id];}
+function srUp(id){const s=gsr(id);s.b=Math.min(s.b+1,4);s.n=Date.now()+SRI[s.b]*864e5;save();}
+function srDn(id){const s=gsr(id);s.b=Math.max(s.b-1,0);s.n=Date.now();save();}
+function due(){return N.filter(n=>gsr(n.id).n<=Date.now());}
+function smart(){const d=due();return d.length?d[0|Math.random()*d.length]:N[0|Math.random()*N.length];}
+function gfn(){if(lfi==='mastered')return N.filter(n=>mst.has(n.id));if(lfi==='remaining')return N.filter(n=>!mst.has(n.id));if(lfi==='due')return due();return N;}
+function dv(w){return`<div class="dv" style="width:${w||'30%'}"><i></i></div>`;}
+function hd(t,s,p){return`<div class="ph" style="position:relative"><h1>${t}</h1>${s?`<p class="sub">${s}</p>`:''}${p?`<button class="info-btn" onclick="showInfo('${p}')">?</button>`:''}${dv()}</div>`;}
+
+// Conditional transliteration display
+function trlit(text){return showTranslit?text:'';}
+function trlitHtml(text,cls){return showTranslit?`<div class="${cls}">${text}</div>`:'';}
+
+// =============================================
+// AUDIO SYSTEM
+// =============================================
+// Priority: 1) local mp3 file  2) Web Speech API fallback
+// To add real tajwid audio: place files as audio/1.mp3, audio/2.mp3, etc.
+let audioPlaying=false;
+function playName(id){
+  if(audioPlaying) return;
+  const n=N.find(x=>x.id===id);
+  if(!n) return;
+  audioPlaying=true;
+  const btn=document.getElementById('audio-btn-'+id);
+  if(btn){btn.classList.add('playing');btn.textContent='🔊';}
+  // Try mp3 first
+  const audio=new Audio('audio/'+id+'.mp3?v=7');
+  audio.addEventListener('canplaythrough',()=>{
+    audio.play();
+    audio.onended=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
+  });
+  audio.addEventListener('error',()=>{
+    // Fallback: Web Speech API
+    if('speechSynthesis' in window){
+      const u=new SpeechSynthesisUtterance(n.ar);
+      u.lang='ar-SA';u.rate=0.75;u.pitch=1;
+      u.onend=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
+      u.onerror=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    } else {
+      audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}
+    }
+  });
+}
+function audioBtnHtml(id){
+  return `<button class="audio-btn" id="audio-btn-${id}" onclick="event.stopPropagation();playName(${id})" title="Écouter la prononciation">🔈</button>`;
+}
+
+// TAB BAR
+const TB=[{id:'learn',l:'Apprendre',i:'📖'},{id:'review',l:'Révision',i:'🔁'},{id:'quiz',l:'Quiz',i:'✨'},{id:'write',l:'Écrire',i:'✍️'},{id:'match',l:'Relier',i:'🔗'},{id:'categories',l:'Thèmes',i:'🏷️'},{id:'progress',l:'Progrès',i:'📊'},{id:'settings',l:'Réglages',i:'⚙️'}];
+function rTB(){document.getElementById('tab-bar').innerHTML=TB.map(t=>`<button class="tb${pg===t.id?' a':''}" onclick="sp('${t.id}')"><span class="ti">${t.i}</span><span class="tl">${t.l}</span>${pg===t.id?'<div class="td"></div>':''}</button>`).join('');}
+function sp(id){pg=id;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');rTB();({learn:rL,review:rRev,quiz:rQ,write:rW,match:iM,categories:rC,progress:rP,settings:rS})[id]();}
+
+// =============================================
+// LEARN
+// =============================================
+function rL(){
+  const ns=gfn();if(li>=ns.length)li=0;const n=ns[li];const dc=due().length;
+  const rem=99-mst.size, acq=mst.size;
+  let h=arcSvg()+streakHtml();
+  h+=hd('Apprendre','Mémorise les Noms un par un','learn');
+  h+=`<div style="display:flex;justify-content:flex-end;padding:0 20px 4px"><button onclick="searchOpen=!searchOpen;searchQ='';rL();if(searchOpen){setTimeout(()=>{const i=document.getElementById('search-inp');if(i)i.focus();},50);}" style="background:none;border:1px solid var(--cream-dark);border-radius:8px;padding:5px 12px;font-size:0.75rem;color:var(--ink-faint);cursor:pointer">${searchOpen?'\u2715 Fermer':'\ud83d\udd0d Rechercher'}</button></div>`;
+  h+=renderSearch();
+  if(searchOpen&&searchQ.length>=1){document.getElementById('page-learn').innerHTML=h;const inp=document.getElementById('search-inp');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}return;}
+  h+='<div class="pills">';
+  h+='<button class="pl'+(lfi==='all'?' a':'')+'" onclick="sLF(\'all\')">Tous (99)</button>';
+  h+='<button class="pl'+(lfi==='remaining'?' a':'')+'" onclick="sLF(\'remaining\')">Restants ('+rem+')</button>';
+  h+='<button class="pl'+(lfi==='mastered'?' a':'')+'" onclick="sLF(\'mastered\')">Mémorisés ('+acq+')</button>';
+  h+='<button class="pl'+(lfi==='due'?' a':'')+'" onclick="sLF(\'due\')">À réviser ('+dc+')</button>';
+  h+='</div>';
+  if(!n||!ns.length){h+='<div class="empty">Aucun nom dans cette catégorie</div>';document.getElementById('page-learn').innerHTML=h;return;}
+  const im=mst.has(n.id),s=gsr(n.id),ci=CAT[n.c];
+  h+=`<div class="counter">${li+1} / ${ns.length}</div>`;
+  h+=`<div class="card-wrap"><div class="card ${slideDir?'slide-'+slideDir:'fade-in'}" id="lc" onclick="tF()">`;
+  h+=`<div class="co co-tl"></div><div class="co co-tr"></div><div class="co co-bl"></div><div class="co co-br"></div>`;
+  h+=`<div class="c-num">N\u00b0${n.id} <span class="sr-b sr${s.b}">${SRL[s.b]}</span></div>`;
+  h+=`<div class="c-ar">${n.ar}</div>`;
+  h+=audioBtnHtml(n.id);
+  if(showTranslit)h+=`<div class="c-tr">${n.t}</div>`;
+  if(lf){
+    h+=`<div class="c-fr">${n.fr}</div>`;
+    h+=`<div class="c-cat" style="margin-top:4px">${ci.i} ${ci.l}</div>`;
+    h+=`<button class="mbtn mbtn-off" style="margin-top:4px;font-size:0.7rem;padding:4px 12px" onclick="event.stopPropagation();showDetail(${n.id})">\ud83d\udcd6 En savoir plus</button>`;
+  } else {
+    h+=`<div class="c-hint">Touche pour révéler</div>`;
+  }
+  h+=`</div></div>`;
+  h+=`<div class="ctrls"><button class="nbtn" onclick="lG(-1)">\u2039</button><button class="mbtn ${im?'mbtn-on':'mbtn-off'}" onclick="tM(${n.id})">${im?'\u2713 Mémorisé':'Je le sais'}</button><button class="nbtn" onclick="lG(1)">\u203a</button></div>`;
+  h+=`<div class="meta">\u2190 Swipe pour naviguer \u2192</div>`;
+  document.getElementById('page-learn').innerHTML=h;
+  const c=document.getElementById('lc');if(c){let tx=null;c.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});c.addEventListener('touchend',e=>{if(!tx)return;const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){e.preventDefault();lG(d>0?1:-1);}tx=null;});}
+}
+function sLF(f){lfi=f;li=0;lf=false;slideDir='';rL();}
+function tF(){lf=!lf;slideDir='';rL();}
+function lG(d){const ns=gfn();lf=false;slideDir=d>0?'left':'right';if(d===1)li=li<ns.length-1?li+1:0;else li=li>0?li-1:ns.length-1;rL();setTimeout(()=>{slideDir='';},350);}
+function tM(id){if(mst.has(id))mst.delete(id);else{mst.add(id);checkMilestone();}save();rL();}
+
+// =============================================
+// RÉVISION DU JOUR
+// =============================================
+let revList=[], revIdx=0, revDone=new Set(), revFlip=false;
+
+function getRevList(){
+  // Priority: due names first, then weakest (most errors), then new
+  const d=due();
+  const weak=N.filter(n=>st[n.id]&&st[n.id].w>st[n.id].c).sort((a,b)=>(st[b.id]?.w||0)-(st[a.id]?.w||0));
+  const newN=N.filter(n=>!sr[n.id]||sr[n.id].b===0);
+  const combined=[...d];
+  weak.forEach(n=>{if(!combined.find(x=>x.id===n.id))combined.push(n);});
+  newN.forEach(n=>{if(!combined.find(x=>x.id===n.id))combined.push(n);});
+  return combined.slice(0,10); // 10 noms max par session
+}
+
+function rRev(){
+  if(!revList.length){revList=getRevList();revIdx=0;revDone=new Set();revFlip=false;}
+  const dc=due().length;
+  let h=arcSvg()+streakHtml();
+  h+=hd('Révision du jour','Tes noms prioritaires aujourd\'hui','review');
+
+  // Summary bar
+  h+=`<div style="padding:0 20px 12px;display:flex;justify-content:space-between;align-items:center">`;
+  h+=`<span style="font-size:0.8125rem;color:var(--ink-faint)">${revDone.size}/${revList.length} révisés</span>`;
+  h+=`<span style="font-size:0.75rem;color:var(--gold);font-weight:600">${dc} nom${dc>1?'s':''} à réviser au total</span>`;
+  h+=`</div>`;
+
+  // Progress dots
+  h+=`<div style="display:flex;justify-content:center;gap:6px;padding:0 20px 14px">`;
+  revList.forEach((n,i)=>{
+    const done=revDone.has(n.id);
+    const active=i===revIdx;
+    const col=done?'var(--success)':active?'var(--gold)':'var(--cream-dark)';
+    h+=`<div style="width:${active?'20px':'8px'};height:8px;border-radius:4px;background:${col};transition:all 0.2s"></div>`;
+  });
+  h+=`</div>`;
+
+  if(revDone.size===revList.length){
+    // All done!
+    h+=`<div class="done"><div class="em">🌟</div><p>Révision terminée !</p>`;
+    h+=`<div style="font-size:0.875rem;color:var(--ink-light);margin:8px 0">${revList.length} noms révisés aujourd'hui</div>`;
+    h+=dv();
+    h+=`<button class="nrb" onclick="revList=[];revDone=new Set();rRev()">Nouvelle session</button>`;
+    h+=`</div>`;
+    document.getElementById('page-review').innerHTML=h;
+    confetti(40);
+    return;
+  }
+
+  if(!revList.length){
+    h+=`<div style="text-align:center;padding:40px 20px">`;
+    h+=`<div style="font-size:2.5rem;margin-bottom:12px">✅</div>`;
+    h+=`<p style="font-size:1.125rem;color:var(--ink);font-weight:600">Rien à réviser !</p>`;
+    h+=`<p style="font-size:0.875rem;color:var(--ink-faint);margin-top:6px">Tous tes noms sont à jour. Reviens demain ou apprends de nouveaux noms.</p>`;
+    h+=`</div>`;
+    document.getElementById('page-review').innerHTML=h;
+    return;
+  }
+
+  const n=revList[revIdx];
+  const s=gsr(n.id),ci=CAT[n.c],im=mst.has(n.id);
+
+  // Card
+  h+=`<div class="card-wrap"><div class="card fade-in" onclick="revFlip=!revFlip;rRev()">`;
+  h+=`<div class="co co-tl"></div><div class="co co-tr"></div><div class="co co-bl"></div><div class="co co-br"></div>`;
+  h+=`<div class="c-num">N°${n.id} <span class="sr-b sr${s.b}">${SRL[s.b]}</span></div>`;
+  h+=`<div class="c-ar">${n.ar}</div>`;
+  h+=audioBtnHtml(n.id);
+  if(showTranslit) h+=`<div class="c-tr">${n.t}</div>`;
+  if(revFlip){
+    h+=`<div class="c-fr" style="animation:cardFadeIn 0.25s ease">${n.fr}</div>`;
+    h+=`<div class="c-cat">${ci.i} ${ci.l}</div>`;
+    h+=`<button class="mbtn mbtn-off" style="margin-top:8px;font-size:0.75rem;padding:6px 14px" onclick="event.stopPropagation();showDetail(${n.id})">📖 En savoir plus</button>`;
+  } else {
+    h+=`<div class="c-hint">Touche pour révéler</div>`;
+  }
+  h+=`</div></div>`;
+
+  // Action buttons (shown when flipped)
+  if(revFlip){
+    h+=`<div style="display:flex;justify-content:center;gap:12px;padding:14px 20px 4px">`;
+    h+=`<button class="mbtn mbtn-off" style="border-color:var(--error);color:var(--error)" onclick="revAnswer(false)">❌ Je ne sais pas</button>`;
+    h+=`<button class="mbtn mbtn-off" style="border-color:var(--success);color:var(--success)" onclick="revAnswer(true)">✅ Je sais</button>`;
+    h+=`</div>`;
+  }
+
+  h+=`<div class="meta">${revFlip?'Évalue ta connaissance':'Touche la carte pour révéler, swipe pour passer'}</div>`;
+  document.getElementById('page-review').innerHTML=h;
+  // Swipe on review card
+  const rc=document.querySelector('#page-review .card');
+  if(rc){let tx=null;rc.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});rc.addEventListener('touchend',e=>{if(!tx||revFlip)return;const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){e.preventDefault();revFlip=false;if(d>0)revIdx=revIdx<revList.length-1?revIdx+1:0;else revIdx=revIdx>0?revIdx-1:revList.length-1;rRev();}tx=null;});}
+}
+
+function revAnswer(correct){
+  logActivity();
+  const n=revList[revIdx];
+  if(correct){srUp(n.id);miniConfetti();}
+  else srDn(n.id);
+  if(!st[n.id])st[n.id]={c:0,w:0};
+  if(correct)st[n.id].c++;else st[n.id].w++;
+  save();
+  revDone.add(n.id);
+  revFlip=false;
+  revIdx++;
+  if(revIdx>=revList.length)revIdx=0;
+  rRev();
+}
+
+// =============================================
+// QUIZ
+// =============================================
+function gQ(){const tg=smart(),wr=sh(N.filter(n=>n.id!==tg.id)).slice(0,3);qq={tg,ops:sh([tg,...wr])};qs=null;}
+function rQ(){
+  if(!qq)gQ();const t=qq.tg;
+  let h=hd('Quiz','Répétition espacée intelligente','quiz');
+  h+=`<div class="pills">${[{id:'ar_to_fr',l:'Arabe → Français'},{id:'fr_to_ar',l:'Français → Arabe'},{id:'trans_to_ar',l:'Arabe → Translit.'}].map(m=>`<button class="pl${qm===m.id?' a':''}" onclick="sQM('${m.id}')">${m.l}</button>`).join('')}</div>`;
+  if(qn>0)h+=`<div class="ss">Session : ${qc}/${qn} (${Math.round(qc/qn*100)}%)</div>`;
+  let d,dc,lb,hint='';
+  if(qm==='ar_to_fr'){
+    d=t.ar;dc='qd-ar';lb='Quelle est la signification ?';
+    if(showTranslit) hint=`<div style="font-size:0.875rem;color:var(--gold);margin-top:6px">${t.t}</div>`;
+  } else if(qm==='fr_to_ar'){
+    d=t.fr;dc='qd-fr';lb='Quel est ce Nom ?';
+  } else {
+    d=t.ar;dc='qd-ar';lb='Quelle est la translittération ?';
+    hint=`<div style="font-size:0.875rem;color:var(--ink-light);font-style:italic;margin-top:6px">${t.fr}</div>`;
+  }
+  h+=`<div class="qcard"><p class="qlabel">${lb}</p><div class="${dc}">${d}</div>${hint}</div>`;
+  h+='<div class="opts">';
+  qq.ops.forEach(o=>{
+    let cl='';if(qs){if(o.id===t.id)cl='ok';else if(o.id===qs)cl='ko';}
+    let ol=qm==='ar_to_fr'?o.fr:o.t;
+    let oa=qm==='fr_to_ar'?`<div class="oa">${o.ar}</div>`:'';
+    h+=`<button class="ob ${cl}" onclick="qA(${o.id})" ${qs?'disabled':''}>${oa}<div class="ol">${ol}</div></button>`;
+  });
+  h+='</div>';
+  document.getElementById('page-quiz').innerHTML=h;
+}
+function sQM(m){qm=m;qn=0;qc=0;gQ();rQ();}
+function qA(id){if(qs)return;qs=id;qn++;logActivity();const ok=id===qq.tg.id;if(ok){qc++;srUp(qq.tg.id);miniConfetti();}else srDn(qq.tg.id);const tid=qq.tg.id;if(!st[tid])st[tid]={c:0,w:0};if(ok)st[tid].c++;else st[tid].w++;save();rQ();setTimeout(()=>{gQ();rQ();},ok?800:1500);}
+
+// =============================================
+// WRITE
+// =============================================
+function gW(){wq=smart();wa=false;}
+function rW(){
+  if(!wq)gW();const t=wq;
+  let h=hd('Écrire','Mémoire active — tape ta réponse','write');
+  h+=`<div class="pills">${[{id:'ar_to_trans',l:'Arabe → Translit.'},{id:'ar_to_fr',l:'Arabe → Français'},{id:'fr_to_trans',l:'Français → Translit.'}].map(m=>`<button class="pl${wm===m.id?' a':''}" onclick="sWM('${m.id}')">${m.l}</button>`).join('')}</div>`;
+  if(wn>0)h+=`<div class="ss">Session : ${wc}/${wn} (${Math.round(wc/wn*100)}%)</div>`;
+  let d,dc,lb,hint='';
+  if(wm==='ar_to_trans'){
+    d=t.ar;dc='qd-ar';lb='Écris la translittération';
+    hint=`<div style="font-size:0.875rem;color:var(--ink-light);font-style:italic;margin-top:6px">${t.fr}</div>`;
+  } else if(wm==='ar_to_fr'){
+    d=t.ar;dc='qd-ar';lb='Écris la signification';
+    if(showTranslit) hint=`<div style="font-size:0.875rem;color:var(--gold);margin-top:6px">${t.t}</div>`;
+  } else {
+    d=t.fr;dc='qd-fr';lb='Écris la translittération';
+  }
+  h+=`<div class="qcard"><p class="qlabel">${lb}</p><div class="${dc}">${d}</div>${hint}</div>`;
+  h+=`<div style="padding:0 20px"><input type="text" class="wi" id="wf" placeholder="Ta réponse..." autocomplete="off" autocapitalize="off" ${wa?'disabled':''} onkeydown="if(event.key==='Enter')cW()">`;
+  if(!wa)h+=`<button class="wbtn" onclick="cW()">Vérifier</button>`;
+  h+=`<div id="wfb"></div></div>`;
+  document.getElementById('page-write').innerHTML=h;
+  if(!wa)setTimeout(()=>{const f=document.getElementById('wf');if(f)f.focus();},100);
+}
+function sWM(m){wm=m;wn=0;wc=0;gW();rW();}
+function cW(){
+  if(wa)return;const f=document.getElementById('wf');if(!f||!f.value.trim())return;
+  wa=true;wn++;logActivity();const t=wq;
+  let exp=wm==='ar_to_fr'?t.fr:t.t;
+  const ua=norm(f.value);
+  // Build list of accepted answers
+  const accepted=[norm(exp)];
+  // Add alt transliterations (without accents, with common variants)
+  if(wm!=='ar_to_fr'){
+    accepted.push(norm(exp.replace(/â/g,'a').replace(/î/g,'i').replace(/û/g,'u').replace(/'/g,"'").replace(/'/g,'')));
+    accepted.push(norm(exp.replace(/-/g,' ')));
+    accepted.push(norm(exp.replace(/al-/gi,'')));
+    accepted.push(norm(exp.replace(/^(al|ar|as|ash|at|ad|az|an|adh|dhul)-?/i,'')));
+  }
+  // Add alt French (with/without article)
+  if(wm==='ar_to_fr'){
+    accepted.push(norm(exp.replace(/^(le |la |l'|les |celui qui |celle qui )/i,'')));
+  }
+  // Check exact match in any variant
+  const ok=accepted.some(a=>a===ua);
+  // Check close match (Levenshtein)
+  const bestSim=Math.max(...accepted.map(a=>sim(ua,a)));
+  const cl=!ok&&bestSim>0.7;
+  f.disabled=true;f.classList.add(ok||cl?'ok':'ko');
+  const tid=t.id;if(!st[tid])st[tid]={c:0,w:0};
+  const fb=document.getElementById('wfb');
+  if(ok){wc++;st[tid].c++;srUp(tid);miniConfetti();fb.innerHTML=`<div class="wfb wfb-ok"><b>✓ Correct !</b></div>`;}
+  else if(cl){wc++;st[tid].c++;srUp(tid);miniConfetti();fb.innerHTML=`<div class="wfb wfb-ok"><b>✓ Presque !</b><br><span style="font-size:12px">Exact : <b>${exp}</b></span></div>`;}
+  else{st[tid].w++;srDn(tid);fb.innerHTML=`<div class="wfb wfb-ko"><b>✗ Incorrect</b><br><span style="font-size:12px">Réponse : <b>${exp}</b></span><br><span style="font-family:var(--arabic);font-size:1.125rem;direction:rtl">${t.ar}</span> — ${t.t}</div>`;}
+  save();setTimeout(()=>{gW();rW();},ok?1200:2500);
+}
+
+// =============================================
+// MATCH
+// =============================================
+function iM(){clearInterval(mi);mp=sh(N).slice(0,5);mro=sh([...mp]);msl=null;mm=new Set();mw=null;mt=0;mia=false;mi=setInterval(()=>{mt++;rMT();},1000);rM();}
+function rMT(){const e=document.getElementById('mtd');if(e)e.innerHTML=`<span class="timer-v">${ft(mt)}</span><span style="font-size:0.75rem;color:var(--ink-faint);margin-left:10px">${mm.size}/5</span>`;}
+function gML(p){return mmo==='fr_to_ar'?`<div class="mb-fr">${p.fr}</div>`:`<div class="mb-ar">${p.ar}</div>${showTranslit?`<div class="mb-fr" style="font-size:0.625rem;color:var(--ink-faint)">${p.t}</div>`:""}`;}
+function gMR(p){if(mmo==='ar_to_fr')return`<div class="mb-fr">${p.fr}</div>`;if(mmo==='fr_to_ar')return`<div class="mb-ar">${p.ar}</div>${showTranslit?`<div class="mb-fr" style="margin-top:3px;font-size:10px">${p.t}</div>`:""}`;return`<div class="mb-fr">${p.t}</div>`;}
+function rM(){
+  let h=hd('Relier','Relie chaque Nom à sa signification','match');
+  h+=`<div class="pills">${[{id:'ar_to_fr',l:'Arabe → Français'},{id:'fr_to_ar',l:'Français → Arabe'},{id:'ar_to_trans',l:'Arabe → Translit.'}].map(m=>`<button class="pl${mmo===m.id?' a':''}" onclick="sMM('${m.id}')">${m.l}</button>`).join('')}</div>`;
+  h+=`<div class="timer-d" id="mtd"></div>`;
+  if(mm.size===5){clearInterval(mi);confetti(40);h+=`<div class="done"><div class="em">✨</div><p>Terminé en ${ft(mt)} !</p>${dv()}<button class="nrb" onclick="iM()">Nouvelle série</button></div>`;}
+  else{
+    h+=`<div class="mg"><div class="mc">`;
+    mp.forEach(p=>{let c=mm.has(p.id)?'mat':msl===p.id?'sel':'';h+=`<button class="mb ${c}" onclick="mLC(${p.id})">${gML(p)}</button>`;});
+    h+=`</div><div class="mc">`;
+    mro.forEach(p=>{let c=mm.has(p.id)?'mat':mw===p.id?'wrg':'';h+=`<button class="mb ${c}" onclick="mRC(${p.id})">${gMR(p)}</button>`;});
+    h+=`</div></div>`;
+  }
+  document.getElementById('page-match').innerHTML=h;rMT();
+}
+function sMM(m){mmo=m;iM();}
+function mLC(id){if(mm.has(id)||mia)return;msl=id;mw=null;rM();}
+function mRC(id){
+  if(mm.has(id)||!msl||mia)return;
+  if(msl===id){mm.add(id);if(!st[id])st[id]={c:0,w:0};st[id].c++;logActivity();msl=null;save();rM();}
+  else{mia=true;mw=id;if(!st[msl])st[msl]={c:0,w:0};st[msl].w++;save();rM();setTimeout(()=>{mw=null;msl=null;mia=false;rM();},600);}
+}
+
+// =============================================
+// CATEGORIES
+// =============================================
+function rC(){
+  let h=hd('Thèmes','Les Noms classés par famille','categories');
+  Object.entries(CAT).forEach(([k,v])=>{
+    const ns=N.filter(n=>n.c===k);
+    h+=`<div class="csec"><div class="ctitle">${v.i} ${v.l} <span style="font-size:0.6875rem;color:var(--ink-faint);font-weight:400">(${ns.length})</span></div><div class="cgrid">`;
+    ns.forEach(n=>{h+=`<div class="ci" onclick="goN(${n.id})"><div class="ci-ar">${n.ar}</div>${showTranslit?`<div style="font-size:0.6875rem;color:var(--gold);margin:2px 0">${n.t}</div>`:""}<div class="ci-fr">${n.fr}</div></div>`;});
+    h+=`</div></div>`;
+  });
+  document.getElementById('page-categories').innerHTML=h;
+}
+function goN(id){lfi='all';li=N.findIndex(n=>n.id===id);lf=true;sp('learn');}
+
+// =============================================
+// PROGRESS
+// =============================================
+function rP(){
+  const ta=Object.values(st).reduce((a,s)=>a+s.c+s.w,0);
+  const tc=Object.values(st).reduce((a,s)=>a+s.c,0);
+  const acc=ta>0?Math.round(tc/ta*100):0;
+  const pct=Math.round(mst.size/99*100);
+  const dc=due().length;
+  const sd=[0,0,0,0,0];N.forEach(n=>{sd[gsr(n.id).b]++;});
+  const diff=N.map(n=>({...n,s:st[n.id]||{c:0,w:0}})).filter(n=>n.s.w>0).sort((a,b)=>b.s.w-a.s.w).slice(0,10);
+
+  let h=arcSvg()+streakHtml();
+  h+=hd('Progrès','Ton avancement','progress');
+  h+=`<div class="sg">
+    <div class="sc"><div class="sv">${mst.size}</div><div class="ssub">/ 99</div><div class="slab">Noms mémorisés</div></div>
+    <div class="sc"><div class="sv">${acc}%</div><div class="ssub">${tc}/${ta}</div><div class="slab">Précision</div></div>
+    <div class="sc"><div class="sv">${dc}</div><div class="ssub">noms</div><div class="slab">À réviser</div></div>
+    <div class="sc"><div class="sv">${sd[3]+sd[4]}</div><div class="ssub">/ 99</div><div class="slab">Mémorisés (SR)</div></div>
+  </div>`;
+  h+=`<div class="psec"><div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px"><span style="color:var(--ink-light);font-weight:600">Progression</span><span style="color:var(--gold);font-weight:700">${pct}%</span></div><div class="pbar"><div class="pfill" style="width:${pct}%"></div></div></div>`;
+  // SR bar
+  const cols=['var(--ink-faint)','var(--gold)','#E0A030','var(--success)','#1B4332'];
+  h+=`<div style="padding:0 20px;margin-bottom:20px"><p style="font-size:0.75rem;font-weight:600;color:var(--ink-light);margin-bottom:8px">Répétition espacée</p><div class="sr-bar">`;
+  sd.forEach((c,i)=>{const w=c/99*100;if(w>0)h+=`<div class="sr-seg" style="width:${w}%;background:${cols[i]}">${c}</div>`;});
+  h+=`</div><div class="sr-legend"><span>Nouveau</span><span>En cours</span><span>Révision</span><span>Acquis</span><span>Maîtrisé</span></div></div>`;
+  if(diff.length){
+    h+=`<div class="dlist"><h3>À retravailler</h3>`;
+    diff.forEach(n=>{h+=`<div class="di"><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--arabic);font-size:1rem;color:var(--ink);direction:rtl">${n.ar}</span>${showTranslit?`<span style="font-size:0.6875rem;color:var(--ink-faint)">${n.t}</span>`:""}</div><div style="display:flex;gap:8px;font-size:10px"><span style="color:var(--success)">✓${n.s.c}</span><span style="color:var(--error)">✗${n.s.w}</span></div></div>`;});
+    h+='</div>';
+  }
+  h+=weekChart();
+  h+=`<div class="rst"><button class="rstb" onclick="if(confirm('Réinitialiser toute ta progression ?')){mst=new Set();st={};sr={};localStorage.clear();rP();}">Réinitialiser</button></div>`;
+  document.getElementById('page-progress').innerHTML=h;
+}
+
+// =============================================
+// SETTINGS
+// =============================================
+let darkMode = false;
+let fontScale = 100;
+let showTranslit = true; // Toggle transliteration display
+
+function loadSettings(){
+  try {
+    const d = localStorage.getItem('a-dark'); if(d) darkMode = JSON.parse(d);
+    const f = localStorage.getItem('a-font'); if(f) fontScale = JSON.parse(f);
+    const t = localStorage.getItem('a-trans'); if(t !== null) showTranslit = JSON.parse(t);
+  } catch(e){}
+  applySettings();
+}
+
+function applySettings(){
+  if(darkMode) document.body.classList.add('dark');
+  else document.body.classList.remove('dark');
+  document.documentElement.style.fontSize = (fontScale / 100 * 16) + 'px';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.content = darkMode ? '#121212' : '#FAF6F0';
+}
+
+function saveSettings(){
+  try {
+    localStorage.setItem('a-dark', JSON.stringify(darkMode));
+    localStorage.setItem('a-font', JSON.stringify(fontScale));
+    localStorage.setItem('a-trans', JSON.stringify(showTranslit));
+  } catch(e){}
+}
+
+function toggleDark(){
+  darkMode = !darkMode;
+  saveSettings(); applySettings(); rS();
+}
+
+function toggleTranslit(){
+  showTranslit = !showTranslit;
+  saveSettings(); rS();
+}
+
+function setFontScale(v){
+  fontScale = parseInt(v);
+  saveSettings(); applySettings();
+  const el = document.getElementById('font-val');
+  if(el) el.textContent = fontScale + '%';
+}
+
+// INFO MODALS per page
+const INFO={
+  review:{t:'🔁 Révision du jour',d:'Ta session quotidienne de révision. L\'app sélectionne automatiquement les 10 noms les plus urgents à revoir : ceux dont la date de révision est passée (répétition espacée), ceux que tu maîtrises le moins (plus d\'erreurs que de réussites), et les noms que tu n\'as pas encore étudiés. Évalue-toi honnêtement avec « Je sais » ou « Je ne sais pas » pour optimiser la mémorisation.'},
+  learn:{t:'📖 Apprendre',d:'Parcours les 99 Noms un par un. Touche la carte pour la retourner et voir la signification en français. Tu peux filtrer par catégorie : Tous, Restants, Mémorisés, ou ceux à réviser selon le système de répétition espacée.'},
+  quiz:{t:'✨ Quiz',d:'Teste ta mémoire ! Un nom t\'est présenté et tu dois choisir la bonne réponse parmi 4 propositions. 3 modes disponibles : Arabe→Français, Français→Arabe, Arabe→Translittération. Le système de répétition espacée priorise les noms que tu maîtrises le moins.'},
+  write:{t:'✍️ Écrire',d:'Mémoire active : tape toi-même la réponse. Plusieurs écritures sont acceptées (avec ou sans accents, avec ou sans article al-). Le seuil de tolérance est de 70%. Idéal pour ancrer la mémorisation.'},
+  match:{t:'🔗 Relier',d:'Relie chaque nom arabe à sa signification le plus vite possible. 5 paires à trouver, chronomètre en cours. Tu peux choisir le sens du matching : Arabe→Français, Français→Arabe, ou Arabe→Translittération.'},
+  categories:{t:'🏷️ Thèmes',d:'Les 99 Noms classés en 7 familles thématiques : Miséricorde, Puissance, Majesté, Sagesse, Création, Générosité, Justice. Touche un nom pour l\'ouvrir dans la page Apprendre.'},
+  progress:{t:'📊 Progrès',d:'Ton tableau de bord : noms mémorisés, précision, noms à réviser. La barre de répétition espacée montre la distribution de tes noms dans les 5 boîtes Leitner (Nouveau → Maîtrisé). Les noms les plus difficiles sont listés en bas.'}
+};
+
+function showInfo(page){
+  const i=INFO[page];if(!i)return;
+  const o=document.createElement('div');o.className='info-overlay';o.onclick=function(e){if(e.target===o)o.remove();};
+  o.innerHTML='<div class="info-box"><button class="info-close" onclick="this.closest(\'.info-overlay\').remove()">✕</button><h2>'+i.t+'</h2><p>'+i.d+'</p></div>';
+  document.body.appendChild(o);
+}
+
+// EN SAVOIR PLUS — descriptions des 99 noms
+// Références vérifiées uniquement (Coran, Sahih Bukhari, Sahih Muslim)
+// Noms 3-10 : cités nommément dans Sourate Al-Hashr (59:23)
+// Noms 1-2 : cités dans Al-Hashr (59:22)
+// Noms 11-13 : cités nommément dans Al-Hashr (59:24)
+const DESC={
+1:"La miséricorde absolue et universelle d'Allah, qui englobe toute la création sans distinction. Ce nom est exclusivement réservé à Allah. Cité dans Al-Fatiha (1:1), Al-Hashr (59:22) et titre de la Sourate Ar-Rahmân (55). Racine : ر-ح-م (rahima). Hadith Qudsi : « Ma miséricorde l'emporte sur Ma colère » (Bukhari 7554).",
+2:"La miséricorde spécifique d'Allah envers les croyants. Cité dans Al-Hashr (59:22) et la Basmala ouvrant chaque sourate. Al-Ahzâb (33:43) : « Il est envers les croyants Miséricordieux. » Racine : ر-ح-م (rahima).",
+3:"Le Roi, Le Souverain absolu. Cité nommément dans Al-Hashr (59:23). Aussi dans Tâ-Hâ (20:114) et Al-Mu'minûn (23:116).",
+4:"Le Très Saint, Le Pur. Cité nommément dans Al-Hashr (59:23) et Al-Jumu'a (62:1). Racine : ق-د-س (qadasa). Les anges Le glorifient par ce nom.",
+5:"La Source de la Paix. Cité nommément dans Al-Hashr (59:23). Hadith : le Prophète ﷺ disait après chaque prière « Allâhumma anta as-Salâm, wa minka as-Salâm » (Muslim 591). Racine : س-ل-م (salima).",
+6:"Le Rassurant, Le Garant de la foi. Cité nommément dans Al-Hashr (59:23). Il confirme Ses serviteurs dans la foi et leur accorde la sécurité. Racine : أ-م-ن (amina).",
+7:"Le Protecteur, Le Surveillant suprême. Cité nommément dans Al-Hashr (59:23). Le Coran est aussi décrit comme « muhaymin » sur les Écritures précédentes dans Al-Mâ'ida (5:48).",
+8:"Le Tout Puissant, L'Invincible. Cité nommément dans Al-Hashr (59:23). Apparaît plus de 90 fois dans le Coran, souvent associé à Al-Hakîm.",
+9:"Le Contraignant. Cité nommément dans Al-Hashr (59:23). Racine : ج-ب-ر (jabara), qui signifie aussi « réparer ». Double sens : puissance irrésistible et réparation.",
+10:"Le Superbe, dont la grandeur est suprême. Cité nommément dans Al-Hashr (59:23). Hadith Qudsi : « L'orgueil est Mon manteau et la grandeur est Mon vêtement » (Muslim 2620).",
+11:"Le Créateur, qui a déterminé toute chose. Cité nommément dans Al-Hashr (59:24). Al-An'âm (6:102) : « Créateur de toute chose. » Racine : خ-ل-ق (khalaqa).",
+12:"Le Producteur, qui donne l'existence à partir du néant. Cité nommément dans Al-Hashr (59:24). Aussi dans Al-Baqara (2:54). Racine : ب-ر-أ (bara'a).",
+13:"Le Formateur, qui façonne chaque créature. Cité nommément dans Al-Hashr (59:24) : « C'est Lui Allah, Le Créateur, Le Producteur, Le Formateur. » Racine : ص-و-ر (sawwara).",
+14:"L'Infini Pardonneur, qui pardonne sans cesse. Forme intensive (fa''âl). Nûh (71:10) : « Demandez pardon à votre Seigneur, car Il est Grand Pardonneur. » Aussi Az-Zumar (39:5). Racine : غ-ف-ر (ghafara).",
+15:"Le Dominateur Suprême. Forme intensive. Yûsuf (12:39) : « Des seigneurs épars valent-ils mieux qu'Allah, L'Unique, Le Dominateur Suprême ? » Aussi Ar-Ra'd (13:16).",
+16:"Le Donateur Suprême. Âl 'Imrân (3:8) et Sâd (38:9,35) : « Tu es Le Donateur. » Ses dons sont infinis et sans contrepartie.",
+17:"Le Pourvoyeur absolu. Forme intensive. Adh-Dhâriyât (51:58) : « C'est Allah qui est Le Pourvoyeur, Le Détenteur de la force, Le Ferme. »",
+18:"L'Ouvreur, qui résout les différends. Saba' (34:26) et Al-A'râf (7:89). Racine : ف-ت-ح (fataha), ouvrir.",
+19:"L'Omniscient. Cité plus de 150 fois dans le Coran. Luqmân (31:16) : « Rien ne Lui échappe, fût-ce le poids d'un atome. »",
+20:"Celui qui retient et resserre la subsistance selon Sa sagesse. Al-Baqara (2:245) : « Allah retient et étend. » Associé à Al-Bâsit.",
+21:"Celui qui étend et accorde avec largesse. Al-Baqara (2:245). Complémentaire d'Al-Qâbid. Il dilate les cœurs et répand Ses bienfaits.",
+22:"Celui qui abaisse les tyrans et les orgueilleux. Mentionné dans le hadith des 99 noms (At-Tirmidhî). Opposé à Ar-Râfi'.",
+23:"Celui qui élève en rang qui Il veut. Al-An'âm (6:83) et Al-Mujâdala (58:11) : « Allah élève en degrés ceux qui ont la foi et la science. »",
+24:"Celui qui accorde la puissance et l'honneur. Âl 'Imrân (3:26) : « Tu honores qui Tu veux et Tu humilies qui Tu veux. »",
+25:"Celui qui humilie qui Il veut. Âl 'Imrân (3:26). Complémentaire d'Al-Mu'izz.",
+26:"L'Audient. Ash-Shûrâ (42:11) : « Rien ne Lui ressemble, et c'est Lui L'Audient, Le Clairvoyant. » Racine : س-م-ع (sami'a).",
+27:"Le Clairvoyant. Ash-Shûrâ (42:11) et Al-Isrâ' (17:1). Racine : ب-ص-ر (basura).",
+28:"Le Juge, L'Arbitre suprême. Al-Hajj (22:69) : « Allah jugera entre vous au Jour de la Résurrection. »",
+29:"Le Juste par excellence. An-Nisâ' (4:40) : « Allah ne lèse personne, fût-ce du poids d'un atome. » Racine : ع-د-ل ('adala).",
+30:"Le Subtil, Le Bienveillant. Al-An'âm (6:103) : « Les regards ne peuvent L'atteindre. Il est Le Doux, Le Bien-Informé. »",
+31:"Le Bien-Informé. Al-Mulk (67:14) : « Ne sait-Il pas ce qu'Il a créé, Lui Le Subtil, Le Bien-Informé ? »",
+32:"L'Indulgent, Le Clément. Fâtir (35:41) et Al-Baqara (2:225). Sa patience laisse le temps au repentir.",
+33:"Le Sublime. Al-Baqara (2:255) — Ayat Al-Kursî : « Il est Le Très Haut, Le Sublime. »",
+34:"Le Pardonneur. Az-Zumar (39:53) : « Ne désespérez pas de la miséricorde d'Allah. Allah pardonne tous les péchés. » Racine : غ-ف-ر (ghafara).",
+35:"Le Reconnaissant, qui récompense le moindre bien. Fâtir (35:30) et Ash-Shûrâ (42:23).",
+36:"Le Très Haut. Al-Baqara (2:255) et An-Nisâ' (4:34).",
+37:"Le Grand, dont la grandeur est incomparable. Luqmân (31:30).",
+38:"Le Gardien. Hûd (11:57) : « Mon Seigneur est Gardien de toute chose. » Al-Hijr (15:9).",
+39:"Le Nourricier. An-Nisâ' (4:85). Il pourvoit à la force et à la subsistance de chaque être vivant.",
+40:"Celui qui tient compte de tout. An-Nisâ' (4:6) et Al-Isrâ' (17:14).",
+41:"Le Majestueux. Mentionné dans le hadith des 99 noms (At-Tirmidhî). Ses attributs de majesté et de beauté sont sans pareil.",
+42:"Le Généreux. Al-Infitâr (82:6) : « Qu'est-ce qui t'a trompé au sujet de ton Seigneur, Le Généreux ? » An-Naml (27:40).",
+43:"Le Vigilant, L'Observateur. An-Nisâ' (4:1) : « Allah vous observe en permanence. » Al-Ahzâb (33:52).",
+44:"Celui qui exauce les invocations. Al-Baqara (2:186) : « Je suis proche, J'exauce l'invocation de celui qui M'invoque. » Hûd (11:61).",
+45:"L'Immense. Al-Baqara (2:115) : « Où que vous vous tourniez, là est la Face d'Allah. Allah est Immense et Omniscient. »",
+46:"Le Sage. Associé à Al-'Azîz plus de 40 fois dans le Coran. Al-Baqara (2:129).",
+47:"Le Bien-Aimant. Hûd (11:90) et Al-Burûj (85:14) : « C'est Lui Le Pardonneur, Le Bien-Aimant. »",
+48:"Le Glorieux. Hûd (11:73) et Al-Burûj (85:15) : « Maître du Trône, Le Glorieux. »",
+49:"Celui qui ressuscite. Al-Hajj (22:7) : « L'Heure viendra, et Allah ressuscitera ceux qui sont dans les tombes. »",
+50:"Le Témoin de toute chose. Al-Mâ'ida (5:117) : « Tu es Le Témoin de toute chose. » Yûnus (10:61).",
+51:"La Vérité, L'Être véritable. Al-Hajj (22:6) et Luqmân (31:30).",
+52:"Le Garant. Âl 'Imrân (3:173) : « Allah nous suffit, Il est Le meilleur Garant. » At-Talâq (65:3).",
+53:"Le Fort. Al-Hajj (22:40) : « Allah est certes Fort et Puissant. » Ash-Shûrâ (42:19).",
+54:"Le Ferme, L'Inébranlable. Adh-Dhâriyât (51:58) : « Allah est Le Pourvoyeur, Le Détenteur de la force, Le Ferme. »",
+55:"L'Allié, Le Protecteur des croyants. Al-Baqara (2:257) : « Allah est Le Protecteur des croyants, Il les fait sortir des ténèbres vers la lumière. »",
+56:"Le Louable. Ibrâhîm (14:1) et Luqmân (31:12). Toute louange Lui revient.",
+57:"Celui qui dénombre toute chose. Maryam (19:94) : « Il les a dénombrés et bien comptés. » Al-Jinn (72:28).",
+58:"L'Initiateur de la création. Al-Burûj (85:13) : « C'est Lui qui commence et qui recommence. » Yûnus (10:34).",
+59:"Celui qui reproduit la création. Al-Burûj (85:13) et Ar-Rûm (30:27) : « C'est Lui qui commence la création puis la recommence. »",
+60:"Celui qui donne la vie. Ar-Rûm (30:50) et Al-Baqara (2:258). Il insuffle la vie et redonne vie à la terre morte.",
+61:"Celui qui donne la mort. Al-Mulk (67:2) : « Celui qui a créé la mort et la vie afin de vous éprouver. »",
+62:"Le Vivant, dont la vie est éternelle. Al-Baqara (2:255) — Ayat Al-Kursî, Âl 'Imrân (3:2), Al-Furqân (25:58), Ghâfir (40:65).",
+63:"Celui qui subsiste par Lui-même et fait subsister toute chose. Al-Baqara (2:255) et Âl 'Imrân (3:2). Souvent associé à Al-Hayy.",
+64:"Celui qui possède tout et ne manque de rien. Mentionné dans le hadith des 99 noms (At-Tirmidhî).",
+65:"Le Noble Glorieux. Mentionné dans le hadith des 99 noms (At-Tirmidhî).",
+66:"L'Unique. Al-Baqara (2:163) : « Votre Dieu est un Dieu unique. » Al-Ikhlâs (112).",
+67:"Le Seul. Al-Ikhlâs (112:1) : « Dis : Lui, Allah, est Un. »",
+68:"L'Absolu, vers qui se tournent toutes les créatures. Al-Ikhlâs (112:2). Il n'a besoin de rien et tout a besoin de Lui.",
+69:"Le Capable. Al-Baqara (2:20) et Al-Mulk (67:1) : « Béni soit Celui dans la main de qui est le pouvoir. Il est capable de toute chose. »",
+70:"Le Tout Déterminant, au pouvoir absolu. Al-Kahf (18:45). Plus intensif qu'Al-Qâdir.",
+71:"Celui qui avance qui Il veut. Hadith (Bukhari 1120, Muslim 769) : « Tu es Celui qui avance et Celui qui retarde. »",
+72:"Celui qui retarde qui Il veut. Hadith (Bukhari 1120, Muslim 769). Complémentaire d'Al-Muqaddim.",
+73:"Le Premier, sans commencement. Al-Hadîd (57:3) : « Il est Le Premier et Le Dernier, L'Apparent et Le Caché. » Hadith (Muslim 2713).",
+74:"Le Dernier, qui demeure sans fin. Al-Hadîd (57:3) et Al-Qasas (28:88) : « Tout périt sauf Sa Face. »",
+75:"L'Apparent, dont les signes sont manifestes. Al-Hadîd (57:3). Hadith (Muslim 2713) : « Tu es L'Apparent, rien n'est au-dessus de Toi. »",
+76:"Le Caché, au-delà de la perception. Al-Hadîd (57:3). Hadith (Muslim 2713) : « Tu es Le Caché, rien n'est en-dessous de Toi. »",
+77:"Le Maître, Le Gouverneur de toute chose. Ar-Ra'd (13:11). Il gère et administre l'univers.",
+78:"Le Très Élevé. Ar-Ra'd (13:9) : « Le Grand, Le Très Élevé. »",
+79:"Le Bienfaisant. At-Tûr (52:28) : « C'est Lui Le Bienfaisant, Le Très Miséricordieux. » Racine : ب-ر-ر (barra).",
+80:"Celui qui accepte le repentir. At-Tawba (9:104) et Al-Baqara (2:37). Forme intensive.",
+81:"Le Vengeur. Âl 'Imrân (3:4). Sa vengeance est une manifestation de Sa justice parfaite.",
+82:"L'Effaceur des péchés. Racine : ع-ف-و ('afâ). An-Nisâ' (4:149). Dou'â de Laylat al-Qadr (At-Tirmidhî 3513) : « Tu aimes le pardon, pardonne-moi. »",
+83:"Le Compatissant. At-Tawba (9:117) et Al-Baqara (2:143) : « Allah est envers les gens Compatissant et Miséricordieux. »",
+84:"Possesseur du Royaume. Âl 'Imrân (3:26) : « Ô Allah, Maître du Royaume ! Tu donnes le pouvoir à qui Tu veux. »",
+85:"Plein de Majesté et de Munificence. Ar-Rahmân (55:27) : « Seule subsiste la Face de ton Seigneur, plein de Majesté et de Munificence. » Et verset 78.",
+86:"L'Équitable. Al-Anbiyâ' (21:47) : « Nous placerons les balances justes au Jour de la Résurrection. »",
+87:"Celui qui rassemble. Âl 'Imrân (3:9) : « Tu rassembleras les gens un Jour au sujet duquel il n'y a pas de doute. »",
+88:"Le Riche, qui n'a besoin de rien. Muhammad (47:38) : « Allah est Le Riche et vous êtes les pauvres. » Fâtir (35:15).",
+89:"Celui qui enrichit. At-Tawba (9:28) : « Allah vous enrichira par Sa grâce. »",
+90:"Celui qui empêche et protège du mal. Mentionné dans le hadith des 99 noms (At-Tirmidhî). Complémentaire d'An-Nâfi'.",
+91:"Celui qui crée l'épreuve. Al-An'âm (6:17) : « Si Allah te touche d'un mal, nul ne peut le dissiper en dehors de Lui. »",
+92:"Celui qui accorde le bienfait. Al-An'âm (6:17) : « Et s'Il te touche d'un bien, Il est capable de toute chose. »",
+93:"La Lumière des cieux et de la terre. An-Nûr (24:35) : « Allah est la Lumière des cieux et de la terre. »",
+94:"Le Guide. Al-Hajj (22:54) et Al-Furqân (25:31). Il guide les cœurs sincères vers la vérité.",
+95:"Le Créateur Originel. Al-Baqara (2:117) : « Créateur des cieux et de la terre. Quand Il décide une chose, Il lui dit : Sois, et elle est. »",
+96:"L'Éternel. Ar-Rahmân (55:27) : « Tout ce qui est sur elle est voué à disparaître. Seule subsiste la Face de ton Seigneur. »",
+97:"L'Héritier. Maryam (19:40) : « C'est Nous qui hériterons de la terre et de tout ce qui s'y trouve. » Al-Hijr (15:23).",
+98:"Celui qui dirige avec sagesse. Mentionné dans le hadith des 99 noms (At-Tirmidhî). Il guide Ses créatures avec une sagesse parfaite.",
+99:"Le Patient, dont la patience est absolue. Hadith (Bukhari 7378) : « Personne n'est plus patient qu'Allah face aux propos blessants. »"
+};
+// Generate minimal descriptions for names without detailed ones
+function getDesc(id){
+  if(DESC[id]) return DESC[id];
+  const n=N.find(x=>x.id===id);if(!n)return '';
+  const ci=CAT[n.c];
+  return n.t+' ('+n.fr+') fait partie de la famille « '+ci.l+' ». Ce nom glorifie un attribut d\'Allah lié à '+ci.l.toLowerCase()+'.';
+}
+
+function showDetail(id){
+  const n=N.find(x=>x.id===id);if(!n)return;
+  const ci=CAT[n.c];const d=getDesc(id);
+  const o=document.createElement('div');o.className='info-overlay';o.onclick=function(e){if(e.target===o)o.remove();};
+  let h='<div class="info-box"><button class="info-close" onclick="this.closest(\'.info-overlay\').remove()">✕</button>';
+  h+='<div style="text-align:center;margin-bottom:16px"><div style="font-family:var(--arabic);font-size:2rem;direction:rtl;color:var(--ink)">'+n.ar+'</div>';
+  h+='<div style="font-size:1.125rem;color:var(--gold);font-weight:600;margin-top:4px">'+n.t+'</div>';
+  h+='<div style="font-size:0.9375rem;color:var(--ink-light);font-style:italic">'+n.fr+'</div>';
+  h+='<div style="margin-top:10px">'+audioBtnHtml(n.id)+'</div>';
+  h+='<div style="margin-top:8px;display:inline-block;padding:3px 10px;border-radius:10px;font-size:0.75rem;color:var(--gold);background:var(--gold-glow)">'+ci.i+' '+ci.l+'</div></div>';
+  h+='<p style="font-size:0.875rem;color:var(--ink-light);line-height:1.7">'+d+'</p>';
+  h+='</div>';
+  o.innerHTML=h;
+  document.body.appendChild(o);
+}
+
+function rS(){
+  let h = hd('Réglages','Personnalise ton expérience');
+  h += '<div class="set-section">';
+
+  // Dark mode
+  h += '<div class="set-label">Apparence</div>';
+  h += '<div class="set-row"><span>🌙 Mode sombre</span>';
+  h += '<button class="toggle'+(darkMode?' on':'')+'" onclick="toggleDark()"></button></div>';
+
+  // Transliteration
+  h += '<div class="set-label" style="margin-top:20px">Affichage</div>';
+  h += '<div class="set-row"><span>🔤 Translittération</span>';
+  h += '<button class="toggle'+(showTranslit?' on':'')+'" onclick="toggleTranslit()"></button></div>';
+  h += '<div style="padding:0 4px;margin-top:-6px;margin-bottom:12px;font-size:0.75rem;color:var(--ink-faint)">Affiche la prononciation sous chaque nom arabe. Désactive si tu es arabophone.</div>';
+
+  // Font size
+  h += '<div class="set-label" style="margin-top:20px">Taille du texte</div>';
+  h += '<div class="set-row" style="flex-direction:column;align-items:stretch;gap:8px">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center"><span>Taille</span><span class="size-val" id="font-val">'+fontScale+'%</span></div>';
+  h += '<input type="range" class="size-slider" min="80" max="140" step="10" value="'+fontScale+'" oninput="setFontScale(this.value)">';
+  h += '<div class="size-labels"><span>Petit</span><span>Normal</span><span>Grand</span></div>';
+  h += '</div>';
+
+  // Info
+  h += '<div class="set-label" style="margin-top:20px">À propos</div>';
+  h += '<div class="set-row" style="flex-direction:column;align-items:flex-start;gap:6px">';
+  h += '<span style="font-weight:600;color:var(--ink)">Asma Allah Al-Husna</span>';
+  h += '<span style="font-size:13px">Les 99 Noms d\'Allah — App de mémorisation</span>';
+  h += '<span style="font-size:0.75rem;color:var(--ink-faint)">Version 4.0 • Données stockées localement</span>';
+  h += '</div>';
+
+  // Update instructions
+  h += '<div class="set-label" style="margin-top:20px">Mise à jour</div>';
+  h += '<div class="set-row" style="flex-direction:column;align-items:flex-start;gap:6px">';
+  h += '<span style="font-size:0.8125rem;color:var(--ink-light);line-height:1.5">L\'app se met à jour automatiquement quand tu es connecté à Internet. Si tu ne vois pas les changements :</span>';
+  h += '<span style="font-size:0.8125rem;color:var(--ink-light);line-height:1.5">1. Ferme complètement l\'app<br>2. Rouvre-la (elle re-télécharge la dernière version)<br>3. Si ça ne marche pas : Réglages Safari → Vider le cache du site</span>';
+  h += '<button class="rstb" style="margin-top:8px" onclick="if(navigator.serviceWorker){navigator.serviceWorker.getRegistration().then(r=>{if(r)r.update().then(()=>location.reload())});} else location.reload()">🔄 Vérifier les mises à jour</button>';
+  h += '</div>';
+
+  h += '</div>';
+  document.getElementById('page-settings').innerHTML = h;
+}
+
+// =============================================
+// CONFETTI & ANIMATIONS
+// =============================================
+function confetti(count=30){
+  const c=document.createElement('div');c.className='confetti-container';document.body.appendChild(c);
+  const colors=['#B8860B','#D4A84B','#2D6A4F','#E8D5B7','#9B2226','#F5E6CC'];
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    const shapes=['circle','square','diamond'];const shape=shapes[Math.floor(Math.random()*3)];
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDelay=Math.random()*0.8+'s';
+    p.style.animationDuration=(2+Math.random()*1.5)+'s';
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    if(shape==='circle')p.style.borderRadius='50%';
+    else if(shape==='diamond'){p.style.transform='rotate(45deg)';p.style.width='6px';p.style.height='6px';}
+    c.appendChild(p);
+  }
+  setTimeout(()=>c.remove(),3500);
+}
+
+function milestone(emoji,text,sub){
+  const m=document.createElement('div');m.className='milestone';
+  m.innerHTML='<div class="ms-emoji">'+emoji+'</div><div class="ms-text">'+text+'</div><div class="ms-sub">'+sub+'</div>';
+  document.body.appendChild(m);confetti(50);
+  setTimeout(()=>{m.style.transition='all 0.3s';m.style.opacity='0';m.style.transform='translate(-50%,-50%) scale(0.8)';setTimeout(()=>m.remove(),400);},2500);
+}
+
+function checkMilestone(){
+  const s=mst.size;
+  if(s===25)milestone('⭐','25 Noms acquis !','Quart du chemin — continue !');
+  else if(s===50)milestone('🌙','50 Noms acquis !','La moitié — tu gères !');
+  else if(s===75)milestone('🏆','75 Noms acquis !','Trois quarts — bientôt la fin !');
+  else if(s===99)milestone('✨','99 Noms maîtrisés !','Allahu Akbar — tu les connais tous !');
+}
+
+function miniConfetti(){confetti(15);}
+
+// SPLASH SCREEN
+function showSplash(){
+  const s=document.createElement('div');
+  s.id='splash';
+  s.style.cssText='position:fixed;inset:0;z-index:9999;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;animation:cardFadeIn 0.4s ease';
+  s.innerHTML=`
+    <div style="font-family:var(--arabic);font-size:2rem;direction:rtl;color:var(--ink);line-height:1.6;margin-bottom:24px">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
+    <div style="font-family:var(--heading);font-size:1.5rem;color:var(--ink);font-weight:600;margin-bottom:8px">Asma Allah Al-Husna</div>
+    <div style="font-family:var(--heading);font-size:0.875rem;color:var(--gold);font-style:italic;margin-bottom:24px">Les 99 plus beaux Noms d'Allah</div>
+    <div style="max-width:340px;padding:16px 20px;border-radius:12px;background:rgba(0,0,0,0.03);border:1px solid var(--cream-dark)">
+      <div style="font-family:var(--arabic);font-size:1rem;direction:rtl;color:var(--ink);line-height:1.8;margin-bottom:12px">إِنَّ لِلَّهِ تِسْعَةً وَتِسْعِينَ ٱسْمًا مِائَةً إِلَّا وَاحِدًا مَنْ أَحْصَاهَا دَخَلَ ٱلْجَنَّةَ</div>
+      <div style="font-size:0.8125rem;color:var(--ink-light);line-height:1.6;font-style:italic">Al-Bukhari (2736) et Muslim (2677) rapportent d'après Abu Hurayrah (qu'Allah l'agrée) que le Prophète ﷺ a dit :<br><br>\u00ab Allah possède quatre-vingt-dix-neuf noms. Quiconque les mémorise entrera au Paradis. \u00bb</div>
+    </div>
+    <button onclick="document.getElementById('splash').style.opacity='0';document.getElementById('splash').style.transition='opacity 0.3s';setTimeout(()=>document.getElementById('splash').remove(),350)" style="margin-top:28px;padding:12px 32px;background:var(--gold);color:white;border:none;border-radius:8px;font-family:var(--heading);font-size:0.9375rem;font-weight:600;cursor:pointer;letter-spacing:0.5px">Commencer</button>
+  `;
+  document.body.appendChild(s);
+}
+
+
+// INIT
+load();loadSettings();rTB();rL();
+showSplash();
+
+// PWA — nuke old caches + register v7
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  if(window.caches) caches.keys().then(function(ks){
+    ks.forEach(function(k){ if(k!=='asma-v7') caches.delete(k); });
+  });
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    var hadOld = regs.length > 0;
+    var p = regs.map(function(r){ return r.unregister(); });
+    return Promise.all(p).then(function(){ return hadOld; });
+  }).then(function(hadOld){
+    navigator.serviceWorker.register('sw.js?v=7').then(function(reg){
+      if(hadOld && !sessionStorage.getItem('sw7')){
+        sessionStorage.setItem('sw7','1');
+        setTimeout(function(){ window.location.reload(true); }, 300);
+      }
+    });
+  }).catch(function(e){ console.log('SW error',e); });
+})();
+
+  </script>
+</body>
+</html>
