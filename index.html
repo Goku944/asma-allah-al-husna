@@ -392,6 +392,14 @@
     .week-count { font-size:0.5rem; color:var(--ink-faint); }
     body.dark .week-bar { opacity:0.9; }
 
+    /* AUDIO BUTTON */
+    .audio-btn { background:none; border:1.5px solid var(--gold-light); border-radius:50%; width:36px; height:36px; font-size:1rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; justify-content:center; margin:6px 0; }
+    .audio-btn:active { transform:scale(0.9); }
+    .audio-btn.playing { background:var(--gold-glow); border-color:var(--gold); animation:audioPulse 0.8s ease infinite; }
+    @keyframes audioPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    body.dark .audio-btn { border-color:rgba(200,169,110,0.3); }
+    body.dark .audio-btn.playing { background:rgba(200,169,110,0.15); }
+
   </style>
 </head>
 <body>
@@ -654,6 +662,42 @@ function hd(t,s,p){return`<div class="ph" style="position:relative"><h1>${t}</h1
 function trlit(text){return showTranslit?text:'';}
 function trlitHtml(text,cls){return showTranslit?`<div class="${cls}">${text}</div>`:'';}
 
+// =============================================
+// AUDIO SYSTEM
+// =============================================
+// Priority: 1) local mp3 file  2) Web Speech API fallback
+// To add real tajwid audio: place files as audio/1.mp3, audio/2.mp3, etc.
+let audioPlaying=false;
+function playName(id){
+  if(audioPlaying) return;
+  const n=N.find(x=>x.id===id);
+  if(!n) return;
+  audioPlaying=true;
+  const btn=document.getElementById('audio-btn-'+id);
+  if(btn){btn.classList.add('playing');btn.textContent='🔊';}
+  // Try mp3 first
+  const audio=new Audio('audio/'+id+'.mp3');
+  audio.addEventListener('canplaythrough',()=>{
+    audio.play();
+    audio.onended=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
+  });
+  audio.addEventListener('error',()=>{
+    // Fallback: Web Speech API
+    if('speechSynthesis' in window){
+      const u=new SpeechSynthesisUtterance(n.ar);
+      u.lang='ar-SA';u.rate=0.75;u.pitch=1;
+      u.onend=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
+      u.onerror=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    } else {
+      audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}
+    }
+  });
+}
+function audioBtnHtml(id){
+  return `<button class="audio-btn" id="audio-btn-${id}" onclick="event.stopPropagation();playName(${id})" title="Écouter la prononciation">🔈</button>`;
+}
 
 // TAB BAR
 const TB=[{id:'learn',l:'Apprendre',i:'📖'},{id:'review',l:'Révision',i:'🔁'},{id:'quiz',l:'Quiz',i:'✨'},{id:'write',l:'Écrire',i:'✍️'},{id:'match',l:'Relier',i:'🔗'},{id:'categories',l:'Thèmes',i:'🏷️'},{id:'progress',l:'Progrès',i:'📊'},{id:'settings',l:'Réglages',i:'⚙️'}];
@@ -668,7 +712,7 @@ function rL(){
   const rem=99-mst.size, acq=mst.size;
   let h=arcSvg()+streakHtml();
   h+=hd('Apprendre','Mémorise les Noms un par un','learn');
-  h+=`<div style="display:flex;justify-content:flex-end;padding:0 20px 4px"><button onclick="searchOpen=!searchOpen;searchQ='';rL()" style="background:none;border:1px solid var(--cream-dark);border-radius:8px;padding:5px 12px;font-size:0.75rem;color:var(--ink-faint);cursor:pointer">${searchOpen?'✕ Fermer':'🔍 Rechercher'}</button></div>`;
+  h+=`<div style="display:flex;justify-content:flex-end;padding:0 20px 4px"><button onclick="searchOpen=!searchOpen;searchQ='';rL();if(searchOpen){setTimeout(()=>{const i=document.getElementById('search-inp');if(i)i.focus();},50);}" style="background:none;border:1px solid var(--cream-dark);border-radius:8px;padding:5px 12px;font-size:0.75rem;color:var(--ink-faint);cursor:pointer">${searchOpen?'✕ Fermer':'🔍 Rechercher'}</button></div>`;
   h+=renderSearch();
   if(searchOpen&&searchQ.length>=1){document.getElementById('page-learn').innerHTML=h;const inp=document.getElementById('search-inp');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}return;}
   h+='<div class="pills">';
@@ -684,6 +728,7 @@ function rL(){
   h+=`<div class="co co-tl"></div><div class="co co-tr"></div><div class="co co-bl"></div><div class="co co-br"></div>`;
   h+=`<div class="c-num">N°${n.id} <span class="sr-b sr${s.b}">${SRL[s.b]}</span></div>`;
   h+=`<div class="c-ar">${n.ar}</div>`;
+  h+=audioBtnHtml(n.id);
   if(showTranslit)h+=`<div class="c-tr">${n.t}</div>`;
   if(lf){
     h+=`<div class="c-fr" style="animation:cardFadeIn 0.25s ease">${n.fr}</div>`;
@@ -771,6 +816,7 @@ function rRev(){
   h+=`<div class="co co-tl"></div><div class="co co-tr"></div><div class="co co-bl"></div><div class="co co-br"></div>`;
   h+=`<div class="c-num">N°${n.id} <span class="sr-b sr${s.b}">${SRL[s.b]}</span></div>`;
   h+=`<div class="c-ar">${n.ar}</div>`;
+  h+=audioBtnHtml(n.id);
   if(showTranslit) h+=`<div class="c-tr">${n.t}</div>`;
   if(revFlip){
     h+=`<div class="c-fr" style="animation:cardFadeIn 0.25s ease">${n.fr}</div>`;
@@ -1172,6 +1218,7 @@ function showDetail(id){
   h+='<div style="text-align:center;margin-bottom:16px"><div style="font-family:var(--arabic);font-size:2rem;direction:rtl;color:var(--ink)">'+n.ar+'</div>';
   h+='<div style="font-size:1.125rem;color:var(--gold);font-weight:600;margin-top:4px">'+n.t+'</div>';
   h+='<div style="font-size:0.9375rem;color:var(--ink-light);font-style:italic">'+n.fr+'</div>';
+  h+='<div style="margin-top:10px">'+audioBtnHtml(n.id)+'</div>';
   h+='<div style="margin-top:8px;display:inline-block;padding:3px 10px;border-radius:10px;font-size:0.75rem;color:var(--gold);background:var(--gold-glow)">'+ci.i+' '+ci.l+'</div></div>';
   h+='<p style="font-size:0.875rem;color:var(--ink-light);line-height:1.7">'+d+'</p>';
   h+='</div>';
