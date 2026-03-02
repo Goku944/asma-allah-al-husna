@@ -345,6 +345,53 @@
     @keyframes slideL { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
     @keyframes slideR { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
 
+    /* ===== V6 ADDITIONS ===== */
+
+    /* ARC PROGRESS (global header) */
+    .arc-wrap { display:flex; justify-content:center; padding:8px 0 4px; }
+    .arc-svg { width:80px; height:44px; }
+    .arc-bg { fill:none; stroke:var(--cream-dark); stroke-width:6; }
+    .arc-fill { fill:none; stroke:var(--gold); stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset 0.6s ease; }
+    .arc-text { font-family:var(--heading); font-size:0.6875rem; fill:var(--ink); text-anchor:middle; font-weight:700; }
+    .arc-sub { font-family:var(--heading); font-size:0.375rem; fill:var(--ink-faint); text-anchor:middle; }
+    body.dark .arc-bg { stroke:#333; }
+    body.dark .arc-text { fill:#F0E6D3; }
+
+    /* ARABESQUE — disabled */
+
+    /* SEARCH BAR */
+    .search-bar { padding:0 20px 8px; }
+    .search-input { width:100%; padding:10px 14px 10px 36px; border:1.5px solid var(--cream-dark); border-radius:10px; font-family:var(--heading); font-size:0.8125rem; background:var(--cream); color:var(--ink); outline:none; transition:border 0.2s; box-sizing:border-box; }
+    .search-input:focus { border-color:var(--gold); }
+    .search-input::placeholder { color:var(--ink-faint); }
+    .search-wrap { position:relative; }
+    .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.875rem; color:var(--ink-faint); pointer-events:none; }
+    .search-results { padding:0 20px; }
+    .search-item { display:flex; align-items:center; gap:12px; padding:10px 14px; margin-bottom:6px; background:white; border-radius:10px; border:1px solid var(--cream-dark); cursor:pointer; }
+    .search-item:active { background:var(--cream-dark); }
+    body.dark .search-input { background:#1E1E1E; border-color:#333; color:#F0E6D3; }
+    body.dark .search-item { background:#1E1E1E; border-color:#333; }
+
+    /* STREAK */
+    .streak-bar { display:flex; align-items:center; justify-content:center; gap:8px; padding:6px 0; }
+    .streak-flame { font-size:1.25rem; }
+    .streak-num { font-family:var(--heading); font-size:1.125rem; font-weight:700; color:var(--gold); }
+    .streak-label { font-size:0.6875rem; color:var(--ink-faint); }
+    .streak-dots { display:flex; gap:4px; margin-top:2px; }
+    .streak-dot { width:8px; height:8px; border-radius:50%; background:var(--cream-dark); }
+    .streak-dot.active { background:var(--gold); }
+    .streak-dot.today { background:var(--success); box-shadow:0 0 4px var(--success); }
+
+    /* WEEKLY CHART */
+    .week-chart { padding:0 20px; margin-bottom:16px; }
+    .week-bars { display:flex; justify-content:space-between; align-items:flex-end; height:80px; gap:4px; }
+    .week-bar-wrap { display:flex; flex-direction:column; align-items:center; flex:1; gap:4px; }
+    .week-bar { width:100%; border-radius:4px 4px 0 0; background:var(--gold); min-height:2px; transition:height 0.3s ease; opacity:0.8; }
+    .week-bar.today { opacity:1; box-shadow:0 0 6px rgba(200,169,110,0.4); }
+    .week-day { font-size:0.5625rem; color:var(--ink-faint); font-weight:600; }
+    .week-count { font-size:0.5rem; color:var(--ink-faint); }
+    body.dark .week-bar { opacity:0.9; }
+
   </style>
 </head>
 <body>
@@ -483,14 +530,111 @@ let li=0, lf=false, lfi='all', slideDir='';
 let qm='ar_to_fr', qq=null, qs=null, qn=0, qc=0;
 let wm='ar_to_trans', wq=null, wa=false, wn=0, wc=0;
 let mp=[], mro=[], msl=null, mm=new Set(), mw=null, mt=0, mi=null, mmo='ar_to_fr', mia=false;
+let streak=0, lastActive='', actLog={};
 
 // UTILS
 function sh(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
 function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z\s]/g,'').trim();}
 function sim(a,b){if(a===b)return 1;const l=a.length>b.length?a:b,s=a.length>b.length?b:a;if(!l.length)return 1;let m=0;for(let i=0;i<s.length;i++)if(s[i]===l[i])m++;return m/l.length;}
 function ft(s){return(s/60|0)+':'+(s%60+'').padStart(2,'0');}
-function save(){try{localStorage.setItem('a-m',JSON.stringify([...mst]));localStorage.setItem('a-s',JSON.stringify(st));localStorage.setItem('a-r',JSON.stringify(sr));}catch(e){}}
-function load(){try{const a=localStorage.getItem('a-m');if(a)mst=new Set(JSON.parse(a));const b=localStorage.getItem('a-s');if(b)st=JSON.parse(b);const c=localStorage.getItem('a-r');if(c)sr=JSON.parse(c);}catch(e){}}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function save(){try{localStorage.setItem('a-m',JSON.stringify([...mst]));localStorage.setItem('a-s',JSON.stringify(st));localStorage.setItem('a-r',JSON.stringify(sr));localStorage.setItem('a-streak',JSON.stringify({s:streak,d:lastActive}));localStorage.setItem('a-log',JSON.stringify(actLog));}catch(e){}}
+function load(){try{const a=localStorage.getItem('a-m');if(a)mst=new Set(JSON.parse(a));const b=localStorage.getItem('a-s');if(b)st=JSON.parse(b);const c=localStorage.getItem('a-r');if(c)sr=JSON.parse(c);const sk=localStorage.getItem('a-streak');if(sk){const d=JSON.parse(sk);streak=d.s||0;lastActive=d.d||'';}const lg=localStorage.getItem('a-log');if(lg)actLog=JSON.parse(lg);}catch(e){}}
+
+// STREAK
+function updateStreak(){
+  const today=todayStr();
+  if(lastActive===today) return;
+  const yesterday=new Date(Date.now()-864e5).toISOString().slice(0,10);
+  if(lastActive===yesterday){streak++;}
+  else if(lastActive!==today){streak=1;}
+  lastActive=today;
+  save();
+}
+function logActivity(){
+  const today=todayStr();
+  actLog[today]=(actLog[today]||0)+1;
+  updateStreak();
+  save();
+}
+
+// ARC PROGRESS SVG
+function arcSvg(){
+  const pct=Math.round(mst.size/99*100);
+  const r=32,cx=40,cy=38;
+  const circ=Math.PI*r;
+  const offset=circ-(pct/100*circ);
+  return `<div class="arc-wrap"><svg class="arc-svg" viewBox="0 0 80 44">
+    <path class="arc-bg" d="M8,38 A32,32 0 0,1 72,38"/>
+    <path class="arc-fill" d="M8,38 A32,32 0 0,1 72,38" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+    <text class="arc-text" x="40" y="32">${mst.size}/99</text>
+    <text class="arc-sub" x="40" y="42">${pct}%</text>
+  </svg></div>`;
+}
+
+// SEARCH
+let searchOpen=false, searchQ='';
+function renderSearch(){
+  if(!searchOpen) return '';
+  let h='<div class="search-bar"><div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" type="text" placeholder="Rechercher un nom..." value="'+searchQ+'" oninput="searchQ=this.value;rL()" autofocus></div></div>';
+  if(searchQ.length>=1){
+    const q=norm(searchQ);
+    const results=N.filter(n=>norm(n.fr).includes(q)||norm(n.t).includes(q)||n.ar.includes(searchQ)||(''+n.id)===searchQ.trim());
+    if(results.length){
+      h+='<div class="search-results">';
+      results.slice(0,8).forEach(n=>{
+        const ci=CAT[n.c];
+        h+=`<div class="search-item" onclick="searchOpen=false;searchQ='';goN(${n.id})">
+          <span style="font-family:var(--arabic);font-size:1.125rem;direction:rtl">${n.ar}</span>
+          <span style="flex:1"><b style="color:var(--gold);font-size:0.8125rem">${n.t}</b><br><span style="font-size:0.75rem;color:var(--ink-light)">${n.fr}</span></span>
+          <span style="font-size:0.6875rem;color:var(--ink-faint)">N°${n.id}</span>
+        </div>`;
+      });
+      h+='</div>';
+    } else {
+      h+='<div style="text-align:center;padding:16px;color:var(--ink-faint);font-size:0.8125rem">Aucun résultat</div>';
+    }
+  }
+  return h;
+}
+
+// WEEKLY CHART
+function weekChart(){
+  const days=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const today=new Date();
+  const dow=today.getDay()||7;
+  let data=[];
+  for(let i=1;i<=7;i++){
+    const d=new Date(today);
+    d.setDate(today.getDate()-(dow-i));
+    const key=d.toISOString().slice(0,10);
+    data.push({day:days[i-1],count:actLog[key]||0,isToday:key===todayStr()});
+  }
+  const max=Math.max(...data.map(d=>d.count),1);
+  let h='<div class="week-chart"><p style="font-size:0.75rem;font-weight:600;color:var(--ink-light);margin-bottom:8px">Activité cette semaine</p><div class="week-bars">';
+  data.forEach(d=>{
+    const height=Math.max(d.count/max*60,2);
+    h+=`<div class="week-bar-wrap"><div class="week-count">${d.count||''}</div><div class="week-bar${d.isToday?' today':''}" style="height:${height}px"></div><div class="week-day">${d.day}</div></div>`;
+  });
+  h+='</div></div>';
+  return h;
+}
+
+// STREAK DISPLAY
+function streakHtml(){
+  if(streak<=0) return '';
+  const today=todayStr();
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(Date.now()-i*864e5).toISOString().slice(0,10);
+    days.push({d,active:!!actLog[d],isToday:d===today});
+  }
+  let h='<div class="streak-bar"><span class="streak-flame">🔥</span><span class="streak-num">'+streak+'</span><span class="streak-label">jour'+(streak>1?'s':'')+'</span></div>';
+  h+='<div style="display:flex;justify-content:center;margin-bottom:8px"><div class="streak-dots">';
+  days.forEach(d=>{h+=`<div class="streak-dot${d.active?' active':''}${d.isToday?' today':''}"></div>`;});
+  h+='</div></div>';
+  return h;
+}
 function gsr(id){if(!sr[id])sr[id]={b:0,n:0};return sr[id];}
 function srUp(id){const s=gsr(id);s.b=Math.min(s.b+1,4);s.n=Date.now()+SRI[s.b]*864e5;save();}
 function srDn(id){const s=gsr(id);s.b=Math.max(s.b-1,0);s.n=Date.now();save();}
@@ -516,7 +660,11 @@ function sp(id){pg=id;document.querySelectorAll('.page').forEach(p=>p.classList.
 function rL(){
   const ns=gfn();if(li>=ns.length)li=0;const n=ns[li];const dc=due().length;
   const rem=99-mst.size, acq=mst.size;
-  let h=hd('Apprendre','Mémorise les Noms un par un','learn');
+  let h=arcSvg()+streakHtml();
+  h+=hd('Apprendre','Mémorise les Noms un par un','learn');
+  h+=`<div style="display:flex;justify-content:flex-end;padding:0 20px 4px"><button onclick="searchOpen=!searchOpen;searchQ='';rL()" style="background:none;border:1px solid var(--cream-dark);border-radius:8px;padding:5px 12px;font-size:0.75rem;color:var(--ink-faint);cursor:pointer">${searchOpen?'✕ Fermer':'🔍 Rechercher'}</button></div>`;
+  h+=renderSearch();
+  if(searchOpen&&searchQ.length>=1){document.getElementById('page-learn').innerHTML=h;return;}
   h+='<div class="pills">';
   h+='<button class="pl'+(lfi==='all'?' a':'')+'" onclick="sLF(\'all\')">Tous (99)</button>';
   h+='<button class="pl'+(lfi==='remaining'?' a':'')+'" onclick="sLF(\'remaining\')">Restants ('+rem+')</button>';
@@ -568,7 +716,8 @@ function getRevList(){
 function rRev(){
   if(!revList.length){revList=getRevList();revIdx=0;revDone=new Set();revFlip=false;}
   const dc=due().length;
-  let h=hd('Révision du jour','Tes noms prioritaires aujourd\'hui','review');
+  let h=arcSvg()+streakHtml();
+  h+=hd('Révision du jour','Tes noms prioritaires aujourd\'hui','review');
 
   // Summary bar
   h+=`<div style="padding:0 20px 12px;display:flex;justify-content:space-between;align-items:center">`;
@@ -634,11 +783,15 @@ function rRev(){
     h+=`</div>`;
   }
 
-  h+=`<div class="meta">${revFlip?'Évalue ta connaissance':'Touche la carte pour révéler'}</div>`;
+  h+=`<div class="meta">${revFlip?'Évalue ta connaissance':'Touche la carte pour révéler, swipe pour passer'}</div>`;
   document.getElementById('page-review').innerHTML=h;
+  // Swipe on review card
+  const rc=document.querySelector('#page-review .card');
+  if(rc){let tx=null;rc.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});rc.addEventListener('touchend',e=>{if(!tx||revFlip)return;const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){e.preventDefault();revFlip=false;if(d>0)revIdx=revIdx<revList.length-1?revIdx+1:0;else revIdx=revIdx>0?revIdx-1:revList.length-1;rRev();}tx=null;});}
 }
 
 function revAnswer(correct){
+  logActivity();
   const n=revList[revIdx];
   if(correct){srUp(n.id);miniConfetti();}
   else srDn(n.id);
@@ -683,7 +836,7 @@ function rQ(){
   document.getElementById('page-quiz').innerHTML=h;
 }
 function sQM(m){qm=m;qn=0;qc=0;gQ();rQ();}
-function qA(id){if(qs)return;qs=id;qn++;const ok=id===qq.tg.id;if(ok){qc++;srUp(qq.tg.id);miniConfetti();}else srDn(qq.tg.id);const tid=qq.tg.id;if(!st[tid])st[tid]={c:0,w:0};if(ok)st[tid].c++;else st[tid].w++;save();rQ();setTimeout(()=>{gQ();rQ();},ok?800:1500);}
+function qA(id){if(qs)return;qs=id;qn++;logActivity();const ok=id===qq.tg.id;if(ok){qc++;srUp(qq.tg.id);miniConfetti();}else srDn(qq.tg.id);const tid=qq.tg.id;if(!st[tid])st[tid]={c:0,w:0};if(ok)st[tid].c++;else st[tid].w++;save();rQ();setTimeout(()=>{gQ();rQ();},ok?800:1500);}
 
 // =============================================
 // WRITE
@@ -714,7 +867,7 @@ function rW(){
 function sWM(m){wm=m;wn=0;wc=0;gW();rW();}
 function cW(){
   if(wa)return;const f=document.getElementById('wf');if(!f||!f.value.trim())return;
-  wa=true;wn++;const t=wq;
+  wa=true;wn++;logActivity();const t=wq;
   let exp=wm==='ar_to_fr'?t.fr:t.t;
   const ua=norm(f.value);
   // Build list of accepted answers
@@ -769,7 +922,7 @@ function sMM(m){mmo=m;iM();}
 function mLC(id){if(mm.has(id)||mia)return;msl=id;mw=null;rM();}
 function mRC(id){
   if(mm.has(id)||!msl||mia)return;
-  if(msl===id){mm.add(id);if(!st[id])st[id]={c:0,w:0};st[id].c++;msl=null;save();rM();}
+  if(msl===id){mm.add(id);if(!st[id])st[id]={c:0,w:0};st[id].c++;logActivity();msl=null;save();rM();}
   else{mia=true;mw=id;if(!st[msl])st[msl]={c:0,w:0};st[msl].w++;save();rM();setTimeout(()=>{mw=null;msl=null;mia=false;rM();},600);}
 }
 
@@ -800,7 +953,8 @@ function rP(){
   const sd=[0,0,0,0,0];N.forEach(n=>{sd[gsr(n.id).b]++;});
   const diff=N.map(n=>({...n,s:st[n.id]||{c:0,w:0}})).filter(n=>n.s.w>0).sort((a,b)=>b.s.w-a.s.w).slice(0,10);
 
-  let h=hd('Progrès','Ton avancement','progress');
+  let h=arcSvg()+streakHtml();
+  h+=hd('Progrès','Ton avancement','progress');
   h+=`<div class="sg">
     <div class="sc"><div class="sv">${mst.size}</div><div class="ssub">/ 99</div><div class="slab">Noms mémorisés</div></div>
     <div class="sc"><div class="sv">${acc}%</div><div class="ssub">${tc}/${ta}</div><div class="slab">Précision</div></div>
@@ -809,7 +963,7 @@ function rP(){
   </div>`;
   h+=`<div class="psec"><div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px"><span style="color:var(--ink-light);font-weight:600">Progression</span><span style="color:var(--gold);font-weight:700">${pct}%</span></div><div class="pbar"><div class="pfill" style="width:${pct}%"></div></div></div>`;
   // SR bar
-  const cols=['var(--gold)','var(--error)','var(--ink-faint)','var(--success)','#1B4332'];
+  const cols=['var(--ink-faint)','var(--gold)','#E0A030','var(--success)','#1B4332'];
   h+=`<div style="padding:0 20px;margin-bottom:20px"><p style="font-size:0.75rem;font-weight:600;color:var(--ink-light);margin-bottom:8px">Répétition espacée</p><div class="sr-bar">`;
   sd.forEach((c,i)=>{const w=c/99*100;if(w>0)h+=`<div class="sr-seg" style="width:${w}%;background:${cols[i]}">${c}</div>`;});
   h+=`</div><div class="sr-legend"><span>Nouveau</span><span>En cours</span><span>Révision</span><span>Acquis</span><span>Maîtrisé</span></div></div>`;
@@ -818,6 +972,7 @@ function rP(){
     diff.forEach(n=>{h+=`<div class="di"><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--arabic);font-size:1rem;color:var(--ink);direction:rtl">${n.ar}</span>${showTranslit?`<span style="font-size:0.6875rem;color:var(--ink-faint)">${n.t}</span>`:""}</div><div style="display:flex;gap:8px;font-size:10px"><span style="color:var(--success)">✓${n.s.c}</span><span style="color:var(--error)">✗${n.s.w}</span></div></div>`;});
     h+='</div>';
   }
+  h+=weekChart();
   h+=`<div class="rst"><button class="rstb" onclick="if(confirm('Réinitialiser toute ta progression ?')){mst=new Set();st={};sr={};localStorage.clear();rP();}">Réinitialiser</button></div>`;
   document.getElementById('page-progress').innerHTML=h;
 }
