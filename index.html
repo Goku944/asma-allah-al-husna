@@ -675,25 +675,24 @@ function playName(id){
   audioPlaying=true;
   const btn=document.getElementById('audio-btn-'+id);
   if(btn){btn.classList.add('playing');btn.textContent='🔊';}
-  // Try mp3 first
-  const audio=new Audio('audio/'+id+'.mp3?v=7');
-  audio.addEventListener('canplaythrough',()=>{
-    audio.play();
-    audio.onended=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
-  });
-  audio.addEventListener('error',()=>{
-    // Fallback: Web Speech API
+  function done(){audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}}
+  function fallback(){console.log('[AUDIO] Fallback to Speech API for id='+id);
     if('speechSynthesis' in window){
       const u=new SpeechSynthesisUtterance(n.ar);
       u.lang='ar-SA';u.rate=0.75;u.pitch=1;
-      u.onend=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
-      u.onerror=()=>{audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}};
-      speechSynthesis.cancel();
-      speechSynthesis.speak(u);
-    } else {
-      audioPlaying=false;if(btn){btn.classList.remove('playing');btn.textContent='🔈';}
-    }
-  });
+      u.onend=done;u.onerror=done;
+      speechSynthesis.cancel();speechSynthesis.speak(u);
+    } else done();
+  }
+  // Try mp3 with direct play (works on user interaction)
+  console.log('[AUDIO] Trying: audio/'+id+'.mp3');
+  try {
+    const audio=new Audio('audio/'+id+'.mp3');
+    audio.onended=done;
+    audio.onerror=function(){fallback();};
+    var p=audio.play();
+    if(p&&p.catch) p.catch(function(){fallback();});
+  } catch(e){fallback();}
 }
 function audioBtnHtml(id){
   return `<button class="audio-btn" id="audio-btn-${id}" onclick="event.stopPropagation();playName(${id})" title="Écouter la prononciation">🔈</button>`;
@@ -710,7 +709,7 @@ function sp(id){pg=id;document.querySelectorAll('.page').forEach(p=>p.classList.
 function rL(){
   const ns=gfn();if(li>=ns.length)li=0;const n=ns[li];const dc=due().length;
   const rem=99-mst.size, acq=mst.size;
-  let h=arcSvg()+streakHtml();
+  let h="";
   h+=hd('Apprendre','Mémorise les Noms un par un','learn');
   h+=`<div style="display:flex;justify-content:flex-end;padding:0 20px 4px"><button onclick="searchOpen=!searchOpen;searchQ='';rL();if(searchOpen){setTimeout(()=>{const i=document.getElementById('search-inp');if(i)i.focus();},50);}" style="background:none;border:1px solid var(--cream-dark);border-radius:8px;padding:5px 12px;font-size:0.75rem;color:var(--ink-faint);cursor:pointer">${searchOpen?'\u2715 Fermer':'\ud83d\udd0d Rechercher'}</button></div>`;
   h+=renderSearch();
@@ -767,7 +766,7 @@ function getRevList(){
 function rRev(){
   if(!revList.length){revList=getRevList();revIdx=0;revDone=new Set();revFlip=false;}
   const dc=due().length;
-  let h=arcSvg()+streakHtml();
+  let h="";
   h+=hd('Révision du jour','Tes noms prioritaires aujourd\'hui','review');
 
   // Summary bar
