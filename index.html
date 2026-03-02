@@ -88,10 +88,10 @@
     /* ============================================ */
     .card-wrap { padding: 0 20px; }
     .card {
-      background: white; border-radius: var(--radius); padding: 24px 20px;
+      background: white; border-radius: var(--radius); padding: 20px 16px;
       box-shadow: var(--shadow-card);
       text-align: center; position: relative; overflow: hidden;
-      height: 300px;
+      min-height: 260px;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;
     }
@@ -101,9 +101,9 @@
     .co-tr { top:12px; right:12px; border-top:1.5px solid var(--gold-light); border-right:1.5px solid var(--gold-light); border-radius:0 4px 0 0; }
     .co-bl { bottom:12px; left:12px; border-bottom:1.5px solid var(--gold-light); border-left:1.5px solid var(--gold-light); border-radius:0 0 0 4px; }
     .co-br { bottom:12px; right:12px; border-bottom:1.5px solid var(--gold-light); border-right:1.5px solid var(--gold-light); border-radius:0 0 4px 0; }
-    .c-num { font-size:0.8125rem; color:var(--gold); font-weight:600; letter-spacing:2px; margin-bottom:14px; }
-    .c-ar { font-family:var(--arabic); font-size:2.875rem; line-height:1.3; color:var(--ink); direction:rtl; margin-bottom:12px; }
-    .c-tr { font-size:1.375rem; color:var(--gold); font-weight:600; letter-spacing:0.5px; margin-bottom:4px; }
+    .c-num { font-size:0.75rem; color:var(--gold); font-weight:600; letter-spacing:2px; margin-bottom:8px; }
+    .c-ar { font-family:var(--arabic); font-size:2.625rem; line-height:1.2; color:var(--ink); direction:rtl; margin-bottom:6px; }
+    .c-tr { font-size:1.25rem; color:var(--gold); font-weight:600; letter-spacing:0.5px; margin-bottom:2px; }
     .c-fr { font-size:1.125rem; color:var(--ink-light); font-style:italic; line-height:1.4; animation:fadeUp 0.25s ease; }
     .c-cat { display:inline-block; margin-top:8px; padding:4px 12px; border-radius:10px; font-size:0.75rem; color:var(--gold); background:var(--gold-glow); border:1px solid var(--gold-border); }
     .c-hint { font-size:0.8125rem; color:var(--ink-faint); opacity:0.5; margin-top:10px; }
@@ -393,7 +393,7 @@
     body.dark .week-bar { opacity:0.9; }
 
     /* AUDIO BUTTON */
-    .audio-btn { background:none; border:1.5px solid var(--gold-light); border-radius:50%; width:36px; height:36px; font-size:1rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; justify-content:center; margin:6px 0; }
+    .audio-btn { background:none; border:1px solid var(--gold-light); border-radius:50%; width:28px; height:28px; font-size:0.8rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; justify-content:center; margin:2px 0; }
     .audio-btn:active { transform:scale(0.9); }
     .audio-btn.playing { background:var(--gold-glow); border-color:var(--gold); animation:audioPulse 0.8s ease infinite; }
     @keyframes audioPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
