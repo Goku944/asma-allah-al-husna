@@ -60,18 +60,18 @@
     /* TAB BAR */
     .tab-bar {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(250,246,240,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      background: rgba(250,246,240,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid rgba(184,134,11,0.08);
-      display: flex; justify-content: space-around; align-items: flex-start;
-      padding: 8px 4px max(8px, env(safe-area-inset-bottom));
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 6px 2px max(6px, env(safe-area-inset-bottom));
       max-width: 500px; margin: 0 auto;
     }
-    .tb { background:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 4px; border-radius:10px; opacity:0.4; transition:opacity 0.2s; }
-    .tb.a { opacity:1; }
-    .tb .ti { font-size:1.25rem; line-height:1; }
-    .tb .tl { font-size:0.625rem; font-weight:500; color:var(--ink-light); letter-spacing:0.3px; white-space:nowrap; }
-    .tb.a .tl { font-weight:700; color:var(--gold); }
-    .tb .td { width:14px; height:2px; border-radius:1px; background:var(--gold); margin-top:2px; }
+    .tb { background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:1px; padding:4px 6px; border-radius:10px; opacity:0.35; transition:all 0.2s; cursor:pointer; min-width:0; }
+    .tb.a { opacity:1; background:rgba(200,169,110,0.08); }
+    .tb .ti { font-size:1.125rem; line-height:1; }
+    .tb .tl { font-size:0; overflow:hidden; max-width:0; transition:all 0.2s; font-weight:600; color:var(--gold); white-space:nowrap; }
+    .tb.a .tl { font-size:0.5625rem; max-width:60px; letter-spacing:0.2px; }
+    .tb .td { width:3px; height:3px; border-radius:50%; background:var(--gold); margin-top:1px; }
 
     /* PILLS */
     .pills { display:flex; justify-content:center; gap:6px; padding:0 12px; flex-wrap:wrap; margin-bottom:14px; }
@@ -576,26 +576,32 @@ function arcSvg(){
 let searchOpen=false, searchQ='';
 function renderSearch(){
   if(!searchOpen) return '';
-  let h='<div class="search-bar"><div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" type="text" placeholder="Rechercher un nom..." value="'+searchQ+'" oninput="searchQ=this.value;rL()" autofocus></div></div>';
-  if(searchQ.length>=1){
-    const q=norm(searchQ);
-    const results=N.filter(n=>norm(n.fr).includes(q)||norm(n.t).includes(q)||n.ar.includes(searchQ)||(''+n.id)===searchQ.trim());
-    if(results.length){
-      h+='<div class="search-results">';
-      results.slice(0,8).forEach(n=>{
-        const ci=CAT[n.c];
-        h+=`<div class="search-item" onclick="searchOpen=false;searchQ='';goN(${n.id})">
-          <span style="font-family:var(--arabic);font-size:1.125rem;direction:rtl">${n.ar}</span>
-          <span style="flex:1"><b style="color:var(--gold);font-size:0.8125rem">${n.t}</b><br><span style="font-size:0.75rem;color:var(--ink-light)">${n.fr}</span></span>
-          <span style="font-size:0.6875rem;color:var(--ink-faint)">N°${n.id}</span>
-        </div>`;
-      });
-      h+='</div>';
-    } else {
-      h+='<div style="text-align:center;padding:16px;color:var(--ink-faint);font-size:0.8125rem">Aucun résultat</div>';
-    }
-  }
+  let h='<div class="search-bar"><div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-inp" type="text" placeholder="Rechercher un nom..." value="'+searchQ+'" oninput="doSearch(this.value)"></div></div>';
+  h+='<div id="search-res">';
+  h+=searchResults();
+  h+='</div>';
   return h;
+}
+function searchResults(){
+  if(searchQ.length<1) return '';
+  const q=norm(searchQ);
+  const results=N.filter(n=>norm(n.fr).includes(q)||norm(n.t).includes(q)||n.ar.includes(searchQ)||(''+n.id)===searchQ.trim());
+  if(!results.length) return '<div style="text-align:center;padding:16px;color:var(--ink-faint);font-size:0.8125rem">Aucun résultat</div>';
+  let h='<div class="search-results">';
+  results.slice(0,8).forEach(n=>{
+    h+=`<div class="search-item" onclick="searchOpen=false;searchQ='';goN(${n.id})">
+      <span style="font-family:var(--arabic);font-size:1.125rem;direction:rtl">${n.ar}</span>
+      <span style="flex:1"><b style="color:var(--gold);font-size:0.8125rem">${n.t}</b><br><span style="font-size:0.75rem;color:var(--ink-light)">${n.fr}</span></span>
+      <span style="font-size:0.6875rem;color:var(--ink-faint)">N°${n.id}</span>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function doSearch(v){
+  searchQ=v;
+  const el=document.getElementById('search-res');
+  if(el) el.innerHTML=searchResults();
 }
 
 // WEEKLY CHART
@@ -664,7 +670,7 @@ function rL(){
   h+=hd('Apprendre','Mémorise les Noms un par un','learn');
   h+=`<div style="display:flex;justify-content:flex-end;padding:0 20px 4px"><button onclick="searchOpen=!searchOpen;searchQ='';rL()" style="background:none;border:1px solid var(--cream-dark);border-radius:8px;padding:5px 12px;font-size:0.75rem;color:var(--ink-faint);cursor:pointer">${searchOpen?'✕ Fermer':'🔍 Rechercher'}</button></div>`;
   h+=renderSearch();
-  if(searchOpen&&searchQ.length>=1){document.getElementById('page-learn').innerHTML=h;return;}
+  if(searchOpen&&searchQ.length>=1){document.getElementById('page-learn').innerHTML=h;const inp=document.getElementById('search-inp');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}return;}
   h+='<div class="pills">';
   h+='<button class="pl'+(lfi==='all'?' a':'')+'" onclick="sLF(\'all\')">Tous (99)</button>';
   h+='<button class="pl'+(lfi==='remaining'?' a':'')+'" onclick="sLF(\'remaining\')">Restants ('+rem+')</button>';
