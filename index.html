@@ -352,6 +352,7 @@
     <div class="page-scroll">
       <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
       <div id="page-learn" class="page active"></div>
+      <div id="page-review" class="page"></div>
       <div id="page-quiz" class="page"></div>
       <div id="page-write" class="page"></div>
       <div id="page-match" class="page"></div>
@@ -505,9 +506,9 @@ function trlitHtml(text,cls){return showTranslit?`<div class="${cls}">${text}</d
 
 
 // TAB BAR
-const TB=[{id:'learn',l:'Apprendre',i:'📖'},{id:'quiz',l:'Quiz',i:'✨'},{id:'write',l:'Écrire',i:'✍️'},{id:'match',l:'Relier',i:'🔗'},{id:'categories',l:'Thèmes',i:'🏷️'},{id:'progress',l:'Progrès',i:'📊'},{id:'settings',l:'Réglages',i:'⚙️'}];
+const TB=[{id:'learn',l:'Apprendre',i:'📖'},{id:'review',l:'Révision',i:'🔁'},{id:'quiz',l:'Quiz',i:'✨'},{id:'write',l:'Écrire',i:'✍️'},{id:'match',l:'Relier',i:'🔗'},{id:'categories',l:'Thèmes',i:'🏷️'},{id:'progress',l:'Progrès',i:'📊'},{id:'settings',l:'Réglages',i:'⚙️'}];
 function rTB(){document.getElementById('tab-bar').innerHTML=TB.map(t=>`<button class="tb${pg===t.id?' a':''}" onclick="sp('${t.id}')"><span class="ti">${t.i}</span><span class="tl">${t.l}</span>${pg===t.id?'<div class="td"></div>':''}</button>`).join('');}
-function sp(id){pg=id;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');rTB();({learn:rL,quiz:rQ,write:rW,match:iM,categories:rC,progress:rP,settings:rS})[id]();}
+function sp(id){pg=id;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');rTB();({learn:rL,review:rRev,quiz:rQ,write:rW,match:iM,categories:rC,progress:rP,settings:rS})[id]();}
 
 // =============================================
 // LEARN
@@ -547,6 +548,109 @@ function sLF(f){lfi=f;li=0;lf=false;slideDir='';rL();}
 function tF(){lf=!lf;slideDir='';rL();}
 function lG(d){const ns=gfn();lf=false;slideDir=d>0?'left':'right';if(d===1)li=li<ns.length-1?li+1:0;else li=li>0?li-1:ns.length-1;rL();setTimeout(()=>{slideDir='';},350);}
 function tM(id){if(mst.has(id))mst.delete(id);else{mst.add(id);checkMilestone();}save();rL();}
+
+// =============================================
+// RÉVISION DU JOUR
+// =============================================
+let revList=[], revIdx=0, revDone=new Set(), revFlip=false;
+
+function getRevList(){
+  // Priority: due names first, then weakest (most errors), then new
+  const d=due();
+  const weak=N.filter(n=>st[n.id]&&st[n.id].w>st[n.id].c).sort((a,b)=>(st[b.id]?.w||0)-(st[a.id]?.w||0));
+  const newN=N.filter(n=>!sr[n.id]||sr[n.id].b===0);
+  const combined=[...d];
+  weak.forEach(n=>{if(!combined.find(x=>x.id===n.id))combined.push(n);});
+  newN.forEach(n=>{if(!combined.find(x=>x.id===n.id))combined.push(n);});
+  return combined.slice(0,10); // 10 noms max par session
+}
+
+function rRev(){
+  if(!revList.length){revList=getRevList();revIdx=0;revDone=new Set();revFlip=false;}
+  const dc=due().length;
+  let h=hd('Révision du jour','Tes noms prioritaires aujourd\'hui','review');
+
+  // Summary bar
+  h+=`<div style="padding:0 20px 12px;display:flex;justify-content:space-between;align-items:center">`;
+  h+=`<span style="font-size:0.8125rem;color:var(--ink-faint)">${revDone.size}/${revList.length} révisés</span>`;
+  h+=`<span style="font-size:0.75rem;color:var(--gold);font-weight:600">${dc} nom${dc>1?'s':''} à réviser au total</span>`;
+  h+=`</div>`;
+
+  // Progress dots
+  h+=`<div style="display:flex;justify-content:center;gap:6px;padding:0 20px 14px">`;
+  revList.forEach((n,i)=>{
+    const done=revDone.has(n.id);
+    const active=i===revIdx;
+    const col=done?'var(--success)':active?'var(--gold)':'var(--cream-dark)';
+    h+=`<div style="width:${active?'20px':'8px'};height:8px;border-radius:4px;background:${col};transition:all 0.2s"></div>`;
+  });
+  h+=`</div>`;
+
+  if(revDone.size===revList.length){
+    // All done!
+    h+=`<div class="done"><div class="em">🌟</div><p>Révision terminée !</p>`;
+    h+=`<div style="font-size:0.875rem;color:var(--ink-light);margin:8px 0">${revList.length} noms révisés aujourd'hui</div>`;
+    h+=dv();
+    h+=`<button class="nrb" onclick="revList=[];revDone=new Set();rRev()">Nouvelle session</button>`;
+    h+=`</div>`;
+    document.getElementById('page-review').innerHTML=h;
+    confetti(40);
+    return;
+  }
+
+  if(!revList.length){
+    h+=`<div style="text-align:center;padding:40px 20px">`;
+    h+=`<div style="font-size:2.5rem;margin-bottom:12px">✅</div>`;
+    h+=`<p style="font-size:1.125rem;color:var(--ink);font-weight:600">Rien à réviser !</p>`;
+    h+=`<p style="font-size:0.875rem;color:var(--ink-faint);margin-top:6px">Tous tes noms sont à jour. Reviens demain ou apprends de nouveaux noms.</p>`;
+    h+=`</div>`;
+    document.getElementById('page-review').innerHTML=h;
+    return;
+  }
+
+  const n=revList[revIdx];
+  const s=gsr(n.id),ci=CAT[n.c],im=mst.has(n.id);
+
+  // Card
+  h+=`<div class="card-wrap"><div class="card fade-in" onclick="revFlip=!revFlip;rRev()">`;
+  h+=`<div class="co co-tl"></div><div class="co co-tr"></div><div class="co co-bl"></div><div class="co co-br"></div>`;
+  h+=`<div class="c-num">N°${n.id} <span class="sr-b sr${s.b}">${SRL[s.b]}</span></div>`;
+  h+=`<div class="c-ar">${n.ar}</div>`;
+  if(showTranslit) h+=`<div class="c-tr">${n.t}</div>`;
+  if(revFlip){
+    h+=`<div class="c-fr" style="animation:cardFadeIn 0.25s ease">${n.fr}</div>`;
+    h+=`<div class="c-cat">${ci.i} ${ci.l}</div>`;
+    h+=`<button class="mbtn mbtn-off" style="margin-top:8px;font-size:0.75rem;padding:6px 14px" onclick="event.stopPropagation();showDetail(${n.id})">📖 En savoir plus</button>`;
+  } else {
+    h+=`<div class="c-hint">Touche pour révéler</div>`;
+  }
+  h+=`</div></div>`;
+
+  // Action buttons (shown when flipped)
+  if(revFlip){
+    h+=`<div style="display:flex;justify-content:center;gap:12px;padding:14px 20px 4px">`;
+    h+=`<button class="mbtn mbtn-off" style="border-color:var(--error);color:var(--error)" onclick="revAnswer(false)">❌ Je ne sais pas</button>`;
+    h+=`<button class="mbtn mbtn-off" style="border-color:var(--success);color:var(--success)" onclick="revAnswer(true)">✅ Je sais</button>`;
+    h+=`</div>`;
+  }
+
+  h+=`<div class="meta">${revFlip?'Évalue ta connaissance':'Touche la carte pour révéler'}</div>`;
+  document.getElementById('page-review').innerHTML=h;
+}
+
+function revAnswer(correct){
+  const n=revList[revIdx];
+  if(correct){srUp(n.id);miniConfetti();}
+  else srDn(n.id);
+  if(!st[n.id])st[n.id]={c:0,w:0};
+  if(correct)st[n.id].c++;else st[n.id].w++;
+  save();
+  revDone.add(n.id);
+  revFlip=false;
+  revIdx++;
+  if(revIdx>=revList.length)revIdx=0;
+  rRev();
+}
 
 // =============================================
 // QUIZ
@@ -645,23 +749,8 @@ function cW(){
 // =============================================
 function iM(){clearInterval(mi);mp=sh(N).slice(0,5);mro=sh([...mp]);msl=null;mm=new Set();mw=null;mt=0;mia=false;mi=setInterval(()=>{mt++;rMT();},1000);rM();}
 function rMT(){const e=document.getElementById('mtd');if(e)e.innerHTML=`<span class="timer-v">${ft(mt)}</span><span style="font-size:0.75rem;color:var(--ink-faint);margin-left:10px">${mm.size}/5</span>`;}
-function gML(p){
-  if(mmo==='fr_to_ar') return `<div class="mb-fr">${p.fr}</div>`;
-  // Arabic shown: add translit if non-arabophone, add french if ar_to_trans mode
-  let h=`<div class="mb-ar">${p.ar}</div>`;
-  if(mmo==='ar_to_trans'&&showTranslit) h+=`<div class="mb-fr" style="font-size:0.625rem;color:var(--ink-faint)">${p.fr}</div>`;
-  else if(mmo==='ar_to_fr'&&showTranslit) h+=`<div class="mb-fr" style="font-size:0.625rem;color:var(--ink-faint)">${p.t}</div>`;
-  return h;
-}
-function gMR(p){
-  if(mmo==='ar_to_fr') return `<div class="mb-fr">${p.fr}</div>`;
-  if(mmo==='fr_to_ar'){
-    let h=`<div class="mb-ar">${p.ar}</div>`;
-    if(showTranslit) h+=`<div class="mb-fr" style="margin-top:3px;font-size:10px">${p.t}</div>`;
-    return h;
-  }
-  return `<div class="mb-fr">${p.t}</div>`;
-}
+function gML(p){return mmo==='fr_to_ar'?`<div class="mb-fr">${p.fr}</div>`:`<div class="mb-ar">${p.ar}</div>${showTranslit?`<div class="mb-fr" style="font-size:0.625rem;color:var(--ink-faint)">${p.t}</div>`:""}`;}
+function gMR(p){if(mmo==='ar_to_fr')return`<div class="mb-fr">${p.fr}</div>`;if(mmo==='fr_to_ar')return`<div class="mb-ar">${p.ar}</div>${showTranslit?`<div class="mb-fr" style="margin-top:3px;font-size:10px">${p.t}</div>`:""}`;return`<div class="mb-fr">${p.t}</div>`;}
 function rM(){
   let h=hd('Relier','Relie chaque Nom à sa signification','match');
   h+=`<div class="pills">${[{id:'ar_to_fr',l:'Arabe → Français'},{id:'fr_to_ar',l:'Français → Arabe'},{id:'ar_to_trans',l:'Arabe → Translit.'}].map(m=>`<button class="pl${mmo===m.id?' a':''}" onclick="sMM('${m.id}')">${m.l}</button>`).join('')}</div>`;
@@ -784,6 +873,7 @@ function setFontScale(v){
 
 // INFO MODALS per page
 const INFO={
+  review:{t:'🔁 Révision du jour',d:'Ta session quotidienne de révision. L\'app sélectionne automatiquement les 10 noms les plus urgents à revoir : ceux dont la date de révision est passée (répétition espacée), ceux que tu maîtrises le moins (plus d\'erreurs que de réussites), et les noms que tu n\'as pas encore étudiés. Évalue-toi honnêtement avec « Je sais » ou « Je ne sais pas » pour optimiser la mémorisation.'},
   learn:{t:'📖 Apprendre',d:'Parcours les 99 Noms un par un. Touche la carte pour la retourner et voir la signification en français. Tu peux filtrer par catégorie : Tous, Restants, Mémorisés, ou ceux à réviser selon le système de répétition espacée.'},
   quiz:{t:'✨ Quiz',d:'Teste ta mémoire ! Un nom t\'est présenté et tu dois choisir la bonne réponse parmi 4 propositions. 3 modes disponibles : Arabe→Français, Français→Arabe, Arabe→Translittération. Le système de répétition espacée priorise les noms que tu maîtrises le moins.'},
   write:{t:'✍️ Écrire',d:'Mémoire active : tape toi-même la réponse. Plusieurs écritures sont acceptées (avec ou sans accents, avec ou sans article al-). Le seuil de tolérance est de 70%. Idéal pour ancrer la mémorisation.'},
@@ -799,18 +889,107 @@ function showInfo(page){
   document.body.appendChild(o);
 }
 
-// EN SAVOIR PLUS — descriptions des noms (source: Coran, hadiths, tafsir)
+// EN SAVOIR PLUS — descriptions des 99 noms (sources: Coran, hadiths, tafsir)
 const DESC={
-1:"Ar-Rahmân désigne la miséricorde absolue et universelle d'Allah, qui englobe toute la création sans distinction. Ce nom est exclusivement réservé à Allah. Cité dans la Sourate Al-Fatiha (1:1) et titre de la Sourate Ar-Rahmân (55). Racine : ر-ح-م (rahima). Hadith : « Ma miséricorde l'emporte sur Ma colère » (Bukhari).",
-2:"Ar-Rahîm désigne la miséricorde spécifique d'Allah envers les croyants dans l'au-delà. Contrairement à Ar-Rahmân (universelle), Ar-Rahîm est une miséricorde récompensant la foi. Cité 114 fois dans la Basmala. Sourate Al-Baqara (2:143) : « Allah est compatissant et miséricordieux envers les hommes. »",
-3:"Al-Malik signifie Le Roi, Le Souverain absolu. Allah est le Roi de toute chose, des mondes visibles et invisibles. Sourate Al-Hashr (59:23). Il est Celui qui possède tout et dirige l'univers sans associé.",
-4:"Al-Quddûs signifie Le Très Saint, Le Pur. Allah est exempt de tout défaut et de toute imperfection. Cité dans la Sourate Al-Hashr (59:23) et Al-Jumu'a (62:1). Racine : ق-د-س (qadasa), la pureté.",
-5:"As-Salâm signifie La Paix, Celui qui est exempt de tout défaut. Il est la source de toute paix et sécurité. Sourate Al-Hashr (59:23). Le Prophète ﷺ disait après chaque prière : « Allâhumma anta as-Salâm, wa minka as-Salâm. »",
-6:"Al-Mu'min signifie Le Rassurant, Le Garant de la foi. Il est Celui qui confirme les croyants dans leur foi et leur accorde la sécurité. Sourate Al-Hashr (59:23). Racine : أ-م-ن (amina), sécurité.",
-7:"Al-Muhaymin signifie Le Protecteur, Le Surveillant. Allah veille sur toute Sa création et la protège. Sourate Al-Hashr (59:23). Il observe tout et rien ne Lui échappe.",
-8:"Al-'Azîz signifie Le Tout Puissant, L'Invincible. Nul ne peut Le vaincre ni s'opposer à Sa volonté. Cité 92 fois dans le Coran, souvent associé à Al-Hakîm (Le Sage).",
-9:"Al-Jabbâr signifie Le Contraignant, Celui qui impose Sa volonté. Il est aussi Celui qui répare les cœurs brisés. Sourate Al-Hashr (59:23). Double sens : puissance et réparation.",
-10:"Al-Mutakabbir signifie Le Superbe, Celui dont la grandeur est suprême. L'orgueil n'appartient qu'à Allah. Sourate Al-Hashr (59:23). Hadith : « L'orgueil est Mon manteau et la grandeur est Mon vêtement » (Muslim).",
+1:"Désigne la miséricorde absolue et universelle d'Allah, qui englobe toute la création sans distinction. Ce nom est exclusivement réservé à Allah. Cité dans la Sourate Al-Fatiha (1:1) et titre de la Sourate Ar-Rahmân (55). Racine : ر-ح-م (rahima). Hadith : « Ma miséricorde l'emporte sur Ma colère » (Bukhari).",
+2:"Désigne la miséricorde spécifique d'Allah envers les croyants dans l'au-delà. Contrairement à Ar-Rahmân (universelle), Ar-Rahîm est une miséricorde récompensant la foi. Cité 114 fois dans la Basmala. Sourate Al-Baqara (2:143) : « Allah est compatissant et miséricordieux envers les hommes. »",
+3:"Le Roi, Le Souverain absolu de toute chose, des mondes visibles et invisibles. Sourate Al-Hashr (59:23) et Al-Mu'minûn (23:116). Il possède tout et dirige l'univers sans associé. Le jour du Jugement, Il dira : « À qui appartient la royauté aujourd'hui ? » (Coran 40:16).",
+4:"Le Très Saint, Le Pur, exempt de tout défaut et de toute imperfection. Sourate Al-Hashr (59:23) et Al-Jumu'a (62:1). Les anges Le glorifient par ce nom. Racine : ق-د-س (qadasa), la pureté absolue.",
+5:"La Source de la Paix, Celui qui est exempt de tout défaut. Source de toute paix et sécurité. Sourate Al-Hashr (59:23). Le Prophète ﷺ disait après chaque prière : « Allâhumma anta as-Salâm, wa minka as-Salâm » (Muslim).",
+6:"Le Rassurant, Le Garant de la foi. Il confirme les croyants dans leur foi et leur accorde la sécurité. Sourate Al-Hashr (59:23). Racine : أ-م-ن (amina), la sécurité. Il témoigne de Sa propre unicité.",
+7:"Le Protecteur, Le Surveillant. Allah veille sur toute Sa création et la protège. Sourate Al-Hashr (59:23). Le Coran est décrit comme « Muhaymin » sur les Écritures précédentes (5:48).",
+8:"Le Tout Puissant, L'Invincible. Nul ne peut Le vaincre ni s'opposer à Sa volonté. Cité 92 fois dans le Coran, souvent associé à Al-Hakîm (Le Sage). Sourate Al-Hashr (59:23).",
+9:"Le Contraignant, Celui qui impose Sa volonté. Aussi Celui qui répare les cœurs brisés (jabr = réparer). Sourate Al-Hashr (59:23). Double sens : puissance irrésistible et réparation de ce qui est brisé.",
+10:"Le Superbe, Celui dont la grandeur est suprême. L'orgueil n'appartient qu'à Allah seul. Sourate Al-Hashr (59:23). Hadith : « L'orgueil est Mon manteau et la grandeur est Mon vêtement » (Muslim).",
+11:"Le Créateur, Celui qui a déterminé toute chose et lui a donné ses caractéristiques. Sourate Al-Hashr (59:24). Racine : خ-ل-ق (khalaqa). Il crée à partir du néant, sans modèle préexistant.",
+12:"Le Producteur, Celui qui donne l'existence à partir du néant. Sourate Al-Hashr (59:24). Il crée de manière harmonieuse et fait passer Ses créatures du non-être à l'être. Lié à Al-Khâliq et Al-Musawwir.",
+13:"Le Formateur, Celui qui façonne Ses créatures et leur donne leur apparence. Sourate Al-Hashr (59:24) : « Il est Le Créateur, Le Producteur, Le Formateur. À Lui les plus beaux noms. » Il donne à chaque être sa forme unique.",
+14:"L'Infini Pardonneur, Celui qui pardonne encore et encore. Forme intensive (fâ'âl) de « pardonner ». Racine : غ-ف-ر (ghafara) — couvrir, cacher les péchés. Sourate Az-Zumar (39:5). Il ne cesse de pardonner à celui qui se repent.",
+15:"Le Dominateur Suprême, Celui qui domine et soumet toute chose. Forme intensive. Sourate Ar-Ra'd (13:16). Rien ne résiste à Sa puissance. Sourate Al-An'âm (6:18) : « Il est Le Dominateur au-dessus de Ses serviteurs. »",
+16:"Le Donateur Suprême, Celui qui donne sans compter et sans contrepartie. Sourate Âl 'Imrân (3:8) : « Notre Seigneur, ne fais pas dévier nos cœurs… Tu es Le Donateur. » Ses dons sont infinis et gratuits.",
+17:"Celui qui pourvoit, Le Pourvoyeur absolu. Forme intensive. Il nourrit et subvient aux besoins de toute créature. Sourate Adh-Dhâriyât (51:58) : « C'est Allah qui est Le Pourvoyeur, Le Détenteur de la force. »",
+18:"L'Ouvreur, Celui qui ouvre les portes de la miséricorde et de la subsistance. Sourate Saba' (34:26) : « Notre Seigneur nous réunira puis nous jugera en toute vérité. Il est Le Juge, L'Omniscient. » Il résout les différends et lève les difficultés.",
+19:"L'Omniscient, Celui dont le savoir englobe toute chose, le passé, le présent et l'avenir. Cité plus de 150 fois dans le Coran. Sourate Al-Baqara (2:29). Rien ne Lui échappe, pas même le poids d'un atome.",
+20:"Celui qui retient, Celui qui resserre la subsistance selon Sa sagesse. Associé à Al-Bâsit (Celui qui étend). Sourate Al-Baqara (2:245). Il éprouve et donne selon ce qui est le meilleur pour chacun.",
+21:"Celui qui étend, Celui qui élargit et accorde la subsistance avec largesse. Complémentaire d'Al-Qâbid. Sourate Al-Baqara (2:245). Il dilate les cœurs et répand Ses bienfaits.",
+22:"Celui qui abaisse, Celui qui rabaisse les tyrans et les orgueilleux. Opposé à Ar-Râfi'. Mentionné dans les hadiths. Il abaisse qui Il veut selon Sa justice et Sa sagesse.",
+23:"Celui qui élève, Celui qui élève en rang et en honneur qui Il veut. Sourate Al-An'âm (6:83) : « Nous élevons en rang qui Nous voulons. » Il élève les humbles et les croyants sincères.",
+24:"Celui qui honore, Celui qui accorde la puissance et l'honneur à qui Il veut. Sourate Âl 'Imrân (3:26) : « Tu honores qui Tu veux et Tu humilies qui Tu veux. » La vraie dignité vient de Lui seul.",
+25:"Celui qui humilie, Celui qui abaisse qui Il veut en le privant de tout honneur. Sourate Âl 'Imrân (3:26). Complémentaire d'Al-Mu'izz. Sa justice s'applique aux arrogants et aux injustes.",
+26:"L'Audient, Celui qui entend toute chose, même le murmure le plus secret. Sourate Ash-Shûrâ (42:11). Son ouïe est parfaite et n'a aucune ressemblance avec celle de Ses créatures.",
+27:"Le Clairvoyant, Celui qui voit toute chose, rien ne Lui est caché. Sourate Ash-Shûrâ (42:11) : « Rien ne Lui ressemble, et Il est L'Audient, Le Clairvoyant. » Sa vision embrasse l'apparent et le caché.",
+28:"Le Juge, L'Arbitre suprême qui tranche entre les créatures avec justice et vérité. Sourate Al-Hajj (22:69) : « Allah jugera entre vous au Jour de la Résurrection. » Son jugement est sans appel.",
+29:"Le Juste, Celui dont la justice est absolue et parfaite. Il ne commet aucune injustice. Sourate An-Nisâ' (4:40) : « Allah ne lèse personne, fût-ce du poids d'un atome. » Racine : ع-د-ل ('adala).",
+30:"Le Subtil, Le Bienveillant, Celui dont la bonté atteint Ses serviteurs par des voies imperceptibles. Sourate Al-An'âm (6:103) : « Les regards ne peuvent L'atteindre, cependant qu'Il saisit tous les regards. Il est Le Doux, Le Bien-Informé. »",
+31:"Le Bien-Informé, Celui qui connaît la réalité profonde et cachée de toute chose. Sourate Al-Mulk (67:14) : « Ne sait-Il pas ce qu'Il a créé, Lui Le Subtil, Le Bien-Informé ? »",
+32:"L'Indulgent, Le Clément, Celui qui ne Se hâte pas de punir Ses serviteurs malgré leurs fautes. Sourate Al-Baqara (2:225). Sa patience est immense, laissant le temps au repentir.",
+33:"Le Sublime, L'Immense, Celui dont la grandeur dépasse toute compréhension. Sourate Al-Baqara (2:255) — Ayat Al-Kursî : « Son Trône déborde les cieux et la terre, et leur garde ne Lui coûte aucune peine. »",
+34:"Le Pardonneur, Celui qui pardonne abondamment. Racine : غ-ف-ر (ghafara). Sourate Az-Zumar (39:53) : « Ne désespérez pas de la miséricorde d'Allah. Allah pardonne tous les péchés. » Proche d'Al-Ghaffâr mais désigne un pardon plus complet.",
+35:"Le Reconnaissant, Celui qui récompense généreusement le moindre bien accompli. Sourate Fâtir (35:30). Il multiplie la récompense des actes de Ses serviteurs et ne laisse aucun bien sans rétribution.",
+36:"Le Très Haut, Celui qui est au-dessus de toute chose, en rang et en attributs. Sourate Al-Baqara (2:255). Sa hauteur est absolue, sans concept de lieu ni de direction. Lié à Al-Mutâ'alî.",
+37:"Le Grand, Celui dont la grandeur est incomparable et sans limite. Sourate Luqmân (31:30) : « C'est parce qu'Allah est Le Grand, Le Sublime. » Sa grandeur est dans Son essence, Ses noms et Ses actes.",
+38:"Le Gardien, Le Préservateur, Celui qui protège toute chose et rien ne se perd auprès de Lui. Sourate Hûd (11:57). Il garde et préserve l'univers et les actes de Ses serviteurs.",
+39:"Le Nourricier, Le Garant, Celui qui pourvoit à la nourriture et à la force de chaque créature. Sourate An-Nisâ' (4:85). Aucun être vivant n'est oublié dans Sa subsistance.",
+40:"Celui qui tient compte, Le Compteur, Celui qui suffit à Ses serviteurs et tient le compte de tout. Sourate An-Nisâ' (4:6). Rien n'échappe à Son décompte, et Il est Le meilleur Garant.",
+41:"Le Majestueux, Celui dont la majesté est absolue. Combinant la beauté et la grandeur. Mentionné dans les traditions prophétiques. Ses attributs de majesté et de beauté sont sans pareil.",
+42:"Le Généreux, Celui dont la générosité est sans limite. Sourate An-Naml (27:40) : « Mon Seigneur est Le Riche, Le Généreux. » Il donne avant qu'on Lui demande et pardonne avant qu'on s'excuse.",
+43:"Le Vigilant, L'Observateur, Celui qui observe en permanence Ses créatures. Sourate Al-Ahzâb (33:52). Rien ne Lui échappe, Il voit chaque acte, chaque intention secrète.",
+44:"Celui qui exauce, Celui qui répond aux invocations de Ses serviteurs. Sourate Hûd (11:61) : « Mon Seigneur est proche et Il répond. » Il exauce le croyant sincère dans sa détresse.",
+45:"L'Immense, Celui dont l'étendue englobe toute chose. Sourate Al-Baqara (2:115) : « À Allah appartient l'Orient et l'Occident. Où que vous vous tourniez, là est la Face d'Allah. Allah est Immense, Omniscient. »",
+46:"Le Sage, Celui dont la sagesse est parfaite dans Ses actes et Ses décrets. Cité avec Al-'Azîz plus de 40 fois. Sourate Al-Baqara (2:209). Chaque chose qu'Il crée ou décrète contient une sagesse.",
+47:"Le Bien-Aimant, Celui qui aime Ses serviteurs pieux et qui est aimé d'eux. Sourate Hûd (11:90). Son amour est actif : Il entoure de Sa bienveillance ceux qui Le recherchent.",
+48:"Le Glorieux, Le Plein de gloire, Celui dont la gloire et la noblesse sont parfaites. Sourate Hûd (11:73) et Al-Burûj (85:15). Sa gloire est dans Son essence même.",
+49:"Celui qui ressuscite, Celui qui ramènera les morts à la vie le Jour du Jugement. Sourate Al-Hajj (22:7) : « L'Heure viendra, pas de doute, et Allah ressuscitera ceux qui sont dans les tombes. »",
+50:"Le Témoin, Celui qui témoigne de toute chose et rien ne Lui est caché. Sourate Al-Mâ'ida (5:117). Il est Témoin de chaque acte, parole et pensée de Ses créatures.",
+51:"La Vérité, L'Être véritable dont l'existence est absolue et indubitable. Sourate Al-Hajj (22:6) : « C'est parce qu'Allah est La Vérité. » Tout ce qui est en dehors de Lui est éphémère.",
+52:"Le Garant, Le Protecteur en qui on place sa confiance. Sourate Âl 'Imrân (3:173) : « Allah nous suffit, Il est Le meilleur Garant. » Il prend en charge les affaires de celui qui Lui fait confiance.",
+53:"Le Fort, Celui dont la force est absolue et illimitée. Sourate Ash-Shûrâ (42:19). Sa force n'est jamais épuisée et ne connaît aucune faiblesse.",
+54:"Le Ferme, L'Inébranlable, Celui dont la puissance est parfaite et constante. Sourate Adh-Dhâriyât (51:58) : « C'est Allah Le Pourvoyeur, Le Détenteur de la force, Le Ferme. »",
+55:"Le Protecteur, L'Allié, Celui qui soutient et prend soin de Ses serviteurs croyants. Sourate Al-Baqara (2:257) : « Allah est Le Protecteur des croyants. » Il les guide de l'obscurité vers la lumière.",
+56:"Le Louable, Celui qui est digne de toute louange par Ses attributs et Ses actes. Sourate Ibrâhîm (14:1). Toute louange Lui revient dans les cieux et sur terre.",
+57:"Celui qui dénombre, Celui qui connaît le nombre exact de toute chose. Sourate Maryam (19:94). Il a compté toute chose et rien ne Lui échappe.",
+58:"Celui qui commence, L'Initiateur de la création. Il a créé toute chose pour la première fois sans modèle préalable. Sourate Al-Burûj (85:13) : « C'est Lui qui commence et qui recommence. »",
+59:"Celui qui reproduit, Celui qui recrée après la mort. Sourate Al-Burûj (85:13). Il ressuscitera les créatures comme Il les a créées la première fois.",
+60:"Celui qui donne la vie, Celui qui fait vivre les créatures et insuffle la vie. Sourate Ar-Rûm (30:50) : « Regarde les traces de la miséricorde d'Allah, comment Il redonne la vie à la terre après sa mort. »",
+61:"Celui qui donne la mort, Celui qui ôte la vie quand Il le veut. Sourate Al-Mulk (67:2) : « Celui qui a créé la mort et la vie afin de vous éprouver. » La mort est un passage, non une fin.",
+62:"Le Vivant, Celui dont la vie est éternelle et parfaite, sans début ni fin. Sourate Al-Baqara (2:255) — Ayat Al-Kursî : « Allah, point de divinité que Lui, Le Vivant. » Sa vie n'est précédée d'aucun néant.",
+63:"Celui qui subsiste par Lui-même, L'Éternel qui fait subsister toute chose. Sourate Al-Baqara (2:255). Il n'a besoin de rien, et tout a besoin de Lui. Souvent associé à Al-Hayy.",
+64:"Celui qui trouve, Le Riche, Celui qui ne manque de rien et trouve tout ce qu'Il veut. Mentionné dans les traditions prophétiques. Sa richesse est absolue et ne diminue jamais.",
+65:"Le Noble, Le Glorieux, Celui dont la noblesse et la gloire sont parfaites. Mentionné dans les traditions. Sa noblesse est dans Son essence, Ses noms et Ses actes.",
+66:"L'Unique, Celui qui est Un dans Son essence, Ses attributs et Ses actes. Sourate Al-Baqara (2:163) : « Votre Dieu est un Dieu unique. Point de divinité à part Lui. »",
+67:"Le Seul, L'Absolument Un, sans partie ni composition. Sourate Al-Ikhlâs (112:1) : « Dis : Lui, Allah, est Un. » Ce nom exprime l'unicité absolue dans l'essence divine.",
+68:"L'Absolu, Le Plein, Celui vers qui toutes les créatures se tournent dans leurs besoins. Sourate Al-Ikhlâs (112:2) : « Allah, As-Samad. » Il n'a besoin de rien, et tout a besoin de Lui.",
+69:"Le Capable, Celui qui a le pouvoir sur toute chose. Sourate Al-Baqara (2:20) : « Allah est capable de toute chose. » Son pouvoir est sans limite et Sa volonté est toujours accomplie.",
+70:"Le Tout Déterminant, Celui dont le pouvoir est absolu et parfait. Sourate Al-Kahf (18:45). Plus intensif qu'Al-Qâdir. Il détermine chaque chose avec une puissance totale.",
+71:"Celui qui met en avant, Celui qui avance qui Il veut et ce qu'Il veut. Mentionné dans un hadith du Prophète ﷺ dans ses invocations nocturnes. Il avance et retarde selon Sa sagesse.",
+72:"Celui qui retarde, Celui qui recule qui Il veut. Complémentaire d'Al-Muqaddim. Hadith du Prophète ﷺ : « Tu es Celui qui avance et Celui qui retarde » (Bukhari). Sa sagesse est dans chaque décret.",
+73:"Le Premier, Celui qui existe avant toute chose, sans commencement. Sourate Al-Hadîd (57:3) : « Il est Le Premier et Le Dernier, L'Apparent et Le Caché. » Rien ne Le précède.",
+74:"Le Dernier, Celui qui demeure après la disparition de toute chose, sans fin. Sourate Al-Hadîd (57:3). Tout périt sauf Sa Face (28:88). Il est éternel sans fin.",
+75:"L'Apparent, Celui dont l'existence est manifeste par Ses signes. Sourate Al-Hadîd (57:3). Ses preuves et Ses signes sont évidents dans la création.",
+76:"Le Caché, Celui qui est au-delà de la perception et de l'imagination. Sourate Al-Hadîd (57:3). Les esprits ne peuvent saisir Sa réalité. Il est connu par Ses attributs, non par Sa vision en ce monde.",
+77:"Le Maître, Le Gouverneur, Celui qui gère et administre toute chose. Sourate Ar-Ra'd (13:11). Il est Le Maître de l'univers et rien ne se produit sans Sa permission.",
+78:"Le Très Élevé, Celui qui est élevé au-dessus de tout ce que Lui attribuent les créatures. Sourate Ar-Ra'd (13:9). Plus élevé que toute description, toute imagination et toute comparaison.",
+79:"Le Charitable, Le Bienfaisant, Celui dont la bonté et la bienfaisance englobent Ses créatures. Sourate At-Tûr (52:28) : « Il est Le Bienfaisant, Le Très Miséricordieux. » Sa bonté touche le croyant et le non-croyant.",
+80:"Celui qui accepte le repentir, Celui qui ne cesse d'accueillir le repentir de Ses serviteurs. Sourate Al-Baqara (2:37) : « Il est Celui qui accepte le repentir, Le Miséricordieux. » Forme intensive : Il Se tourne vers le serviteur avant même que celui-ci ne se repente.",
+81:"Le Vengeur, Celui qui punit sévèrement les injustes et les tyrans. Sourate Âl 'Imrân (3:4). Sa vengeance est une manifestation de Sa justice parfaite, non de la colère aveugle.",
+82:"L'Indulgent, Le Pardonnant, Celui qui efface les péchés. Racine : ع-ف-و ('afâ) — effacer complètement. Sourate An-Nisâ' (4:149). Dou'â du Prophète ﷺ : « Tu aimes le pardon, pardonne-moi » (Tirmidhi).",
+83:"Le Compatissant, Celui dont la compassion est tendre et bienveillante. Sourate At-Tawba (9:117) : « Il est envers eux Compatissant et Miséricordieux. » Plus tendre et plus doux que Ar-Rahîm.",
+84:"Possesseur du Royaume, Le Maître absolu de tout domaine. Sourate Âl 'Imrân (3:26) : « Ô Allah, Maître du Royaume ! Tu donnes le pouvoir à qui Tu veux. » Rien n'existe en dehors de Son royaume.",
+85:"Plein de Majesté et de Munificence, Celui qui réunit la grandeur et la générosité. Sourate Ar-Rahmân (55:27) : « Seule subsiste la Face de ton Seigneur, plein de Majesté et de Munificence. »",
+86:"L'Équitable, Celui qui juge avec équité et justice parfaites. Sourate Al-Anbiyâ' (21:47). Il placera les balances justes au Jour de la Résurrection.",
+87:"Celui qui rassemble, Celui qui réunira toutes les créatures le Jour du Jugement. Sourate Âl 'Imrân (3:9) : « Notre Seigneur, Tu rassembleras les gens un Jour au sujet duquel il n'y a pas de doute. »",
+88:"Le Riche, Celui qui n'a besoin de rien ni de personne. Sourate Muhammad (47:38) : « Allah est Le Riche et vous êtes les pauvres. » Sa richesse est absolue et sans limite.",
+89:"Celui qui enrichit, Celui qui accorde la richesse et comble les besoins de Ses serviteurs. Sourate At-Tawba (9:28) : « Allah vous enrichira par Sa grâce. » Il enrichit matériellement et spirituellement.",
+90:"Celui qui empêche, Celui qui retient et protège de ce qui est nuisible. Mentionné dans les hadiths. Complémentaire d'An-Nâfi'. Il empêche le mal d'atteindre Ses serviteurs quand Il le veut.",
+91:"Celui qui peut nuire, Celui qui crée l'épreuve et l'adversité selon Sa sagesse. Mentionné dans les hadiths avec An-Nâfi'. Nul ne peut nuire à qui Il protège, et nul ne peut protéger de ce qu'Il décrète.",
+92:"Celui qui accorde le profit, Celui qui crée le bien et les bienfaits. Mentionné dans les hadiths. Complémentaire d'Ad-Dârr. Tout profit et tout bienfait viennent de Lui seul.",
+93:"La Lumière, Celui qui illumine les cieux et la terre. Sourate An-Nûr (24:35) : « Allah est la Lumière des cieux et de la terre. » Il guide vers Sa lumière qui Il veut.",
+94:"Le Guide, Celui qui guide vers la vérité et le droit chemin. Sourate Al-Hajj (22:54). Il guide les cœurs sincères et montre le chemin de la rectitude à Ses serviteurs.",
+95:"Le Créateur Originel, Celui qui invente et crée de manière inédite. Sourate Al-Baqara (2:117) : « Créateur des cieux et de la terre, quand Il décide une chose, Il lui dit : Sois, et elle est. »",
+96:"L'Éternel, Celui qui demeure et ne périt jamais. Sourate Ar-Rahmân (55:27) : « Tout ce qui est sur terre est voué à disparaître. Seule subsiste la Face de ton Seigneur. »",
+97:"L'Héritier, Celui qui hérite de toute chose après leur disparition. Sourate Maryam (19:40) : « C'est Nous qui hériterons de la terre et de tout ce qui s'y trouve. » Tout retourne à Lui.",
+98:"Celui qui dirige avec Sagesse, Le Guide éclairé, Celui dont la direction est parfaite. Mentionné dans les traditions. Il dirige Ses créatures vers ce qui est bon pour elles avec une sagesse infinie.",
+99:"Le Patient, Celui dont la patience est absolue et qui ne Se hâte pas de punir. Hadith : « Personne n'est plus patient qu'Allah face aux propos blessants » (Bukhari). Sa patience est un signe de Sa perfection."
 };
 // Generate minimal descriptions for names without detailed ones
 function getDesc(id){
